@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pineappleva.github.io/sitemap.xml
