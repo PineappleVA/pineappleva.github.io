@@ -42,9 +42,10 @@ Pipeline técnico (`assets/js/blog.js`):
 - **Orden**: descendente por nombre → la fecha del nombre manda.
 - **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML (`& < > "`)
   y después se convierte el subconjunto soportado. No se puede inyectar HTML.
-- **Índice** (`/blog`): portada editorial alineada a la izquierda; la entrada más
-  reciente se destaca a todo lo ancho (con la fecha en grande) y el resto van en
-  tarjetas con fecha, tiempo de lectura (~180 palabras/min) y extracto automático.
+- **Índice** (`/blog`): estilo revista — cada entrada lleva una portada de degradado
+  propio (paleta fija por archivo) con número de edición; la más reciente va
+  destacada a todo lo ancho. Fecha, tiempo de lectura (~180 palabras/min) y
+  extracto con fundido en todas las tarjetas.
 - **URLs limpias** (todo el sitio sin `.html`): los enlaces internos apuntan a
   `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`, `/contacto`…
   En GitHub Pages esas rutas no existen → Pages sirve `404.html`, cuyo enrutador
@@ -55,9 +56,9 @@ Pipeline técnico (`assets/js/blog.js`):
 - **Entrada** (`/blog/<slug>`): héroe izquierdo con **solo el titular** (el cuerpo no
   lo repite), artículo a medida de lectura con barra lateral «Compartir» fija y
   navegación Anterior/Siguiente.
-- **Juegos solo en esta web**: `juegos.html` embebe los 5 jugables (Dopamina, FNAS,
-  iıRiS Games, SimulaGoal y Trade Up) con deep-link `/juegos?g=<id>`; no hay
-  enlaces para jugar fuera.
+- **Juegos → Pineapple Games**: `juegos.html` es el escaparate; cada tarjeta enlaza
+  a su página del hub (y el deep-link `/juegos?g=<id>` redirige allí directamente
+  mediante el mapa de `assets/js/main.js`).
 
 ## 🌗 Tema claro y oscuro (cómo funciona por dentro)
 
@@ -126,8 +127,10 @@ para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se
 
 ## Resto de características
 
-- ✨ Animaciones: orbes, barra de progreso, contadores, tilt 3D, cinta de palabras,
-  brillo en botones y aparición al hacer scroll — todo respeta `prefers-reduced-motion`.
+- ✨ Animaciones: orbes, barra de progreso, contadores, tilt 3D, cinta de palabras
+  con fundido en los bordes, brillo en botones, aparición al hacer scroll y
+  aperturas con fundido (desplegable, menú móvil, pager, FAQ) — todo respeta
+  `prefers-reduced-motion`.
 - 🇪🇸 Contenido en español.
 - ♿ HTML semántico, navegación por teclado, foco visible, desplegable accesible
   (`aria-expanded`, cierre con Escape/clic fuera).
@@ -143,7 +146,7 @@ entrada.html           ← plantilla de entrada (se sirve en /blog/<slug>)
 blog/posts/*.md        ← entradas (AAAA-MM-DD-titulo.md)
 blog/posts/posts.json  ← manifiesto de respaldo
 assets/css/style.css   ← estilos (temas dark/light por variables)
-assets/js/main.js      ← tema, menú, desplegable, progreso, contadores, tilt, reproductor
+assets/js/main.js      ← tema, menú, desplegable, progreso, contadores, tilt, redirección ?g=
 assets/js/blog.js      ← pipeline Markdown: índice + página de entrada
 assets/img/            ← logos oficiales
 robots.txt · sitemap.xml

@@ -94,21 +94,16 @@
     </section>
 
     <section class="section post-section">
-      <div class="wrap post-layout">
+      <div class="wrap">
         <article class="md-post single" id="mdPost" data-md-dir="/blog/posts" data-api-dir="blog/posts">
           <p class="md-loading">Cargando entrada…</p>
         </article>
 
-        <aside class="post-rail" aria-label="Compartir y navegar">
-          <div class="rail-box">
-            <h3>Compartir</h3>
-            <button id="shareBtn" class="btn small primary" type="button">🔗 Copiar enlace</button>
-            <a class="btn small ghost" href="/blog">Todas las entradas</a>
-          </div>
-        </aside>
-      </div>
+        <div class="post-actions">
+          <button id="shareBtn" class="btn small ghost" type="button">🔗 Copiar enlace</button>
+          <a class="btn small ghost" href="/blog">Todas las entradas</a>
+        </div>
 
-      <div class="wrap">
         <nav class="post-pager" id="postPager" hidden aria-label="Más entradas del blog"></nav>
       </div>
     </section>

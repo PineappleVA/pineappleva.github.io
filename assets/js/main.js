@@ -208,46 +208,21 @@
     });
   }
 
-  /* ---------- Reproductor de juegos (juegos.html) ---------- */
-  var gameFrame = document.getElementById('gameFrame');
-  var playerShell = document.getElementById('player');
-  if (gameFrame && playerShell) {
-    var playerCaption = document.getElementById('playerCaption');
-    var playerStop = document.getElementById('playerStop');
-    var defaultCaption = playerCaption ? playerCaption.textContent : '';
-    var gameButtons = document.querySelectorAll('[data-game]');
-
-    gameButtons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var src = btn.getAttribute('data-game');
-        gameFrame.setAttribute('src', src);
-        playerShell.classList.add('playing');
-        if (playerCaption) playerCaption.textContent = btn.getAttribute('data-name') || 'Jugando…';
-        if (playerStop) playerStop.hidden = false;
-        gameButtons.forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        playerShell.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      });
-    });
-
-    if (playerStop) {
-      playerStop.addEventListener('click', function () {
-        gameFrame.removeAttribute('src');
-        playerShell.classList.remove('playing');
-        if (playerCaption) playerCaption.textContent = defaultCaption;
-        playerStop.hidden = true;
-        gameButtons.forEach(function (b) { b.classList.remove('active'); });
-      });
-    }
-
-    /* Deep-link: juegos.html?g=dopamina|fnas|iris|simulagoal|trade-up
-       carga el juego directamente (lo usan los enlaces del blog). */
+  /* ---------- Juegos: /juegos?g=<id> lleva a su página de Pineapple Games.
+     Lo usan los enlaces del blog; el mapa vive aquí para poder cambiarlo. ---------- */
+  (function () {
     var g = new URLSearchParams(location.search).get('g');
-    if (g) {
-      var target = document.querySelector('[data-game][data-id="' + g.replace(/[^a-z0-9\-]/gi, '') + '"]');
-      if (target) target.click();
-    }
-  }
+    if (!g || !document.getElementById('catalogo')) return;
+    var map = {
+      'dopamina': 'dopamina',
+      'fnas': 'fine-at-skibidi',
+      'iris': 'iris-games',
+      'simulagoal': 'simulagoal',
+      'trade-up': 'trade-up'
+    };
+    var dir = map[String(g).toLowerCase().replace(/[^a-z0-9\-]/g, '')];
+    if (dir) location.replace('https://pineappleva.github.io/Games/games/' + dir + '/');
+  })();
 
   /* ---------- Formulario de contacto → mailto ---------- */
   var form = document.getElementById('contactForm');

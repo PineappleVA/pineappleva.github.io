@@ -171,6 +171,17 @@
     return "";
   }
 
+  var COVERS = ["cov-amber", "cov-sunset", "cov-violet", "cov-teal", "cov-blue", "cov-rose"];
+
+  /* portada estable por entrada: sale del nombre del archivo */
+  function coverClass(name) {
+    var h = 0, str = String(name);
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return COVERS[h % COVERS.length];
+  }
+
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
   function extractExcerpt(md) {
     var lines = String(md).split("\n");
     var foundTitle = false;
@@ -210,8 +221,8 @@
   }
 
   /* ============================================================
-     MODO ÍNDICE (/blog): la última entrada destacada en grande
-     y el resto en tarjetas-resumen
+     MODO ÍNDICE (/blog): revista — cada entrada con su portada de
+     color, la última destacada a todo lo ancho
      ============================================================ */
   var listEl = document.querySelector(".md-list");
   if (listEl) {
@@ -238,35 +249,35 @@
         var excerpt = extractExcerpt(p.md);
 
         var a = document.createElement("a");
-        a.className = "post-card reveal visible" + (idx === 0 ? " featured" : "");
+        a.className = "post-card" + (idx === 0 ? " featured" : "");
         a.href = postUrl(p.name);
+        a.style.animationDelay = (idx * 90) + "ms";
 
-        if (idx === 0) {
-          /* la más reciente, en grande: cuerpo + fecha editorial a la derecha */
-          var parts = postDateParts(p.name);
-          a.innerHTML =
-            '<div class="featured-body">' +
-            '<div class="post-card-head">' +
-            '<span class="pill pill-brand">Última entrada</span>' +
-            '<span class="pill">☕ ' + mins + " min</span>" +
-            "</div>" +
-            "<h3>" + escapeHtml(title) + "</h3>" +
-            (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
-            '<span class="post-card-more">Leer la entrada →</span>' +
-            "</div>" +
-            '<div class="featured-date" aria-hidden="true">' +
-            (parts ? '<span class="d">' + parts.d + '</span><span class="my">' + parts.mon + " " + parts.y + "</span>" : "") +
-            "</div>";
-        } else {
-          a.innerHTML =
-            '<div class="post-card-head">' +
-            (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
-            '<span class="pill">☕ ' + mins + " min</span>" +
-            "</div>" +
-            "<h3>" + escapeHtml(title) + "</h3>" +
-            (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
-            '<span class="post-card-more">Leer la entrada →</span>';
-        }
+        var cover =
+          '<span class="post-cover ' + coverClass(p.name) + '" aria-hidden="true">' +
+          '<span class="cov-no">\u2116 ' + pad2(idx + 1) + "</span>" +
+          '<span class="cov-pine">\uD83C\uDF51</span>' +
+          "</span>";
+
+        var head =
+          '<span class="post-card-head">' +
+          (idx === 0 ? '<span class="pill pill-brand">\u00DAltima entrada</span>' : "") +
+          (date ? '<span class="pill">\uD83D\uDCC5 ' + escapeHtml(date) + "</span>" : "") +
+          '<span class="pill">\u2615 ' + mins + " min</span>" +
+          "</span>";
+
+        a.innerHTML =
+          cover +
+          '<span class="post-card-body">' +
+          head +
+          "<h3>" + escapeHtml(title) + "</h3>" +
+          (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
+          '<span class="post-card-meta">' +
+          (idx === 0 ? "<span>Por Pineapple</span>" : "<span></span>") +
+          '<span class="post-card-more">Leer la entrada \u2192</span>' +
+          "</span>" +
+          "</span>";
+
         listEl.appendChild(a);
       });
     }).catch(function () {

@@ -38,15 +38,15 @@ Todo lo jugable vive en
 [Pineapple Games](https://pineappleva.github.io/Games/), nuestro hub de juegos.
 Ahora mismo hay **6 juegos** publicados, cada uno con su propia historia:
 
-- **[Dopamina](/juegos?g=dopamina)** — el clicker
+- **[Dopamina](https://pineappleva.github.io/Games/games/dopamina/)** — el clicker
   que lo empezó todo. Mejoras, skins, recompensas diarias y renacimientos. La
   partida se guarda sola, así que puedes cerrar la pestaña sin miedo (aunque
   sabemos que no lo vas a hacer).
-- **[FNAS](/juegos?g=fnas)** —
+- **[FNAS](https://pineappleva.github.io/Games/games/fine-at-skibidi/)** —
   *Five Nights at Skibidi's*, nuestro fan-made de terror entre Five Nights at
   Freddy's y Skibidi Toilet. Hecho con creatividad y muchísimo humor: es
  literalmente el juego que más risas nos ha dado desarrollar.
-- **[iıRiS Games](/juegos?g=iris)** — el
+- **[iıRiS Games](https://pineappleva.github.io/Games/games/iris-games/)** — el
   arcade casero: tragaperras, dardos, un muñeco de pruebas y un escritorio Win98
   que impone. Está en estado «deteriorado», que es una forma elegante de decir
   que aguanta pero con muletas.
@@ -54,13 +54,13 @@ Ahora mismo hay **6 juegos** publicados, cada uno con su propia historia:
   la zona experimental. Muchos juegos con contenido nuevo, bueno y actualizado...
   cuando la abramos. Ahora mismo sigue **bloqueada**, y es de las cosas que más
   ganas tenemos de enseñar este curso.
-- **[SimulaGoal](/juegos?g=simulagoal)** — goles, torneos y penaltis: el
+- **[SimulaGoal](https://pineappleva.github.io/Games/games/simulagoal/)** — goles, torneos y penaltis: el
   simulador de mundiales de la casa.
-- **[Trade Up](/juegos?g=trade-up)** — el clásico de los intercambios, en
+- **[Trade Up](https://pineappleva.github.io/Games/games/trade-up/)** — el clásico de los intercambios, en
   proceso de regreso.
 
-Todos se juegan aquí, en la [página de juegos](/juegos): eliges y a correr,
-sin salir de la web.
+Todos se juegan en [Pineapple Games](https://pineappleva.github.io/Games/):
+eliges y a correr, sin instalar nada.
 
 Si quieres saber qué se cuece en la casa de los juegos, los
 [anuncios](https://pineappleva.github.io/Games/anuncios/) son el sitio donde se
@@ -89,8 +89,8 @@ quedado porque cumple: rápido, ligero y directo. Si alguna vez has querido prob
 ## Y esta web: la casa nueva
 
 La que estás viendo. Este verano le dimos una vuelta completa: modo claro y
-oscuro, los juegos se pueden jugar desde aquí mismo en la
-[página de juegos](/juegos), hay una página de
+oscuro, los juegos tienen su escaparate en la [página de juegos](/juegos),
+que te lleva hasta [Pineapple Games](https://pineappleva.github.io/Games/), y hay una página de
 [equipo](/equipo) con huecos libres (ya hablamos
 de eso más abajo) y este **blog**, donde cada entrada tiene su propia página.
 

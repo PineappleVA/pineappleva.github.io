@@ -5,7 +5,7 @@ Pues eso: esta web es la nueva casa de Pineapple. Hecha a mano en HTML y CSS, si
 Aquí puedes encontrar, por ahora:
 
 - Nuestros **proyectos**, con una ficha por cada uno
-- Los **juegos**, que se pueden jugar directamente en la página, sin salir de aquí
+- Los **juegos**, con su escaparate en la web y su casa en Pineapple Games
 - Quiénes somos y a qué le dedicamos las tardes
 - Este blog, que es donde contaremos novedades
 
