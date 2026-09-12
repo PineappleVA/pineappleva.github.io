@@ -136,6 +136,7 @@ assets/js/main.js      ← tema, menú, desplegable, progreso, contadores, tilt,
 assets/js/blog.js      ← pipeline Markdown: índice + página de entrada
 assets/img/            ← logos oficiales
 robots.txt · sitemap.xml
+docs/verificacion-dns.txt  ← nota interna: TXT de verificación del dominio en GitHub
 ```
 
 ## Probar en local
