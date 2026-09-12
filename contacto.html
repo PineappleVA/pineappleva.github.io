@@ -33,7 +33,7 @@
       }
       document.documentElement.setAttribute('data-theme', t);
       var m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute('content', t === 'light' ? '#faf5ea' : '#131007');
+      if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
     })();
   </script>
   <link rel="stylesheet" href="assets/css/style.css">
@@ -55,12 +55,23 @@
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
 
-      <nav id="siteNav" class="main-nav" aria-label="Navegación principal">
+<nav id="siteNav" class="main-nav" aria-label="Navegación principal">
         <ul>
           <li><a href="index.html">Inicio</a></li>
-          <li><a href="proyectos.html">Proyectos</a></li>
           <li><a href="blog.html">Blog</a></li>
-          <li><a href="contacto.html" aria-current="page">Contacto</a></li>
+          <li class="dropdown">
+            <button type="button" class="drop-btn" aria-expanded="false" aria-haspopup="true">
+              Información
+              <svg class="caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="dropdown-menu" hidden>
+        <li><a href="proyectos.html">🚀 Proyectos</a></li>
+        <li><a href="juegos.html">🎮 Juegos</a></li>
+        <li><a href="comunidad.html">🏫 Comunidad</a></li>
+        <li><a href="equipo.html">👥 Equipo</a></li>
+        <li><a href="contacto.html" aria-current="page">📬 Contacto</a></li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <button id="themeToggle" class="theme-toggle" type="button" aria-label="Cambiar entre tema oscuro y claro" title="Cambiar tema">
@@ -181,8 +192,8 @@
           </details>
           <details>
             <summary>¿Mi colegio puede usar School Utilities?</summary>
-            <p>Sí, para eso está. Ya se usa en varios colegios de Valladolid. Si tu centro quiere
-            conocerla, escríbenos y lo contamos.</p>
+            <p>De momento no: solo está disponible en el Safa-Grial y todavía no hemos centrado
+            el producto en otros colegios. Si eso cambia, lo contaremos en el blog.</p>
           </details>
           <details>
             <summary>Un juego no me funciona, ¿qué hago?</summary>
@@ -206,7 +217,6 @@
 
   <!-- ======================= Pie ======================= -->
   <footer class="site-footer">
-
     <div class="wrap footer-grid">
       <div class="footer-brand">
         <a class="brand" href="index.html">
@@ -225,6 +235,7 @@
           <li><a href="juegos.html">Juegos</a></li>
           <li><a href="blog.html">Blog</a></li>
           <li><a href="comunidad.html">Comunidad</a></li>
+          <li><a href="equipo.html">Equipo</a></li>
           <li><a href="contacto.html">Contacto</a></li>
         </ul>
       </nav>
@@ -254,17 +265,23 @@
       <p>© <span id="year">2026</span> <span translate="no">Pineapple</span> · <span translate="no">Making things a little bit better</span></p>
       <p>Hecho con 🍍 en Valladolid</p>
     </div>
-    <div class="wave slow" aria-hidden="true">
-      <svg viewBox="0 0 2880 90" preserveAspectRatio="none" focusable="false">
+
+    <div class="wave wave-footer" aria-hidden="true">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" focusable="false">
         <defs>
           <linearGradient id="wgF" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2880" y2="0">
             <stop offset="0" stop-color="#f5a623"/>
-            <stop offset="1" stop-color="#ffd166"/>
+            <stop offset="0.25" stop-color="#ffd166"/>
+            <stop offset="0.5" stop-color="#f5a623"/>
+            <stop offset="0.75" stop-color="#ffd166"/>
+            <stop offset="1" stop-color="#f5a623"/>
           </linearGradient>
         </defs>
-        <g class="wave-move">
-          <path d="M0,42 C240,90 480,-6 720,42 C960,90 1200,-6 1440,42 L1440,90 L0,90 Z" fill="url(#wgF)"/>
-          <path d="M1440,42 C1680,90 1920,-6 2160,42 C2400,90 2640,-6 2880,42 L2880,90 L1440,90 Z" fill="url(#wgF)"/>
+        <g class="wave-back">
+          <path d="M0,60 C240,26 480,26 720,60 C960,94 1200,94 1440,60 C1680,26 1920,26 2160,60 C2400,94 2640,94 2880,60 L2880,120 L0,120 Z" fill="url(#wgF)" opacity=".3"/>
+        </g>
+        <g class="wave-front">
+          <path d="M0,60 C240,94 480,94 720,60 C960,26 1200,26 1440,60 C1680,94 1920,94 2160,60 C2400,26 2640,26 2880,60 L2880,120 L0,120 Z" fill="url(#wgF)"/>
         </g>
       </svg>
     </div>

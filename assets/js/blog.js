@@ -1,28 +1,29 @@
 /* ============================================================
-   Pineapple — Blog en Markdown + Selector de píldoras
+   Pineapple — Blog en Markdown (índice + página de entrada)
 
-   Basado en el mismo sistema que los anuncios de Pineapple Games.
-   Renderiza entradas escritas en Markdown. Basta con subir un
-   archivo `AAAA-MM-DD-titulo.md` a `blog/posts/` para que aparezca
-   publicado automáticamente (los más recientes primero).
+   Basado en el mismo sistema que los anuncios de Pineapple Games:
+   sube un archivo `AAAA-MM-DD-titulo.md` a `blog/posts/` y se
+   publica solo, ordenado de más reciente a más viejo.
 
    CÓMO FUNCIONA POR DENTRO
    ------------------------
-   1. Listado: se pide a la API de GitHub el contenido de
-      `blog/posts` en main (api.github.com/repos/PineappleVA/
-      pineappleva.github.io/contents/blog/posts?ref=main) y se
-      quedan los .md (sin readme ni ocultos). Si la API falla
-      (sin conexión o límite de peticiones), se lee el manifiesto
-      local blog/posts/posts.json como respaldo.
-   2. Cada archivo se descarga (raw.githubusercontent.com) y se
-      renderiza con un mini-Markdown propio y seguro: primero se
-      escapa todo el HTML y luego se convierten encabezados #..####,
-      listas - y 1., citas >, bloques de código ```, hr ---,
+   1. Listado: GET a la API de GitHub
+      api.github.com/repos/PineappleVA/pineappleva.github.io/
+      contents/blog/posts?ref=main → se quedan los .md (sin readme
+      ni ocultos). Si la API falla (límite de peticiones, sin
+      conexión), se lee el manifiesto blog/posts/posts.json.
+   2. Descarga: cada .md se trae de raw.githubusercontent.com (main).
+   3. Orden: descendente por nombre → la fecha del nombre manda.
+   4. Render: mini-Markdown propio y seguro; primero se escapa TODO
+      el HTML (& < > ") y después se convierte el subconjunto:
+      #..####, listas - y 1., citas >, ```código```, ---,
       **negritas**, *cursivas*, `código`, [enlaces](url) e imágenes.
-   3. Orden: por nombre de archivo descendente → AAAA-MM-DD manda.
-   4. Selector: barra de píldoras fija bajo el menú. Cada píldora
-      hace scroll a su entrada; un IntersectionObserver marca la
-      activa según la entrada visible.
+   5. Dos modos según la página:
+      · blog.html (.md-list) → tarjetas-resumen que enlazan a
+        entrada.html?p=<archivo>
+      · entrada.html (#mdPost) → carga el archivo del parámetro ?p=
+        (validado con un patrón estricto), lo renderiza como página
+        propia, actualiza el <title> y pinta Anterior/Siguiente.
    ============================================================ */
 (function () {
   "use strict";
@@ -30,6 +31,7 @@
   var ORG = "PineappleVA";
   var REPO = "pineappleva.github.io";
   var BRANCH = "main";
+  var RAW_BASE = "https://raw.githubusercontent.com/" + ORG + "/" + REPO + "/" + BRANCH + "/";
 
   /* ---------- Mini-renderizador Markdown (subconjunto seguro) ---------- */
 
@@ -129,164 +131,31 @@
     for (var i = 0; i < lines.length; i++) {
       var t = lines[i].trim();
       var m = t.match(/^#{1,3}\s+(.*)$/);
-      if (m) return m[1].replace(/^[#\s]+/, "").replace(/[*_`]+/g, "").trim().slice(0, 80);
+      if (m) return m[1].replace(/^[#\s]+/, "").replace(/[*_`]+/g, "").trim().slice(0, 90);
     }
     for (var j = 0; j < lines.length; j++) {
       var t2 = lines[j].trim();
       if (t2 && t2.length > 3 && !/^[-*#>!]/.test(t2)) {
-        return t2.replace(/[*_`\[\]]+/g, "").trim().slice(0, 70);
+        return t2.replace(/[*_`\[\]]+/g, "").trim().slice(0, 80);
       }
     }
     return "";
   }
 
-  function loadPosts(files, resolveLocal) {
-    if (!files.length) return Promise.reject(new Error("sin archivos"));
-    var sorted = files.slice().sort().reverse(); // AAAA-MM-DD: más reciente primero
-    return Promise.all(sorted.map(function (f) {
-      return fetchText(resolveLocal(f)).then(function (md) { return { name: f, md: md }; });
-    }));
+  function extractExcerpt(md) {
+    var lines = String(md).split("\n");
+    var foundTitle = false;
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].trim();
+      if (!t || /^[-*#>!]/.test(t) || /^```/.test(t)) { if (!t) foundTitle = foundTitle; continue; }
+      if (!foundTitle) { foundTitle = true; continue; } /* la primera línea suele ser el título */
+      return t.replace(/[*_`\[\]()]+/g, "").trim().slice(0, 150) + (t.length > 150 ? "…" : "");
+    }
+    return "";
   }
 
-  /* ---------- Selector de píldoras ---------- */
-
-  function ensureTabs(box) {
-    var existing = document.getElementById("mdTabs");
-    if (existing) return existing;
-    var wrap = document.createElement("div");
-    wrap.className = "md-tabs-wrap";
-    wrap.innerHTML =
-      '<div class="md-tabs-head">' +
-      '<span class="md-tabs-title">Entradas</span>' +
-      '<span class="md-tabs-count"></span>' +
-      '</div>' +
-      '<div class="md-tabs" id="mdTabs" role="tablist" aria-label="Elegir entrada"></div>';
-    box.parentNode.insertBefore(wrap, box);
-    return wrap.querySelector("#mdTabs");
-  }
-
-  function buildTabs(box, posts) {
-    var tabs = ensureTabs(box);
-    var wrap = tabs.parentNode;
-    var countEl = wrap.querySelector(".md-tabs-count");
-    if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? " entrada" : " entradas");
-    tabs.innerHTML = "";
-
-    posts.forEach(function (p, idx) {
-      var rawTitle = extractTitle(p.md);
-      var fallback = p.name.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
-      var title = rawTitle || fallback;
-      var date = postDate(p.name) || "";
-
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "md-tab" + (idx === 0 ? " active" : "");
-      btn.setAttribute("data-idx", String(idx));
-      btn.innerHTML = escapeHtml(title) + '<span class="tab-date">' + escapeHtml(date) + "</span>";
-
-      btn.addEventListener("click", function () {
-        var target = document.getElementById("md-post-" + idx);
-        if (!target) return;
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        var all = tabs.querySelectorAll(".md-tab");
-        for (var k = 0; k < all.length; k++) all[k].classList.remove("active");
-        btn.classList.add("active");
-        target.classList.add("is-highlight");
-        setTimeout(function () { target.classList.remove("is-highlight"); }, 900);
-        if (window.history && history.replaceState) {
-          try { history.replaceState(null, "", "#" + target.id); } catch (e) {}
-        }
-      });
-
-      tabs.appendChild(btn);
-    });
-
-    /* Marcar la píldora activa según la entrada visible */
-    try {
-      if ("IntersectionObserver" in window) {
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            var m = entry.target.id.match(/md-post-(\d+)/);
-            if (!m) return;
-            var i = parseInt(m[1], 10);
-            var items = tabs.querySelectorAll(".md-tab");
-            for (var q = 0; q < items.length; q++) items[q].classList.remove("active");
-            if (items[i]) {
-              items[i].classList.add("active");
-              /* que la píldora activa se vea en la barra */
-              try { items[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); } catch (e2) {}
-            }
-          });
-        }, { rootMargin: "-20% 0px -60% 0px", threshold: 0.05 });
-
-        posts.forEach(function (_, idx) {
-          var el = document.getElementById("md-post-" + idx);
-          if (el) io.observe(el);
-        });
-      }
-    } catch (e) {}
-
-    /* Si se llega con #md-post-N en la URL, saltar a esa entrada */
-    try {
-      if (location.hash && /^#md-post-\d+/.test(location.hash)) {
-        var targetHash = document.querySelector(location.hash);
-        if (targetHash) {
-          setTimeout(function () { targetHash.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200);
-        }
-      }
-    } catch (e3) {}
-  }
-
-  /* ---------- Render ---------- */
-
-  function renderAll(box, posts) {
-    box.innerHTML = "";
-    posts.forEach(function (p, idx) {
-      var art = document.createElement("article");
-      art.className = "md-post";
-      art.id = "md-post-" + idx;
-      var date = postDate(p.name);
-      var mins = readingMinutes(p.md);
-      var meta =
-        '<div class="post-meta">' +
-        (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
-        '<span class="pill">☕ ' + mins + " min de lectura</span>" +
-        '<span class="author">🍍 Pineapple</span>' +
-        "</div>";
-      art.innerHTML = meta + renderMarkdown(p.md);
-      box.appendChild(art);
-    });
-    var end = document.createElement("p");
-    end.className = "md-end";
-    end.textContent = "🍍 No hay más entradas… por ahora.";
-    box.appendChild(end);
-    buildTabs(box, posts);
-  }
-
-  function renderEmpty(box) {
-    box.innerHTML =
-      '<div class="notice"><h3>Todavía no hay nada por aquí</h3>' +
-      "<p>Cuando publiquemos la primera entrada, aparecerá aquí automáticamente.</p></div>";
-    try {
-      var tabs = document.getElementById("mdTabs");
-      if (tabs) {
-        var wrap = tabs.parentNode;
-        var c = wrap.querySelector(".md-tabs-count");
-        if (c) c.textContent = "0 entradas";
-        tabs.innerHTML = "";
-      }
-    } catch (e) {}
-  }
-
-  /* ---------- Carga: API de GitHub con fallback a posts.json ---------- */
-  document.querySelectorAll(".md-posts").forEach(function (box) {
-    var localDir = (box.getAttribute("data-md-dir") || "./posts").replace(/\/$/, "");
-    var apiDir = box.getAttribute("data-api-dir") || "";
-
-    ensureTabs(box);
-    box.innerHTML = '<p class="md-loading">Cargando entradas…</p>';
-
+  /* Listado de archivos: API de GitHub con fallback a posts.json */
+  function fetchList(apiDir, localDir) {
     function viaApi() {
       if (!apiDir) return Promise.reject(new Error("sin api"));
       var url = "https://api.github.com/repos/" + ORG + "/" + REPO + "/contents/" +
@@ -294,29 +163,179 @@
       return fetch(url, { headers: { Accept: "application/vnd.github+json" } })
         .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then(function (items) {
-          var files = (Array.isArray(items) ? items : [])
+          return (Array.isArray(items) ? items : [])
             .filter(function (it) {
               return it.type === "file" && /\.md$/i.test(it.name) &&
                 it.name.toLowerCase() !== "readme.md" && it.name.charAt(0) !== ".";
             })
-            .map(function (it) { return it.name; });
-          return loadPosts(files, function (name) {
-            return "https://raw.githubusercontent.com/" + ORG + "/" + REPO + "/" +
-              encodeURIComponent(BRANCH) + "/" + apiDir + "/" + name;
-          });
+            .map(function (it) { return it.name; })
+            .sort().reverse();
         });
     }
-
     function viaManifest() {
       return fetchText(localDir + "/posts.json").then(function (text) {
-        var files = (JSON.parse(text).posts || []);
-        return loadPosts(files, function (name) { return localDir + "/" + name; });
+        return (JSON.parse(text).posts || []).slice().sort().reverse();
       });
     }
+    return viaApi().catch(viaManifest);
+  }
 
-    viaApi()
-      .catch(viaManifest)
-      .then(function (posts) { renderAll(box, posts); })
-      .catch(function () { renderEmpty(box); });
-  });
+  /* ============================================================
+     MODO ÍNDICE (blog.html): tarjetas-resumen
+     ============================================================ */
+  var listEl = document.querySelector(".md-list");
+  if (listEl) {
+    var apiDir = listEl.getAttribute("data-api-dir") || "";
+    var localDir = (listEl.getAttribute("data-md-dir") || "blog/posts").replace(/\/$/, "");
+    var countEl = document.getElementById("mdCount");
+
+    fetchList(apiDir, localDir).then(function (files) {
+      if (countEl) countEl.textContent = files.length + (files.length === 1 ? " entrada" : " entradas");
+      if (!files.length) return Promise.reject(new Error("vacío"));
+      return Promise.all(files.map(function (name) {
+        return fetchText(localDir + "/" + name).then(function (md) { return { name: name, md: md }; });
+      }));
+    }).then(function (posts) {
+      listEl.innerHTML = "";
+      posts.forEach(function (p) {
+        var title = extractTitle(p.md) || p.name.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
+        var date = postDate(p.name) || "";
+        var mins = readingMinutes(p.md);
+        var excerpt = extractExcerpt(p.md);
+
+        var a = document.createElement("a");
+        a.className = "post-card reveal visible";
+        a.href = "entrada.html?p=" + encodeURIComponent(p.name);
+        a.innerHTML =
+          '<div class="post-card-head">' +
+          (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
+          '<span class="pill">☕ ' + mins + " min</span>" +
+          "</div>" +
+          "<h3>" + escapeHtml(title) + "</h3>" +
+          (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
+          '<span class="post-card-more">Leer la entrada →</span>';
+        listEl.appendChild(a);
+      });
+    }).catch(function () {
+      if (countEl) countEl.textContent = "0 entradas";
+      listEl.innerHTML =
+        '<div class="notice" style="grid-column:1/-1;"><h3>Todavía no hay nada por aquí</h3>' +
+        "<p>Cuando publiquemos la primera entrada, aparecerá aquí automáticamente.</p></div>";
+    });
+  }
+
+  /* ============================================================
+     MODO ENTRADA (entrada.html?p=nombre.md)
+     ============================================================ */
+  var postEl = document.getElementById("mdPost");
+  if (postEl) {
+    var apiDir2 = postEl.getAttribute("data-api-dir") || "";
+    var localDir2 = (postEl.getAttribute("data-md-dir") || "blog/posts").replace(/\/$/, "");
+
+    var params = new URLSearchParams(location.search);
+    var fileName = params.get("p") || "";
+    var VALID = /^\d{4}-\d{2}-\d{2}-[a-z0-9\-]+\.md$/i;
+
+    var titleEl = document.getElementById("postTitle");
+    var metaEl = document.getElementById("postMeta");
+    var pagerEl = document.getElementById("postPager");
+    var shareBtn = document.getElementById("shareBtn");
+
+    function renderError(msg) {
+      postEl.innerHTML =
+        '<div class="notice"><h3>Esta entrada no aparece</h3>' +
+        "<p>" + escapeHtml(msg) + "</p>" +
+        '<p style="margin-top:.6rem;"><a href="blog.html">← Volver al blog</a></p></div>';
+      if (titleEl) titleEl.textContent = "Entrada no encontrada";
+      if (metaEl) metaEl.textContent = "";
+      document.title = "Entrada no encontrada · Blog · Pineapple";
+    }
+
+    if (!VALID.test(fileName)) {
+      renderError("No hay ninguna entrada con esta dirección.");
+    } else {
+      fetchText(localDir2 + "/" + fileName)
+        .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + fileName); })
+        .then(function (md) {
+          var title = extractTitle(md) || fileName;
+          var date = postDate(fileName);
+          var mins = readingMinutes(md);
+
+          document.title = title + " · Blog · Pineapple";
+          if (titleEl) titleEl.textContent = title;
+          if (metaEl) {
+            metaEl.innerHTML =
+              (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
+              '<span class="pill">☕ ' + mins + " min de lectura</span>" +
+              '<span class="author">🍍 Pineapple</span>';
+          }
+          postEl.innerHTML = renderMarkdown(md);
+
+          if (shareBtn && !shareBtn.dataset.bound) {
+            shareBtn.dataset.bound = "1";
+            shareBtn.addEventListener("click", function () {
+              var url = location.href;
+              function done() {
+                var old = shareBtn.textContent;
+                shareBtn.textContent = "¡Copiado!";
+                setTimeout(function () { shareBtn.textContent = old; }, 1600);
+              }
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done, function () { prompt("Copia el enlace:", url); });
+              } else {
+                prompt("Copia el enlace:", url);
+              }
+            });
+          }
+
+          /* Anterior (más reciente) / Siguiente (más antigua) */
+          if (pagerEl) {
+            fetchList(apiDir2, localDir2).then(function (files) {
+              var i = files.indexOf(fileName);
+              if (i === -1) return;
+              var newer = i > 0 ? files[i - 1] : null;      /* más reciente */
+              var older = i < files.length - 1 ? files[i + 1] : null; /* más antigua */
+              if (!newer && !older) return;
+
+              function card(file, dir, label) {
+                return (
+                  '<a class="pager-card ' + dir + '" href="entrada.html?p=' + encodeURIComponent(file) + '">' +
+                  '<span class="dir">' + label + "</span>" +
+                  '<span class="t">' + escapeHtml(extractTitleCache(file) || file) + "</span></a>"
+                );
+              }
+              /* títulos del listado sin descargar todo: los resolvemos
+                 solo si la entrada ya está en caché; si no, nombre limpio */
+              var cache = {};
+              cache[fileName] = title;
+              function extractTitleCache(file) {
+                return cache[file] ||
+                  file.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
+              }
+
+              pagerEl.innerHTML =
+                (newer ? card(newer, "prev", "← Más reciente") : "<span></span>") +
+                (older ? card(older, "next", "Más antigua →") : "<span></span>");
+              pagerEl.removeAttribute("hidden");
+
+              /* intenta poner títulos reales descargando los vecinos */
+              [newer, older].forEach(function (file) {
+                if (!file) return;
+                fetchText(localDir2 + "/" + file)
+                  .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + file); })
+                  .then(function (md2) {
+                    cache[file] = extractTitle(md2);
+                    var link = pagerEl.querySelector('a[href="entrada.html?p=' + encodeURIComponent(file) + '"] .t');
+                    if (link) link.textContent = cache[file];
+                  })
+                  .catch(function () {});
+              });
+            }).catch(function () {});
+          }
+        })
+        .catch(function () {
+          renderError("Puede que se haya borrado, renombrado o que la dirección esté mal escrita.");
+        });
+    }
+  }
 })();

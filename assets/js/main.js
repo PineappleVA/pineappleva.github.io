@@ -1,8 +1,8 @@
 /* ============================================================
    Pineapple — Portafolio · Scripts comunes
-   Sin dependencias: tema claro/oscuro, menú móvil, barra de
-   progreso, contadores, tilt 3D y reproductor de juegos.
-   (El blog tiene su propio script: blog.js)
+   Sin dependencias: tema claro/oscuro, menú móvil, desplegable
+   de Información, barra de progreso, contadores, tilt 3D y
+   reproductor de juegos. (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
   'use strict';
@@ -23,9 +23,45 @@
       document.documentElement.setAttribute('data-theme', next);
       try { localStorage.setItem('pa-theme', next); } catch (e) {}
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', next === 'light' ? '#faf5ea' : '#131007');
+      if (meta) meta.setAttribute('content', next === 'light' ? '#ffffff' : '#131007');
     });
   }
+
+  /* ---------- Marcar la página actual dentro del desplegable ---------- */
+  var here = (location.pathname.split('/').pop() || 'index.html');
+  document.querySelectorAll('.dropdown-menu a').forEach(function (a) {
+    if (a.getAttribute('href') === here) a.setAttribute('aria-current', 'page');
+  });
+
+  /* ---------- Desplegable de Información ---------- */
+  document.querySelectorAll('.dropdown').forEach(function (dd) {
+    var btn = dd.querySelector('.drop-btn');
+    var menu = dd.querySelector('.dropdown-menu');
+    if (!btn || !menu) return;
+
+    function setOpen(open) {
+      if (open) {
+        menu.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        dd.setAttribute('data-open', 'true');
+      } else {
+        menu.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+        dd.setAttribute('data-open', 'false');
+      }
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(menu.hasAttribute('hidden'));
+    });
+    document.addEventListener('click', function (e) {
+      if (!dd.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  });
 
   /* ---------- Año del pie ---------- */
   var year = document.getElementById('year');

@@ -22,7 +22,7 @@
       }
       document.documentElement.setAttribute('data-theme', t);
       var m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute('content', t === 'light' ? '#faf5ea' : '#131007');
+      if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
     })();
   </script>
   <link rel="stylesheet" href="assets/css/style.css">
@@ -62,20 +62,71 @@
   </main>
 
   <footer class="site-footer">
-    <div class="wrap footer-bottom" style="border-top:0;">
-      <p>© <span id="year">2026</span> <span translate="no">Pineapple</span> · Hecho con 🍍 en Valladolid</p>
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <img src="assets/img/pineapple.png" alt="" width="38" height="38">
+          <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
+        </a>
+        <p class="footer-note">Hecho con 🍍 en Valladolid.<br>
+        Productos digitales, herramientas y juegos para colegios: útiles, sencillos y cercanos.</p>
+      </div>
+
+      <nav class="footer-col" aria-label="Enlaces del sitio">
+        <h3>Explora</h3>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="proyectos.html">Proyectos</a></li>
+          <li><a href="juegos.html">Juegos</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="comunidad.html">Comunidad</a></li>
+          <li><a href="equipo.html">Equipo</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Nuestros productos">
+        <h3>Productos</h3>
+        <ul>
+          <li><a href="https://sites.google.com/safa-grial.es/school-utilities/inicio" target="_blank" rel="noopener">School Utilities ↗</a></li>
+          <li><a href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">Pineapple Games ↗</a></li>
+          <li><a href="https://pineappleva.github.io/Better-Discovery/" target="_blank" rel="noopener">Better Discovery ↗</a></li>
+          <li><a href="https://complain.base44.app/" target="_blank" rel="noopener">Y · Red social ↗</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Síguenos">
+        <h3>Síguenos</h3>
+        <ul>
+          <li><a href="https://github.com/PineappleVA" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <li><a href="https://x.com/pineapplevacorp" target="_blank" rel="noopener">X (Twitter) ↗</a></li>
+          <li><a href="https://www.youtube.com/@pacorp-oficial" target="_blank" rel="noopener">YouTube ↗</a></li>
+          <li><a href="mailto:pineapplevacorp@gmail.com">Email ✉</a></li>
+        </ul>
+      </nav>
     </div>
-    <div class="wave slow" aria-hidden="true">
-      <svg viewBox="0 0 2880 90" preserveAspectRatio="none" focusable="false">
+
+    <div class="wrap footer-bottom">
+      <p>© <span id="year">2026</span> <span translate="no">Pineapple</span> · <span translate="no">Making things a little bit better</span></p>
+      <p>Hecho con 🍍 en Valladolid</p>
+    </div>
+
+    <div class="wave wave-footer" aria-hidden="true">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" focusable="false">
         <defs>
           <linearGradient id="wgF" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2880" y2="0">
             <stop offset="0" stop-color="#f5a623"/>
-            <stop offset="1" stop-color="#ffd166"/>
+            <stop offset="0.25" stop-color="#ffd166"/>
+            <stop offset="0.5" stop-color="#f5a623"/>
+            <stop offset="0.75" stop-color="#ffd166"/>
+            <stop offset="1" stop-color="#f5a623"/>
           </linearGradient>
         </defs>
-        <g class="wave-move">
-          <path d="M0,42 C240,90 480,-6 720,42 C960,90 1200,-6 1440,42 L1440,90 L0,90 Z" fill="url(#wgF)"/>
-          <path d="M1440,42 C1680,90 1920,-6 2160,42 C2400,90 2640,-6 2880,42 L2880,90 L1440,90 Z" fill="url(#wgF)"/>
+        <g class="wave-back">
+          <path d="M0,60 C240,26 480,26 720,60 C960,94 1200,94 1440,60 C1680,26 1920,26 2160,60 C2400,94 2640,94 2880,60 L2880,120 L0,120 Z" fill="url(#wgF)" opacity=".3"/>
+        </g>
+        <g class="wave-front">
+          <path d="M0,60 C240,94 480,94 720,60 C960,26 1200,26 1440,60 C1680,94 1920,94 2160,60 C2400,26 2640,26 2880,60 L2880,120 L0,120 Z" fill="url(#wgF)"/>
         </g>
       </svg>
     </div>
