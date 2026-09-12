@@ -1,22 +1,28 @@
 /* ============================================================
-   Pineapple — Blog en Markdown + Selector lateral
+   Pineapple — Blog en Markdown + Selector de píldoras
 
    Basado en el mismo sistema que los anuncios de Pineapple Games.
    Renderiza entradas escritas en Markdown. Basta con subir un
    archivo `AAAA-MM-DD-titulo.md` a `blog/posts/` para que aparezca
    publicado automáticamente (los más recientes primero).
 
-   - data-md-dir   → carpeta local (relativa a la página) con los .md
-   - data-api-dir  → misma carpeta dentro del repo (para listarla con
-                     la API de GitHub y no editar nada más)
-   Si la API no está disponible (sin conexión, límite de peticiones),
-   se usa `posts.json` de la carpeta como manifiesto.
-
-   Selector lateral:
-   - Crea un layout .md-layout con .md-sidebar (lista) + .md-main
-   - Cada post tiene id md-post-0, md-post-1...
-   - Click en sidebar → scroll suave + highlight
-   - IntersectionObserver → activa el item visible
+   CÓMO FUNCIONA POR DENTRO
+   ------------------------
+   1. Listado: se pide a la API de GitHub el contenido de
+      `blog/posts` en main (api.github.com/repos/PineappleVA/
+      pineappleva.github.io/contents/blog/posts?ref=main) y se
+      quedan los .md (sin readme ni ocultos). Si la API falla
+      (sin conexión o límite de peticiones), se lee el manifiesto
+      local blog/posts/posts.json como respaldo.
+   2. Cada archivo se descarga (raw.githubusercontent.com) y se
+      renderiza con un mini-Markdown propio y seguro: primero se
+      escapa todo el HTML y luego se convierten encabezados #..####,
+      listas - y 1., citas >, bloques de código ```, hr ---,
+      **negritas**, *cursivas*, `código`, [enlaces](url) e imágenes.
+   3. Orden: por nombre de archivo descendente → AAAA-MM-DD manda.
+   4. Selector: barra de píldoras fija bajo el menú. Cada píldora
+      hace scroll a su entrada; un IntersectionObserver marca la
+      activa según la entrada visible.
    ============================================================ */
 (function () {
   "use strict";
@@ -105,11 +111,17 @@
     });
   }
 
+  var MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
   function postDate(name) {
     var m = String(name).match(/^(\d{4})-(\d{2})-(\d{2})-/);
     if (!m) return null;
-    var meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-    return parseInt(m[3], 10) + " " + meses[parseInt(m[2], 10) - 1] + " " + m[1];
+    return parseInt(m[3], 10) + " " + MESES[parseInt(m[2], 10) - 1] + " " + m[1];
+  }
+
+  function readingMinutes(md) {
+    var words = String(md).trim().split(/\s+/).length;
+    return Math.max(1, Math.round(words / 180));
   }
 
   function extractTitle(md) {
@@ -117,25 +129,12 @@
     for (var i = 0; i < lines.length; i++) {
       var t = lines[i].trim();
       var m = t.match(/^#{1,3}\s+(.*)$/);
-      if (m) {
-        return m[1].replace(/^[#\s]+/, "").replace(/[*_`]+/g, "").trim().slice(0, 80);
-      }
+      if (m) return m[1].replace(/^[#\s]+/, "").replace(/[*_`]+/g, "").trim().slice(0, 80);
     }
     for (var j = 0; j < lines.length; j++) {
       var t2 = lines[j].trim();
       if (t2 && t2.length > 3 && !/^[-*#>!]/.test(t2)) {
         return t2.replace(/[*_`\[\]]+/g, "").trim().slice(0, 70);
-      }
-    }
-    return "";
-  }
-
-  function extractExcerpt(md) {
-    var lines = String(md).split("\n");
-    for (var i = 0; i < lines.length; i++) {
-      var t = lines[i].trim();
-      if (t && t.length > 3 && !/^[-*#>!]/.test(t)) {
-        return t.replace(/[*_`\[\]()]+/g, "").trim().slice(0, 140);
       }
     }
     return "";
@@ -149,60 +148,47 @@
     }));
   }
 
-  function ensureLayout(box) {
-    if (box.closest && box.closest(".md-layout")) {
-      var lay = box.closest(".md-layout");
-      return {
-        layout: lay,
-        sidebar: lay.querySelector(".md-sidebar"),
-        main: lay.querySelector(".md-main")
-      };
-    }
-    var layout = document.createElement("div");
-    layout.className = "md-layout";
+  /* ---------- Selector de píldoras ---------- */
 
-    var sidebar = document.createElement("nav");
-    sidebar.className = "md-sidebar";
-    sidebar.setAttribute("aria-label", "Selector de entradas");
-    sidebar.innerHTML = '<div class="md-sidebar-head"><span class="md-sidebar-title">Entradas</span><span class="md-sidebar-count"></span></div><div class="md-sidebar-list"></div>';
-
-    var main = document.createElement("div");
-    main.className = "md-main";
-
-    box.parentNode.insertBefore(layout, box);
-    layout.appendChild(sidebar);
-    layout.appendChild(main);
-    main.appendChild(box);
-
-    return { layout: layout, sidebar: sidebar, main: main };
+  function ensureTabs(box) {
+    var existing = document.getElementById("mdTabs");
+    if (existing) return existing;
+    var wrap = document.createElement("div");
+    wrap.className = "md-tabs-wrap";
+    wrap.innerHTML =
+      '<div class="md-tabs-head">' +
+      '<span class="md-tabs-title">Entradas</span>' +
+      '<span class="md-tabs-count"></span>' +
+      '</div>' +
+      '<div class="md-tabs" id="mdTabs" role="tablist" aria-label="Elegir entrada"></div>';
+    box.parentNode.insertBefore(wrap, box);
+    return wrap.querySelector("#mdTabs");
   }
 
-  function buildSidebar(box, posts) {
-    var info = ensureLayout(box);
-    var sidebar = info.sidebar;
-    if (!sidebar) return;
-    var list = sidebar.querySelector(".md-sidebar-list");
-    var countEl = sidebar.querySelector(".md-sidebar-count");
-    if (!list) return;
-    list.innerHTML = "";
+  function buildTabs(box, posts) {
+    var tabs = ensureTabs(box);
+    var wrap = tabs.parentNode;
+    var countEl = wrap.querySelector(".md-tabs-count");
     if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? " entrada" : " entradas");
+    tabs.innerHTML = "";
 
     posts.forEach(function (p, idx) {
       var rawTitle = extractTitle(p.md);
       var fallback = p.name.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
       var title = rawTitle || fallback;
       var date = postDate(p.name) || "";
+
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "md-sidebar-item" + (idx === 0 ? " active" : "");
+      btn.className = "md-tab" + (idx === 0 ? " active" : "");
       btn.setAttribute("data-idx", String(idx));
-      btn.innerHTML = '<span class="line"><span class="title">' + escapeHtml(title) + '</span></span><span class="meta">' + escapeHtml(date || "") + '</span>';
+      btn.innerHTML = escapeHtml(title) + '<span class="tab-date">' + escapeHtml(date) + "</span>";
 
       btn.addEventListener("click", function () {
         var target = document.getElementById("md-post-" + idx);
         if (!target) return;
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-        var all = list.querySelectorAll(".md-sidebar-item");
+        var all = tabs.querySelectorAll(".md-tab");
         for (var k = 0; k < all.length; k++) all[k].classList.remove("active");
         btn.classList.add("active");
         target.classList.add("is-highlight");
@@ -212,31 +198,27 @@
         }
       });
 
-      list.appendChild(btn);
+      tabs.appendChild(btn);
     });
 
+    /* Marcar la píldora activa según la entrada visible */
     try {
       if ("IntersectionObserver" in window) {
         var io = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              var id = entry.target.id;
-              var m = id.match(/md-post-(\d+)/);
-              if (!m) return;
-              var i = parseInt(m[1], 10);
-              var items = list.querySelectorAll(".md-sidebar-item");
-              for (var q = 0; q < items.length; q++) items[q].classList.remove("active");
-              if (items[i]) {
-                items[i].classList.add("active");
-                try {
-                  if (window.innerWidth > 900) {
-                    items[i].scrollIntoView({ block: "nearest", behavior: "smooth" });
-                  }
-                } catch (e2) {}
-              }
+            if (!entry.isIntersecting) return;
+            var m = entry.target.id.match(/md-post-(\d+)/);
+            if (!m) return;
+            var i = parseInt(m[1], 10);
+            var items = tabs.querySelectorAll(".md-tab");
+            for (var q = 0; q < items.length; q++) items[q].classList.remove("active");
+            if (items[i]) {
+              items[i].classList.add("active");
+              /* que la píldora activa se vea en la barra */
+              try { items[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); } catch (e2) {}
             }
           });
-        }, { rootMargin: "-25% 0px -65% 0px", threshold: 0.1 });
+        }, { rootMargin: "-20% 0px -60% 0px", threshold: 0.05 });
 
         posts.forEach(function (_, idx) {
           var el = document.getElementById("md-post-" + idx);
@@ -245,6 +227,7 @@
       }
     } catch (e) {}
 
+    /* Si se llega con #md-post-N en la URL, saltar a esa entrada */
     try {
       if (location.hash && /^#md-post-\d+/.test(location.hash)) {
         var targetHash = document.querySelector(location.hash);
@@ -255,6 +238,8 @@
     } catch (e3) {}
   }
 
+  /* ---------- Render ---------- */
+
   function renderAll(box, posts) {
     box.innerHTML = "";
     posts.forEach(function (p, idx) {
@@ -262,10 +247,21 @@
       art.className = "md-post";
       art.id = "md-post-" + idx;
       var date = postDate(p.name);
-      art.innerHTML = (date ? '<span class="date">' + escapeHtml(date) + "</span>" : "") + renderMarkdown(p.md);
+      var mins = readingMinutes(p.md);
+      var meta =
+        '<div class="post-meta">' +
+        (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
+        '<span class="pill">☕ ' + mins + " min de lectura</span>" +
+        '<span class="author">🍍 Pineapple</span>' +
+        "</div>";
+      art.innerHTML = meta + renderMarkdown(p.md);
       box.appendChild(art);
     });
-    buildSidebar(box, posts);
+    var end = document.createElement("p");
+    end.className = "md-end";
+    end.textContent = "🍍 No hay más entradas… por ahora.";
+    box.appendChild(end);
+    buildTabs(box, posts);
   }
 
   function renderEmpty(box) {
@@ -273,22 +269,22 @@
       '<div class="notice"><h3>Todavía no hay nada por aquí</h3>' +
       "<p>Cuando publiquemos la primera entrada, aparecerá aquí automáticamente.</p></div>";
     try {
-      var lay = box.closest(".md-layout");
-      if (lay) {
-        var c = lay.querySelector(".md-sidebar-count");
-        var l = lay.querySelector(".md-sidebar-list");
+      var tabs = document.getElementById("mdTabs");
+      if (tabs) {
+        var wrap = tabs.parentNode;
+        var c = wrap.querySelector(".md-tabs-count");
         if (c) c.textContent = "0 entradas";
-        if (l) l.innerHTML = '<div class="notice" style="padding:.6rem .7rem;font-size:.85rem;">Sin entradas</div>';
+        tabs.innerHTML = "";
       }
     } catch (e) {}
   }
 
-  /* ---------- Inicialización ---------- */
+  /* ---------- Carga: API de GitHub con fallback a posts.json ---------- */
   document.querySelectorAll(".md-posts").forEach(function (box) {
     var localDir = (box.getAttribute("data-md-dir") || "./posts").replace(/\/$/, "");
     var apiDir = box.getAttribute("data-api-dir") || "";
 
-    ensureLayout(box);
+    ensureTabs(box);
     box.innerHTML = '<p class="md-loading">Cargando entradas…</p>';
 
     function viaApi() {

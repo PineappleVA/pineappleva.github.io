@@ -1,7 +1,7 @@
 /* ============================================================
-   Pineapple — Portafolio · Scripts
-   Sin dependencias. Menú, barra de progreso, contadores,
-   tilt 3D, reproductor de juegos y animaciones de entrada.
+   Pineapple — Portafolio · Scripts comunes
+   Sin dependencias: tema claro/oscuro, menú móvil, barra de
+   progreso, contadores, tilt 3D y reproductor de juegos.
    (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
@@ -10,6 +10,22 @@
   document.documentElement.classList.add('js');
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Tema claro/oscuro ----------
+     El tema se aplica antes de pintar con el script inline del <head>
+     (lee localStorage 'pa-theme'; si no hay, usa prefers-color-scheme).
+     Aquí solo está el botón que alterna y guarda la elección. */
+  var themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      var next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('pa-theme', next); } catch (e) {}
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', next === 'light' ? '#faf5ea' : '#131007');
+    });
+  }
 
   /* ---------- Año del pie ---------- */
   var year = document.getElementById('year');

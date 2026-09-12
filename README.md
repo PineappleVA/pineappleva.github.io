@@ -2,49 +2,102 @@
 
 Portafolio oficial de **Pineapple** · *Making things a little bit better* 🍍
 
-Web estática multipágina (HTML + CSS + JS, sin dependencias) que sirve como página
-principal de la organización en `https://pineappleva.github.io/`.
+Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
+`https://pineappleva.github.io/`.
 
 ## Páginas
 
 | Página | Descripción |
 | --- | --- |
-| `index.html` | Portada: hero con typing SVG, valores, lo publicado, cifras |
-| `proyectos.html` | Fichas: School Utilities, Y, Better Discovery, web oficial y Games |
+| `index.html` | Portada: typing SVG, valores, colegios, lo publicado y cifras |
+| `proyectos.html` | Fichas: School Utilities, Y, Better Discovery, web clásica y Games |
 | `juegos.html` | Juegos jugables en la propia página (iframe) + catálogo |
-| `blog.html` | Blog en Markdown con selector lateral (como los anuncios de Games) |
-| `comunidad.html` | Historia, valores, cómo trabajamos y estadísticas de GitHub |
+| `blog.html` | Blog en Markdown con selector de píldoras |
+| `comunidad.html` | Historia, valores, equipo, cómo trabajamos y stats de GitHub |
 | `contacto.html` | Canales, formulario y FAQ |
 | `404.html` | Página de error |
 
-## 📝 Cómo publicar en el blog
+## 🌗 Tema claro y oscuro (cómo funciona por dentro)
 
-El blog funciona igual que los anuncios de [Pineapple Games](https://pineappleva.github.io/Games/anuncios/):
+- El tema se decide **antes de pintar** con un script inline en el `<head>` de cada página:
+  1. Si existe `localStorage['pa-theme']` (`light`/`dark`), se usa ese.
+  2. Si no, se respeta `prefers-color-scheme` del sistema.
+  3. Si nada de lo anterior, oscuro (el de la marca).
+- Todo el color vive en **variables CSS**: `:root` define el tema oscuro y
+  `html[data-theme="light"]` lo sobreescribe. Nada de clases repartidas por el HTML.
+- Detalles de adaptación del tema claro:
+  - El logo de la piña es blanco, así que en claro se invierte con `filter: invert(1)`.
+  - Los *tiles* de logos (`school-utilities.png`, `y.png`) **siguen siendo negros** en claro:
+    los logos son blancos y usan `mix-blend-mode: screen`.
+  - Las insignias de estado tienen colores específicos por tema (legibilidad).
+  - El botón alterna sol/luna con CSS (`html[data-theme]`) y guarda en `localStorage`.
+  - `meta name="theme-color"` cambia al alternar (color del navegador móvil).
+
+## 📝 Blog (cómo funciona por dentro)
+
+El mismo sistema que los anuncios de [Pineapple Games](https://pineappleva.github.io/Games/anuncios/):
 **sube un Markdown y aparece solo**.
 
-1. Crea un archivo en `blog/posts/` llamado `AAAA-MM-DD-titulo.md` (ej.: `2026-09-12-mi-entrada.md`)
-2. Escríbelo en Markdown: `#` título, listas, **negritas**, *cursivas*, `código`, citas, imágenes...
-3. Sube el cambio al repositorio y listo: aparece en `blog.html` ordenado de más nuevo a más viejo
+1. Crea un archivo en `blog/posts/` llamado `AAAA-MM-DD-titulo.md`
+2. Escríbelo en Markdown (títulos `#`, listas, **negritas**, *cursivas*, `código`,
+   citas `>`, imágenes `![alt](url)`, separadores `---`)
+3. Push → aparece en `blog.html`, ordenado de más nuevo a más viejo
 
-- El **título** sale del primer `#` del archivo y la **fecha** del nombre.
-- El listado se obtiene con la API de GitHub (`blog/posts`); si falla, usa el manifiesto
-  `blog/posts/posts.json` como respaldo (actualízalo solo si la API no estuviera disponible).
-- Renderizador: `assets/js/blog.js` (mini-Markdown seguro, subconjunto: encabezados, listas,
-  citas, código, enlaces, imágenes, negritas, cursivas, hr).
+Pipeline técnico (`assets/js/blog.js`):
 
-## Características
+- **Listado**: `GET api.github.com/repos/PineappleVA/pineappleva.github.io/contents/blog/posts?ref=main`
+  → se filtran los `.md` (sin `readme.md` ni ocultos).
+- **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el manifiesto
+  `blog/posts/posts.json`. Solo toca actualizarlo si no quieres depender de la API.
+- **Descarga**: cada `.md` se trae de `raw.githubusercontent.com`.
+- **Orden**: descendente por nombre → la fecha del nombre manda.
+- **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML
+  (`& < > "`) y después se convierte el subconjunto soportado. No se puede inyectar HTML.
+- **Selector de píldoras**: barra fija bajo el menú. Cada píldora hace scroll suave a su
+  entrada; un `IntersectionObserver` marca la activa según la entrada visible. Deep-link
+  con `#md-post-N`.
+- **Extras por entrada**: fecha (del nombre), tiempo de lectura (~180 palabras/min) y firma.
 
-- 🍍 Estética de la marca: fondo oscuro cálido, ámbar `#f5a623` y tarjetas redondeadas
-  (mismo sistema de diseño que Pineapple Games).
-- 🌊 Mareas animadas entre secciones y en el pie (desactivables con `prefers-reduced-motion`).
-- 🐙 Elementos del perfil de GitHub: typing SVG, badges de shields.io y tarjetas
-  `github-readme-stats` con los mismos colores.
-- 🎮 Juegos embebidos en la propia web mediante iframe bajo demanda.
+## 🌊 Olas (cómo funcionan por dentro)
+
+Réplica del `capsule-render` de tipo `waving` del README de la organización:
+
+- Un único `<svg>` de `viewBox 2880×90` con el dibujo **repetido dos veces** (dos periodos
+  de 1440). El `<g class="wave-move">` se desplaza con CSS `translateX(-1440px)` en bucle
+  lineal; al completar un periodo el patrón coincide y el bucle es perfecto.
+- Relleno con degradado `#f5a623 → #ffd166` (los colores del README), como
+  `capsule-render.vercel.app/api?type=waving&height=80&section=footer&color=0:F5A623,100:FFD166`.
+- En el pie la ola es el último elemento de la página (como en el README) y va en
+  dirección contraria y más lenta (`.wave.slow`).
+- Con `prefers-reduced-motion: reduce` la animación se apaga.
+
+## 🎮 Juegos embebidos
+
+`juegos.html` carga cada juego en un `iframe` solo cuando pulsas «Jugar aquí»
+(`data-game="URL"` en el botón; `assets/js/main.js` lo conecta). Botón «Expulsar juego»
+para descargar el iframe y no dejar nada corriendo. Los juegos viven en su casa,
+Pineapple Games; aquí se embeben.
+
+## 👥 Equipo
+
+Sección en `comunidad.html` con el equipo real (sacado de los contributors públicos de
+GitHub): **Jaime Gaming** (prácticamente todo el código), GitHub Copilot (sale en los
+contributors de FNAS y Better Discovery) y las aulas de Valladolid como testers.
+
+## Referencias
+
+- Perfil de GitHub: typing SVG (`readme-typing-svg.demolab.com`), badges `shields.io`
+  estilo `for-the-badge` y tarjetas `github-readme-stats` con los mismos colores.
+- Web clásica: la sección «Somos los creadores de varios productos en muchos colegios
+  de Valladolid» de la portada viene de la web antigua de Google Sites.
+
+## Resto de características
+
 - ✨ Animaciones: orbes, barra de progreso, contadores, tilt 3D, cinta de palabras,
-  brillo en botones y aparición al hacer scroll.
+  brillo en botones y aparición al hacer scroll — todo respeta `prefers-reduced-motion`.
 - 🇪🇸 Contenido en español.
-- ♿ Accesible: HTML semántico, navegación por teclado y foco visible.
-- 🔍 SEO: Open Graph, Twitter Cards, JSON-LD, `sitemap.xml` y `robots.txt`.
+- ♿ HTML semántico, navegación por teclado, foco visible.
+- 🔍 SEO: Open Graph, Twitter Cards, JSON-LD, `sitemap.xml`, `robots.txt`.
 - 🚫 Sin frameworks ni dependencias de paquetería.
 
 ## Estructura
@@ -52,11 +105,11 @@ El blog funciona igual que los anuncios de [Pineapple Games](https://pineappleva
 ```
 index.html · proyectos.html · juegos.html · comunidad.html · contacto.html · 404.html
 blog.html              ← página del blog
-blog/posts/*.md        ← entradas del blog (AAAA-MM-DD-titulo.md)
+blog/posts/*.md        ← entradas (AAAA-MM-DD-titulo.md)
 blog/posts/posts.json  ← manifiesto de respaldo
-assets/css/style.css   ← estilos
-assets/js/main.js      ← interacciones comunes
-assets/js/blog.js      ← renderizado Markdown + selector lateral
+assets/css/style.css   ← estilos (temas dark/light por variables)
+assets/js/main.js      ← tema, menú, progreso, contadores, tilt, reproductor
+assets/js/blog.js      ← pipeline Markdown del blog + selector de píldoras
 assets/img/            ← logos oficiales
 robots.txt · sitemap.xml
 ```
@@ -68,8 +121,7 @@ python3 -m http.server 8080
 # → http://localhost:8080
 ```
 
-En local el listado del blog usa `posts.json` (la API de GitHub lista la rama `main`,
-que es la publicada).
+En local, el blog usa `posts.json` (la API lista la rama `main`, que es la publicada).
 
 ## Enlaces de la organización
 
