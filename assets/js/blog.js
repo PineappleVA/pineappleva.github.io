@@ -19,14 +19,15 @@
       #..####, listas - y 1., citas >, ```código```, ---,
       **negritas**, *cursivas*, `código`, [enlaces](url) e imágenes.
    5. Dos modos según la página:
-      · blog.html (.md-list) → tarjetas-resumen que enlazan a la
-        URL limpia /blog/<slug> (GitHub Pages sirve 404.html en esa
-        ruta y main.js redirige a entrada.html?p=<slug>.md;
-        el ?p= sigue funcionando como respaldo directo)
-      · entrada.html (#mdPost) → carga el archivo (?p= o slug de la
-        ruta /blog/..., validado con un patrón estricto), lo
-        renderiza como página propia, actualiza el <title> y pinta
-        Anterior/Siguiente.
+      · /blog (.md-list) → tarjetas-resumen que enlazan a la URL
+        limpia /blog/<slug>
+      · entrada.html (#mdPost) → plantilla de entrada. Se llega a
+        ella con la URL limpia mediante el enrutador de 404.html
+        (fetch-swap) o serve.py en local; lee el slug de
+        location.pathname (o ?p= como respaldo, validado con un
+        patrón estricto), renderiza el Markdown, actualiza el
+        <title> y pinta Anterior/Siguiente. El hero muestra solo el
+        titular de la entrada.
    ============================================================ */
 (function () {
   "use strict";
@@ -109,16 +110,11 @@
     return html;
   }
 
-  /* URL de una entrada: /blog/<slug> en producción (pineappleva.github.io),
-     donde GitHub Pages resuelve esas rutas con 404.html y main.js redirige.
-     En local o previsualización (servidores sin 404 personalizada) se usa el
-     respaldo directo entrada.html?p=<archivo>, para que los enlaces funcionen
-     igual de bien en ambos sitios. */
+  /* URL limpia de una entrada: /blog/<slug>.
+     En producción la resuelve el enrutador de 404.html (fetch-swap
+     manteniendo la URL bonita); en local lo hace serve.py. */
   function postUrl(name) {
-    var file = String(name).replace(/\.md$/i, "");
-    var prod = location.hostname === "pineappleva.github.io";
-    return prod ? "/blog/" + encodeURIComponent(file)
-                : "entrada.html?p=" + encodeURIComponent(file) + ".md";
+    return "/blog/" + encodeURIComponent(String(name).replace(/\.md$/i, ""));
   }
 
   /* ---------- Helpers ---------- */
@@ -263,7 +259,6 @@
     var VALID = /^\d{4}-\d{2}-\d{2}-[a-z0-9\-]+\.md$/i;
 
     var titleEl = document.getElementById("postTitle");
-    var metaEl = document.getElementById("postMeta");
     var pagerEl = document.getElementById("postPager");
     var shareBtn = document.getElementById("shareBtn");
 
@@ -271,9 +266,8 @@
       postEl.innerHTML =
         '<div class="notice"><h3>Esta entrada no aparece</h3>' +
         "<p>" + escapeHtml(msg) + "</p>" +
-        '<p style="margin-top:.6rem;"><a href="blog.html">← Volver al blog</a></p></div>';
+        '<p style="margin-top:.6rem;"><a href="/blog">← Volver al blog</a></p></div>';
       if (titleEl) titleEl.textContent = "Entrada no encontrada";
-      if (metaEl) metaEl.textContent = "";
       document.title = "Entrada no encontrada · Blog · Pineapple";
     }
 
@@ -284,17 +278,9 @@
         .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + fileName); })
         .then(function (md) {
           var title = extractTitle(md) || fileName;
-          var date = postDate(fileName);
-          var mins = readingMinutes(md);
 
           document.title = title + " · Blog · Pineapple";
           if (titleEl) titleEl.textContent = title;
-          if (metaEl) {
-            metaEl.innerHTML =
-              (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
-              '<span class="pill">☕ ' + mins + " min de lectura</span>" +
-              '<span class="author">🍍 Pineapple</span>';
-          }
           postEl.innerHTML = renderMarkdown(md);
 
           if (shareBtn && !shareBtn.dataset.bound) {

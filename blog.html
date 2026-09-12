@@ -17,8 +17,8 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:site" content="@pineapplevacorp">
 
-  <link rel="icon" type="image/png" href="assets/img/pineapple.png">
-  <link rel="apple-touch-icon" href="assets/img/pineapple.png">
+  <link rel="icon" type="image/png" href="/assets/img/pineapple.png">
+  <link rel="apple-touch-icon" href="/assets/img/pineapple.png">
   <meta name="color-scheme" content="dark light">
   <script>
     /* Tema: se aplica ANTES de pintar para evitar parpadeo.
@@ -34,7 +34,7 @@
       if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
     })();
   </script>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
@@ -43,8 +43,8 @@
 
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html" aria-label="Pineapple — inicio">
-        <img src="assets/img/pineapple.png" alt="" width="34" height="34">
+      <a class="brand" href="/" aria-label="Pineapple — inicio">
+        <img src="/assets/img/pineapple.png" alt="" width="34" height="34">
         <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
       </a>
 
@@ -54,19 +54,19 @@
 
       <nav id="siteNav" class="main-nav" aria-label="Navegación principal">
         <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="blog.html" aria-current="page">Blog</a></li>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/blog" aria-current="page">Blog</a></li>
           <li class="dropdown">
             <button type="button" class="drop-btn" aria-expanded="false" aria-haspopup="true">
               Información
               <svg class="caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <ul class="dropdown-menu" hidden>
-        <li><a href="proyectos.html">🚀 Proyectos</a></li>
-        <li><a href="juegos.html">🎮 Juegos</a></li>
-        <li><a href="comunidad.html">🏫 Comunidad</a></li>
-        <li><a href="equipo.html">👥 Equipo</a></li>
-        <li><a href="contacto.html">📬 Contacto</a></li>
+        <li><a href="/proyectos">🚀 Proyectos</a></li>
+        <li><a href="/juegos">🎮 Juegos</a></li>
+        <li><a href="/comunidad">🏫 Comunidad</a></li>
+        <li><a href="/equipo">👥 Equipo</a></li>
+        <li><a href="/contacto">📬 Contacto</a></li>
             </ul>
           </li>
         </ul>
@@ -81,7 +81,7 @@
   <main id="main">
 
     <div class="wrap">
-      <a class="back-link" href="index.html">← Volver al inicio</a>
+      <a class="back-link" href="/">← Volver al inicio</a>
     </div>
 
     <section class="page-hero">
@@ -100,7 +100,7 @@
           <h2>Entradas</h2>
           <span class="md-count" id="mdCount"></span>
         </div>
-        <div class="md-list" data-md-dir="blog/posts" data-api-dir="blog/posts">
+        <div class="md-list" data-md-dir="/blog/posts" data-api-dir="blog/posts">
           <p class="md-loading">Cargando entradas…</p>
         </div>
       </div>
@@ -111,8 +111,8 @@
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div class="footer-brand">
-        <a class="brand" href="index.html">
-          <img src="assets/img/pineapple.png" alt="" width="38" height="38">
+        <a class="brand" href="/">
+          <img src="/assets/img/pineapple.png" alt="" width="38" height="38">
           <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
         </a>
         <p class="footer-note">Hecho con 🍍 en Valladolid.<br>
@@ -122,13 +122,13 @@
       <nav class="footer-col" aria-label="Enlaces del sitio">
         <h3>Explora</h3>
         <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="proyectos.html">Proyectos</a></li>
-          <li><a href="juegos.html">Juegos</a></li>
-          <li><a href="blog.html">Blog</a></li>
-          <li><a href="comunidad.html">Comunidad</a></li>
-          <li><a href="equipo.html">Equipo</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/proyectos">Proyectos</a></li>
+          <li><a href="/juegos">Juegos</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/comunidad">Comunidad</a></li>
+          <li><a href="/equipo">Equipo</a></li>
+          <li><a href="/contacto">Contacto</a></li>
         </ul>
       </nav>
 
@@ -183,7 +183,7 @@
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
   </button>
 
-  <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/blog.js" defer></script>
+  <script src="/assets/js/main.js" defer></script>
+  <script src="/assets/js/blog.js" defer></script>
 </body>
 </html>

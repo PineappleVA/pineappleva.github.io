@@ -38,15 +38,15 @@ Todo lo jugable vive en
 [Pineapple Games](https://pineappleva.github.io/Games/), nuestro hub de juegos.
 Ahora mismo hay **6 juegos** publicados, cada uno con su propia historia:
 
-- **[Dopamina](juegos.html?g=dopamina)** — el clicker
+- **[Dopamina](/juegos?g=dopamina)** — el clicker
   que lo empezó todo. Mejoras, skins, recompensas diarias y renacimientos. La
   partida se guarda sola, así que puedes cerrar la pestaña sin miedo (aunque
   sabemos que no lo vas a hacer).
-- **[FNAS](juegos.html?g=fnas)** —
+- **[FNAS](/juegos?g=fnas)** —
   *Five Nights at Skibidi's*, nuestro fan-made de terror entre Five Nights at
   Freddy's y Skibidi Toilet. Hecho con creatividad y muchísimo humor: es
  literalmente el juego que más risas nos ha dado desarrollar.
-- **[iıRiS Games](juegos.html?g=iris)** — el
+- **[iıRiS Games](/juegos?g=iris)** — el
   arcade casero: tragaperras, dardos, un muñeco de pruebas y un escritorio Win98
   que impone. Está en estado «deteriorado», que es una forma elegante de decir
   que aguanta pero con muletas.
@@ -54,12 +54,12 @@ Ahora mismo hay **6 juegos** publicados, cada uno con su propia historia:
   la zona experimental. Muchos juegos con contenido nuevo, bueno y actualizado...
   cuando la abramos. Ahora mismo sigue **bloqueada**, y es de las cosas que más
   ganas tenemos de enseñar este curso.
-- **[SimulaGoal](juegos.html?g=simulagoal)** — goles, torneos y penaltis: el
+- **[SimulaGoal](/juegos?g=simulagoal)** — goles, torneos y penaltis: el
   simulador de mundiales de la casa.
-- **[Trade Up](juegos.html?g=trade-up)** — el clásico de los intercambios, en
+- **[Trade Up](/juegos?g=trade-up)** — el clásico de los intercambios, en
   proceso de regreso.
 
-Todos se juegan aquí, en la [página de juegos](juegos.html): eliges y a correr,
+Todos se juegan aquí, en la [página de juegos](/juegos): eliges y a correr,
 sin salir de la web.
 
 Si quieres saber qué se cuece en la casa de los juegos, los
@@ -90,8 +90,8 @@ quedado porque cumple: rápido, ligero y directo. Si alguna vez has querido prob
 
 La que estás viendo. Este verano le dimos una vuelta completa: modo claro y
 oscuro, los juegos se pueden jugar desde aquí mismo en la
-[página de juegos](juegos.html), hay una página de
-[equipo](equipo.html) con huecos libres (ya hablamos
+[página de juegos](/juegos), hay una página de
+[equipo](/equipo) con huecos libres (ya hablamos
 de eso más abajo) y este **blog**, donde cada entrada tiene su propia página.
 
 Todo lo que pase de ahora en adelante se contará aquí primero.
@@ -112,7 +112,7 @@ Después del repaso, lo importante: qué queremos conseguir este año.
 
 1. **Acabar y actualizar nuestros juegos.** Que no se queden a medias: los que
    están abiertos, pulidos; los que están cerrados (hola, Slop Central), abiertos.
-2. **Ampliar el equipo.** En la [página de equipo](equipo.html)
+2. **Ampliar el equipo.** En la [página de equipo](/equipo)
    hay huecos libres, y no son decorativos. Si te apetece crear con nosotros,
    ahí está el formulario para enviar tu solicitud.
 3. **Que más gente use nuestros productos.** Esto existe porque alguien lo usa
@@ -125,7 +125,7 @@ Es que esto te interesa, y eso ya es mucho.
 
 Para seguirnos al día estamos en [X](https://x.com/pineapplevacorp) y en
 [YouTube](https://www.youtube.com/@pacorp-oficial). Y para lo que sea —una idea,
-un fallo, un saludo—, la página de [contacto](contacto.html).
+un fallo, un saludo—, la página de [contacto](/contacto).
 
 Feliz vuelta al cole. Madrugar cuesta, pero prometemos que este curso va a
 merecer la pena.

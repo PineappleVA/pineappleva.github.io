@@ -13,11 +13,11 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 | `proyectos.html` | Fichas: School Utilities, Y, Better Discovery y Games |
 | `juegos.html` | Juegos jugables en la propia página (iframe) + catálogo |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
-| `entrada.html?p=…` | Página individual de cada entrada del blog |
+| `entrada.html` (se ve en `/blog/<slug>`) | Página individual de cada entrada del blog |
 | `comunidad.html` | Historia, valores, cómo trabajamos y stats de GitHub |
-| `equipo.html` | El equipo (Jaime, Nerea, Adrian, David + huecos) y solicitud para unirse |
+| `equipo.html` | El equipo (Jaime, David + huecos libres) y solicitud para unirse |
 | `contacto.html` | Canales, formulario y FAQ |
-| `404.html` | Página de error |
+| `404.html` | Página de error **+ enrutador de URLs limpias** |
 
 Navegación: **Inicio · Blog · Información ▾** (Proyectos, Juegos, Comunidad, Equipo, Contacto).
 
@@ -44,14 +44,17 @@ Pipeline técnico (`assets/js/blog.js`):
   y después se convierte el subconjunto soportado. No se puede inyectar HTML.
 - **Índice** (`blog.html`): tarjetas con fecha, tiempo de lectura (~180 palabras/min)
   y un extracto automático (la línea posterior al título).
-- **URLs limpias**: las entradas usan `/blog/<slug>`. En GitHub Pages esa ruta no
-  existe → Pages sirve `404.html` y `main.js` redirige a `entrada.html?p=<slug>.md`.
-  El `?p=` directo también funciona (respaldo), siempre validado con el patrón
-  `AAAA-MM-DD-[a-z0-9-].md` (sin acceso a rutas arbitrarias).
-- **Entrada** (`entrada.html`): actualiza el `<title>`, muestra meta (fecha, lectura,
-  firma), botón «copiar enlace» y navegación Anterior/Siguiente.
+- **URLs limpias** (todo el sitio sin `.html`): los enlaces internos apuntan a
+  `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`, `/contacto`…
+  En GitHub Pages esas rutas no existen → Pages sirve `404.html`, cuyo enrutador
+  hace *fetch-swap*: trae la página real con `fetch`, sustituye el documento y deja
+  la URL limpia con `replaceState` (sin recargas ni saltos a `.html`).
+  El `?p=` directo de `entrada.html` sigue funcionando como respaldo, siempre
+  validado con el patrón `AAAA-MM-DD-[a-z0-9-].md` (sin acceso a rutas arbitrarias).
+- **Entrada** (`entrada.html`): actualiza el `<title>`, el hero muestra **solo el
+  titular**, botón «copiar enlace» y navegación Anterior/Siguiente.
 - **Juegos solo en esta web**: `juegos.html` embebe los 5 jugables (Dopamina, FNAS,
-  iıRiS Games, SimulaGoal y Trade Up) con deep-link `juegos.html?g=<id>`; no hay
+  iıRiS Games, SimulaGoal y Trade Up) con deep-link `/juegos?g=<id>`; no hay
   enlaces para jugar fuera.
 
 ## 🌗 Tema claro y oscuro (cómo funciona por dentro)
@@ -134,7 +137,7 @@ para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se
 ```
 index.html · proyectos.html · juegos.html · comunidad.html · equipo.html · contacto.html · 404.html
 blog.html              ← índice del blog
-entrada.html           ← página de cada entrada (?p=nombre.md)
+entrada.html           ← plantilla de entrada (se sirve en /blog/<slug>)
 blog/posts/*.md        ← entradas (AAAA-MM-DD-titulo.md)
 blog/posts/posts.json  ← manifiesto de respaldo
 assets/css/style.css   ← estilos (temas dark/light por variables)
@@ -147,11 +150,14 @@ robots.txt · sitemap.xml
 ## Probar en local
 
 ```bash
-python3 -m http.server 8080
-# → http://localhost:8080
+python3 serve.py 8080
+# → http://localhost:8080  (con rutas limpias: /proyectos, /blog/<slug>…)
 ```
 
-En local, el blog usa `posts.json` (la API lista la rama `main`, que es la publicada).
+`serve.py` imita a GitHub Pages: los archivos reales se sirven tal cual y cualquier
+ruta sin archivo recibe `404.html` (estado 404), igual que producción — el enrutador
+del navegador completa el resto. En local, el blog usa `posts.json` (la API lista la
+rama `main`, que es la publicada).
 
 ## Enlaces de la organización
 

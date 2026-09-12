@@ -11,17 +11,6 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Enrutador de URLs bonitas del blog ----------
-     En GitHub Pages, una ruta como /blog/<slug> no corresponde a ningún
-     archivo, así que Pages sirve 404.html. Aquí la traducimos a
-     /entrada.html?p=<slug>.md (el renderizador la sabe cargar). */
-  (function () {
-    var m = location.pathname.match(/^\/blog\/([A-Za-z0-9\-]+)\/?$/);
-    if (m) {
-      location.replace('/entrada.html?p=' + encodeURIComponent(m[1]) + '.md' + location.hash);
-    }
-  })();
-
   /* ---------- Tema claro/oscuro ----------
      El tema se aplica antes de pintar con el script inline del <head>
      (lee localStorage 'pa-theme'; si no hay, usa prefers-color-scheme).
@@ -38,10 +27,15 @@
     });
   }
 
-  /* ---------- Marcar la página actual dentro del desplegable ---------- */
-  var here = (location.pathname.split('/').pop() || 'index.html');
-  document.querySelectorAll('.dropdown-menu a').forEach(function (a) {
-    if (a.getAttribute('href') === here) a.setAttribute('aria-current', 'page');
+  /* ---------- Marcar la página actual en el menú ----------
+     Funciona con URLs limpias (/proyectos) y con .html de respaldo. */
+  var here = location.pathname.replace(/\/+$/, '') || '/';
+  if (/\.html$/.test(here)) here = here.replace(/\.html$/, '');
+  document.querySelectorAll('.main-nav a, .dropdown-menu a').forEach(function (a) {
+    var h = a.getAttribute('href');
+    if (!h) return;
+    h = h.replace(/\/+$/, '') || '/';
+    if (h === here) a.setAttribute('aria-current', 'page');
   });
 
   /* ---------- Desplegable de Información ---------- */
