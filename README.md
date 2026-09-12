@@ -66,17 +66,34 @@ Pipeline técnico (`assets/js/blog.js`):
 
 ## 🌊 Olas (cómo funcionan por dentro)
 
-Réplica del `capsule-render` tipo `waving` del README, en dos capas:
+Dos capas de **seno real** (generado punto a punto, sin quebradas), estilo
+`capsule-render` `waving` del README:
 
-- Un `<svg>` de `viewBox 2880×120` con el patrón dibujado **dos veces** (dos periodos de
-  1440). `.wave-front` se desplaza con CSS `translateX(-1440px)` en bucle; `.wave-back`
-  (opacidad .3, fase invertida) lo hace en dirección contraria y más lenta → efecto de
-  oleaje con profundidad. Al ser el patrón periódico, el bucle es perfecto.
-- El degradado es **periódico** (ámbar→amarillo→ámbar→amarillo→ámbar, paradas cada cuarto)
-  para que el color también cicre sin salto en el loop.
+- Cada capa es una pista HTML `.wave-track` de **200% de ancho** con el patrón
+  SVG repetido dos veces (un periodo de 1440 por SVG). La animación es
+  `translateX(-50%)`: al ser un **porcentaje**, equivale siempre a exactamente un
+  periodo en cualquier ancho de pantalla (el fallo anterior era animar en píxeles
+  fijos, que rompía el bucle según el viewport).
+- Capa trasera: otra seno con fase desplazada y amplitud menor, al 35% de
+  opacidad y en dirección contraria → sensación de oleaje con profundidad.
+- El degradado es **periódico** (ámbar→amarillo→ámbar→amarillo→ámbar a lo largo
+  de un periodo) para que el color también cicre sin salto.
 - En la portada hay además una onda divisoria suave (`.wave-soft`) rellena con
-  `var(--bg-deep)`: hace de transición hacia la sección siguiente y se adapta al tema.
+  `var(--bg-deep)` que se adapta al tema.
 - Con `prefers-reduced-motion: reduce` la animación se apaga.
+
+## 🧩 Todo autocontenido (por qué no hay servicios externos)
+
+Los servicios de imágenes del perfil (typing SVG, shields.io, github-readme-stats)
+fallan a menudo (rate limits o caídas), así que se sustituyeron por equivalentes
+locales que **siempre se renderizan**:
+
+- **Typing del hero**: efecto máquina de escribir en `assets/js/main.js`
+  (`#typeline` + `data-words`), con caret parpadeante CSS.
+- **Insignias** (`.x-badge`): dos segmentos HTML/CSS con los colores de cada
+  plataforma, mismo look `for-the-badge`.
+- **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
+  barra de lenguajes, adaptadas a ambos temas.
 
 ## 🎮 Juegos embebidos
 

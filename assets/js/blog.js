@@ -193,7 +193,11 @@
       if (countEl) countEl.textContent = files.length + (files.length === 1 ? " entrada" : " entradas");
       if (!files.length) return Promise.reject(new Error("vacío"));
       return Promise.all(files.map(function (name) {
-        return fetchText(localDir + "/" + name).then(function (md) { return { name: name, md: md }; });
+        /* cada archivo se pide primero en local (GitHub Pages también
+           sirve los .md) y, si falla, en raw.githubusercontent.com */
+        return fetchText(localDir + "/" + name)
+          .catch(function () { return fetchText(RAW_BASE + apiDir + "/" + name); })
+          .then(function (md) { return { name: name, md: md }; });
       }));
     }).then(function (posts) {
       listEl.innerHTML = "";

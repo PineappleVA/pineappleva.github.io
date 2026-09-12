@@ -272,6 +272,7 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   font-weight: 600;
 }
 
+.dropdown-menu[hidden] { display: none !important; }
 .dropdown-menu {
   position: absolute;
   left: 0;
@@ -436,14 +437,25 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   color: var(--text-dim);
 }
 
-/* El typing SVG del hero (mismo servicio que el perfil de GitHub) */
-.typing-svg {
-  display: block;
+/* Typing del hero: efecto local (sin servicios externos) */
+.typing-line {
   margin: 1.1rem auto .4rem;
-  max-width: 100%;
-  height: auto;
-  min-height: 34px;
+  min-height: 1.7em;
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  font-weight: 600;
+  color: var(--text-dim);
 }
+.typing-line .tw-text { color: var(--brand-strong); }
+.tw-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  background: var(--brand);
+  margin-left: 2px;
+  vertical-align: -.15em;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
 
 .hero h1 {
   font-size: clamp(2.2rem, 6.4vw, 3.6rem);
@@ -520,30 +532,47 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
 
 /* ============================================================
    Olas (estilo capsule-render waving del README)
-   Dos capas: una delantera con relleno degradado y una trasera
-   translúcida en fase contraria. El patrón mide 1440 y se dibuja
-   dos veces (2880): al desplazar el grupo -1440 el bucle es
-   perfecto. El degradado es periódico (ámbar→amarillo→ámbar)
-   para que también el color cicla sin salto.
+   Dos capas de seno real. La pista (.wave-track) mide 200% y
+   contiene el patrón dos veces; se anima con translateX(-50%),
+   un PORCENTAJE que escala con el ancho real de la pantalla, así
+   el bucle es perfecto en cualquier tamaño (el fallo de antes era
+   animar en píxeles fijos). El degradado es periódico para que
+   también el color cicre sin salto.
    ============================================================ */
-.wave { line-height: 0; }
-.wave svg { width: 100%; height: 96px; display: block; }
+.wave {
+  position: relative;
+  line-height: 0;
+  overflow: hidden;
+}
+.wave-footer { height: 96px; }
+.wave-soft { height: 72px; }
 
-.wave-front { animation: waveSlide 14s linear infinite; }
-.wave-back  { animation: waveSlideRev 23s linear infinite; }
+.wave-layer { position: absolute; inset: 0; }
+.wave-back { opacity: .35; }
 
-@keyframes waveSlide { to { transform: translateX(-1440px); } }
-@keyframes waveSlideRev { from { transform: translateX(-1440px); } to { transform: translateX(0); } }
+.wave-track {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 200%;
+  display: flex;
+  animation: waveSlide 13s linear infinite;
+  will-change: transform;
+}
+.wave-track svg {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: block;
+}
+.wave-track-rev { animation: waveSlideRev 21s linear infinite; }
 
-/* Onda divisoria suave entre secciones: rellena con el color de
-   la sección siguiente (se adapta al tema con variables) */
-.wave-soft path { fill: var(--bg-deep); }
-.wave-soft svg { height: 72px; }
-.wave-soft .wave-back { opacity: .45; }
+@keyframes waveSlide { to { transform: translateX(-50%); } }
+@keyframes waveSlideRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 
 @media (max-width: 680px) {
-  .wave svg { height: 64px; }
-  .wave-soft svg { height: 48px; }
+  .wave-footer { height: 64px; }
+  .wave-soft { height: 44px; }
 }
 
 /* ============================================================
@@ -601,8 +630,7 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
 .section { padding: 3.4rem 0; }
 .section.alt {
   background: var(--bg-soft);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solider);
   transition: background-color .25s ease;
 }
 
@@ -1099,20 +1127,65 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 .stat-label { font-weight: 700; font-size: 1.02rem; }
 .stat-desc { font-size: .82rem; color: var(--text-dim); }
 
-.gh-cards {
-  display: flex;
-  flex-wrap: wrap;
+.grid-2 { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+
+/* Tarjetas estilo GitHub, hechas en local (siempre se renderizan) */
+.gh-local {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
   gap: 1rem;
-  justify-content: center;
-  align-items: flex-start;
+  max-width: 840px;
+  margin: 0 auto;
 }
-.gh-cards img {
-  max-width: 100%;
-  height: auto;
+.gh-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: .6rem;
+  border-radius: var(--radius);
+  padding: 1.2rem 1.3rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform .18s ease, border-color .18s ease;
+}
+.gh-card:hover { transform: translateY(-3px); border-color: var(--brand); }
+.gh-card-head {
+  font-weight: 700;
+  color: var(--brand-strong);
+  margin-bottom: .8rem;
+  font-size: .95rem;
+}
+.gh-rows { list-style: none; display: flex; flex-direction: column; gap: .5rem; font-size: .9rem; }
+.gh-rows li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: .45rem;
+}
+.gh-rows li:last-child { border-bottom: 0; padding-bottom: 0; }
+.gh-rows b { color: var(--brand-strong); white-space: nowrap; }
+.gh-lang-name {
+  display: flex;
+  justify-content: space-between;
+  font-size: .88rem;
+  margin-bottom: .35rem;
+}
+.gh-lang-name span:last-child { color: var(--text-dim); }
+.gh-bar {
+  height: 10px;
+  background: var(--bg-deep);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.gh-bar span {
+  display: block;
+  height: 100%;
+  background: #e34c26;
+  border-radius: 999px;
+}
+.gh-lang-note {
+  margin-top: .6rem;
+  font-size: .82rem;
+  color: var(--text-dim);
 }
 
 .banner-cta {
@@ -1371,7 +1444,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
   .orb { animation: none; }
   .ticker-track { animation: none; }
   .hero h1 .grad { animation: none; }
-  .wave-front, .wave-back { animation: none; }
+  .wave-track { animation: none; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
