@@ -491,7 +491,7 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   flex-wrap: wrap;
 }
 
-/* Badges de shields.io, estilo for-the-badge como el perfil */
+/* Insignias locales estilo for-the-badge (sin servicios externos) */
 .badges-row {
   margin-top: 1.5rem;
   display: flex;
@@ -499,13 +499,41 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   gap: .5rem;
   justify-content: center;
 }
-.badges-row img {
-  height: 28px;
-  width: auto;
-  border-radius: 4px;
-  transition: transform .15s ease;
+.x-badge {
+  display: inline-flex;
+  align-items: stretch;
+  text-decoration: none;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.badges-row a:hover img { transform: translateY(-2px); }
+.x-badge:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.x-badge .k {
+  background: #34301f;
+  color: #f5f0e4;
+  padding: .45rem .7rem;
+  display: inline-flex;
+  align-items: center;
+}
+html[data-theme="light"] .x-badge .k { background: #33290f; color: #fff; }
+.x-badge .v {
+  padding: .45rem .7rem;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+}
+.x-badge .v-brand  { background: #f5a623; color: #1a1408; }
+.x-badge .v-blue   { background: #4285F4; }
+.x-badge .v-dark   { background: #181717; }
+.x-badge .v-black  { background: #000; }
+.x-badge .v-red    { background: #e62117; }
+.x-badge .v-purple { background: #7c4dbe; }
+.x-badge .v-teal   { background: #0e8a72; }
 
 .chips {
   list-style: none;
@@ -1489,7 +1517,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
   .footer-bottom { flex-direction: column; }
   .banner-cta { flex-direction: column; align-items: flex-start; }
   .contact-form .row { grid-template-columns: 1fr; }
-  .badges-row img { height: 24px; }
+  .x-badge { font-size: .64rem; }
   .post-pager { grid-template-columns: 1fr; }
   .pager-card.next { text-align: left; }
   .md-post.single { padding: 1.4rem 1.2rem; }

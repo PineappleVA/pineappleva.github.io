@@ -11,6 +11,17 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---------- Enrutador de URLs bonitas del blog ----------
+     En GitHub Pages, una ruta como /blog/<slug> no corresponde a ningún
+     archivo, así que Pages sirve 404.html. Aquí la traducimos a
+     /entrada.html?p=<slug>.md (el renderizador la sabe cargar). */
+  (function () {
+    var m = location.pathname.match(/^\/blog\/([A-Za-z0-9\-]+)\/?$/);
+    if (m) {
+      location.replace('/entrada.html?p=' + encodeURIComponent(m[1]) + '.md' + location.hash);
+    }
+  })();
+
   /* ---------- Tema claro/oscuro ----------
      El tema se aplica antes de pintar con el script inline del <head>
      (lee localStorage 'pa-theme'; si no hay, usa prefers-color-scheme).
@@ -233,6 +244,14 @@
         playerStop.hidden = true;
         gameButtons.forEach(function (b) { b.classList.remove('active'); });
       });
+    }
+
+    /* Deep-link: juegos.html?g=dopamina|fnas|iris|simulagoal|trade-up
+       carga el juego directamente (lo usan los enlaces del blog). */
+    var g = new URLSearchParams(location.search).get('g');
+    if (g) {
+      var target = document.querySelector('[data-game][data-id="' + g.replace(/[^a-z0-9\-]/gi, '') + '"]');
+      if (target) target.click();
     }
   }
 

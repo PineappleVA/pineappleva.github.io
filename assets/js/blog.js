@@ -19,11 +19,14 @@
       #..####, listas - y 1., citas >, ```código```, ---,
       **negritas**, *cursivas*, `código`, [enlaces](url) e imágenes.
    5. Dos modos según la página:
-      · blog.html (.md-list) → tarjetas-resumen que enlazan a
-        entrada.html?p=<archivo>
-      · entrada.html (#mdPost) → carga el archivo del parámetro ?p=
-        (validado con un patrón estricto), lo renderiza como página
-        propia, actualiza el <title> y pinta Anterior/Siguiente.
+      · blog.html (.md-list) → tarjetas-resumen que enlazan a la
+        URL limpia /blog/<slug> (GitHub Pages sirve 404.html en esa
+        ruta y main.js redirige a entrada.html?p=<slug>.md;
+        el ?p= sigue funcionando como respaldo directo)
+      · entrada.html (#mdPost) → carga el archivo (?p= o slug de la
+        ruta /blog/..., validado con un patrón estricto), lo
+        renderiza como página propia, actualiza el <title> y pinta
+        Anterior/Siguiente.
    ============================================================ */
 (function () {
   "use strict";
@@ -42,6 +45,8 @@
   function renderInline(s) {
     s = s.replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
     s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    /* enlaces internos (relativos): misma pestaña */
+    s = s.replace(/\[([^\]]+)\]\((?!https?:)([^)\s]+)\)/g, '<a href="$2">$1</a>');
     s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     s = s.replace(/(^|[^*])\*([^\*\n]+)\*/g, "$1<em>$2</em>");
     s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -209,7 +214,7 @@
 
         var a = document.createElement("a");
         a.className = "post-card reveal visible";
-        a.href = "entrada.html?p=" + encodeURIComponent(p.name);
+        a.href = postUrl(p.name);
         a.innerHTML =
           '<div class="post-card-head">' +
           (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
@@ -238,6 +243,11 @@
 
     var params = new URLSearchParams(location.search);
     var fileName = params.get("p") || "";
+    /* URL bonita: /blog/<slug> → archivo <slug>.md (404.html la reenvía aquí) */
+    if (!fileName) {
+      var pm = location.pathname.match(/\/blog\/([A-Za-z0-9\-]+)\/?$/);
+      if (pm) fileName = decodeURIComponent(pm[1]) + ".md";
+    }
     var VALID = /^\d{4}-\d{2}-\d{2}-[a-z0-9\-]+\.md$/i;
 
     var titleEl = document.getElementById("postTitle");
@@ -303,7 +313,7 @@
 
               function card(file, dir, label) {
                 return (
-                  '<a class="pager-card ' + dir + '" href="entrada.html?p=' + encodeURIComponent(file) + '">' +
+                  '<a class="pager-card ' + dir + '" href="' + postUrl(file) + '">' +
                   '<span class="dir">' + label + "</span>" +
                   '<span class="t">' + escapeHtml(extractTitleCache(file) || file) + "</span></a>"
                 );
@@ -329,7 +339,7 @@
                   .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + file); })
                   .then(function (md2) {
                     cache[file] = extractTitle(md2);
-                    var link = pagerEl.querySelector('a[href="entrada.html?p=' + encodeURIComponent(file) + '"] .t');
+                    var link = pagerEl.querySelector('a[href="' + postUrl(file) + '"] .t');
                     if (link) link.textContent = cache[file];
                   })
                   .catch(function () {});

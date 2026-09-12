@@ -29,7 +29,8 @@ El mismo sistema que los anuncios de [Pineapple Games](https://pineappleva.githu
 1. Crea un archivo en `blog/posts/` llamado `AAAA-MM-DD-titulo.md`
 2. Escríbelo en Markdown (títulos `#`, listas, **negritas**, *cursivas*, `código`,
    citas `>`, imágenes `![alt](url)`, separadores `---`)
-3. Push → aparece en el índice de `blog.html` y en `entrada.html?p=AAAA-MM-DD-titulo.md`
+3. Push → aparece en el índice de `blog.html` y en su página con URL limpia:
+   `https://pineappleva.github.io/blog/AAAA-MM-DD-titulo`
 
 Pipeline técnico (`assets/js/blog.js`):
 
@@ -43,10 +44,15 @@ Pipeline técnico (`assets/js/blog.js`):
   y después se convierte el subconjunto soportado. No se puede inyectar HTML.
 - **Índice** (`blog.html`): tarjetas con fecha, tiempo de lectura (~180 palabras/min)
   y un extracto automático (la línea posterior al título).
-- **Entrada** (`entrada.html`): carga el archivo del parámetro `?p=` (validado con el patrón
-  `AAAA-MM-DD-[a-z0-9-].md`, sin acceso a rutas arbitrarias), actualiza el `<title>` de la
-  página, muestra meta (fecha, lectura, firma), botón «copiar enlace» y navegación
-  Anterior (más reciente) / Siguiente (más antigua).
+- **URLs limpias**: las entradas usan `/blog/<slug>`. En GitHub Pages esa ruta no
+  existe → Pages sirve `404.html` y `main.js` redirige a `entrada.html?p=<slug>.md`.
+  El `?p=` directo también funciona (respaldo), siempre validado con el patrón
+  `AAAA-MM-DD-[a-z0-9-].md` (sin acceso a rutas arbitrarias).
+- **Entrada** (`entrada.html`): actualiza el `<title>`, muestra meta (fecha, lectura,
+  firma), botón «copiar enlace» y navegación Anterior/Siguiente.
+- **Juegos solo en esta web**: `juegos.html` embebe los 5 jugables (Dopamina, FNAS,
+  iıRiS Games, SimulaGoal y Trade Up) con deep-link `juegos.html?g=<id>`; no hay
+  enlaces para jugar fuera.
 
 ## 🌗 Tema claro y oscuro (cómo funciona por dentro)
 
