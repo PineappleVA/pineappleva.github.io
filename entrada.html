@@ -85,24 +85,30 @@
       <a class="back-link" href="/blog">← Volver al blog</a>
     </div>
 
-    <section class="page-hero">
+    <section class="post-hero">
       <div class="orb orb-1" aria-hidden="true"></div>
       <div class="wrap">
-        <p class="kicker">Blog</p>
+        <p class="kicker">Blog · Pineapple</p>
         <h1 id="postTitle">Cargando…</h1>
       </div>
     </section>
 
-    <section class="section" style="padding-top:.6rem;">
-      <div class="wrap">
+    <section class="section post-section">
+      <div class="wrap post-layout">
         <article class="md-post single" id="mdPost" data-md-dir="/blog/posts" data-api-dir="blog/posts">
           <p class="md-loading">Cargando entrada…</p>
         </article>
 
-        <div style="text-align:center;margin-top:1.2rem;">
-          <button id="shareBtn" class="btn small ghost" type="button">🔗 Copiar enlace de la entrada</button>
-        </div>
+        <aside class="post-rail" aria-label="Compartir y navegar">
+          <div class="rail-box">
+            <h3>Compartir</h3>
+            <button id="shareBtn" class="btn small primary" type="button">🔗 Copiar enlace</button>
+            <a class="btn small ghost" href="/blog">Todas las entradas</a>
+          </div>
+        </aside>
+      </div>
 
+      <div class="wrap">
         <nav class="post-pager" id="postPager" hidden aria-label="Más entradas del blog"></nav>
       </div>
     </section>

@@ -42,8 +42,9 @@ Pipeline técnico (`assets/js/blog.js`):
 - **Orden**: descendente por nombre → la fecha del nombre manda.
 - **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML (`& < > "`)
   y después se convierte el subconjunto soportado. No se puede inyectar HTML.
-- **Índice** (`blog.html`): tarjetas con fecha, tiempo de lectura (~180 palabras/min)
-  y un extracto automático (la línea posterior al título).
+- **Índice** (`/blog`): portada editorial alineada a la izquierda; la entrada más
+  reciente se destaca a todo lo ancho (con la fecha en grande) y el resto van en
+  tarjetas con fecha, tiempo de lectura (~180 palabras/min) y extracto automático.
 - **URLs limpias** (todo el sitio sin `.html`): los enlaces internos apuntan a
   `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`, `/contacto`…
   En GitHub Pages esas rutas no existen → Pages sirve `404.html`, cuyo enrutador
@@ -51,8 +52,9 @@ Pipeline técnico (`assets/js/blog.js`):
   la URL limpia con `replaceState` (sin recargas ni saltos a `.html`).
   El `?p=` directo de `entrada.html` sigue funcionando como respaldo, siempre
   validado con el patrón `AAAA-MM-DD-[a-z0-9-].md` (sin acceso a rutas arbitrarias).
-- **Entrada** (`entrada.html`): actualiza el `<title>`, el hero muestra **solo el
-  titular**, botón «copiar enlace» y navegación Anterior/Siguiente.
+- **Entrada** (`/blog/<slug>`): héroe izquierdo con **solo el titular** (el cuerpo no
+  lo repite), artículo a medida de lectura con barra lateral «Compartir» fija y
+  navegación Anterior/Siguiente.
 - **Juegos solo en esta web**: `juegos.html` embebe los 5 jugables (Dopamina, FNAS,
   iıRiS Games, SimulaGoal y Trade Up) con deep-link `/juegos?g=<id>`; no hay
   enlaces para jugar fuera.

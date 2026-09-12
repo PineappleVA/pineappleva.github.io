@@ -134,6 +134,22 @@
     return parseInt(m[3], 10) + " " + MESES[parseInt(m[2], 10) - 1] + " " + m[1];
   }
 
+  function stripFirstHeading(md) {
+    var lines = String(md).replace(/\r\n/g, "\n").split("\n");
+    for (var i = 0; i < lines.length; i++) {
+      if (/^#{1,3}\s+/.test(lines[i].trim())) {
+        return lines.slice(0, i).concat(lines.slice(i + 1)).join("\n");
+      }
+    }
+    return md;
+  }
+
+  function postDateParts(name) {
+    var m = String(name).match(/^(\d{4})-(\d{2})-(\d{2})-/);
+    if (!m) return null;
+    return { d: parseInt(m[3], 10), mon: MESES[parseInt(m[2], 10) - 1] || "", y: m[1] };
+  }
+
   function readingMinutes(md) {
     var words = String(md).trim().split(/\s+/).length;
     return Math.max(1, Math.round(words / 180));
@@ -194,7 +210,8 @@
   }
 
   /* ============================================================
-     MODO ÍNDICE (blog.html): tarjetas-resumen
+     MODO ÍNDICE (/blog): la última entrada destacada en grande
+     y el resto en tarjetas-resumen
      ============================================================ */
   var listEl = document.querySelector(".md-list");
   if (listEl) {
@@ -214,23 +231,42 @@
       }));
     }).then(function (posts) {
       listEl.innerHTML = "";
-      posts.forEach(function (p) {
+      posts.forEach(function (p, idx) {
         var title = extractTitle(p.md) || p.name.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
         var date = postDate(p.name) || "";
         var mins = readingMinutes(p.md);
         var excerpt = extractExcerpt(p.md);
 
         var a = document.createElement("a");
-        a.className = "post-card reveal visible";
+        a.className = "post-card reveal visible" + (idx === 0 ? " featured" : "");
         a.href = postUrl(p.name);
-        a.innerHTML =
-          '<div class="post-card-head">' +
-          (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
-          '<span class="pill">☕ ' + mins + " min</span>" +
-          "</div>" +
-          "<h3>" + escapeHtml(title) + "</h3>" +
-          (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
-          '<span class="post-card-more">Leer la entrada →</span>';
+
+        if (idx === 0) {
+          /* la más reciente, en grande: cuerpo + fecha editorial a la derecha */
+          var parts = postDateParts(p.name);
+          a.innerHTML =
+            '<div class="featured-body">' +
+            '<div class="post-card-head">' +
+            '<span class="pill pill-brand">Última entrada</span>' +
+            '<span class="pill">☕ ' + mins + " min</span>" +
+            "</div>" +
+            "<h3>" + escapeHtml(title) + "</h3>" +
+            (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
+            '<span class="post-card-more">Leer la entrada →</span>' +
+            "</div>" +
+            '<div class="featured-date" aria-hidden="true">' +
+            (parts ? '<span class="d">' + parts.d + '</span><span class="my">' + parts.mon + " " + parts.y + "</span>" : "") +
+            "</div>";
+        } else {
+          a.innerHTML =
+            '<div class="post-card-head">' +
+            (date ? '<span class="pill">📅 ' + escapeHtml(date) + "</span>" : "") +
+            '<span class="pill">☕ ' + mins + " min</span>" +
+            "</div>" +
+            "<h3>" + escapeHtml(title) + "</h3>" +
+            (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
+            '<span class="post-card-more">Leer la entrada →</span>';
+        }
         listEl.appendChild(a);
       });
     }).catch(function () {
@@ -281,7 +317,8 @@
 
           document.title = title + " · Blog · Pineapple";
           if (titleEl) titleEl.textContent = title;
-          postEl.innerHTML = renderMarkdown(md);
+          /* el hero de la página ya pinta el titular: fuera el h1 del cuerpo */
+          postEl.innerHTML = renderMarkdown(stripFirstHeading(md));
 
           if (shareBtn && !shareBtn.dataset.bound) {
             shareBtn.dataset.bound = "1";

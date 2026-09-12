@@ -84,21 +84,28 @@
       <a class="back-link" href="/">← Volver al inicio</a>
     </div>
 
-    <section class="page-hero">
+    <section class="blog-hero">
       <div class="orb orb-1" aria-hidden="true"></div>
-      <div class="wrap">
-        <p class="kicker">Lo último de la casa</p>
-        <h1>📝 Blog</h1>
-        <p class="sub">Lo que vamos haciendo, contado a mano. Cada entrada es su propia página;
-        esta es la lista de todas.</p>
+      <div class="wrap blog-hero-grid">
+        <div>
+          <p class="kicker">Diario de construcción</p>
+          <h1>El blog de Pineapple</h1>
+          <p class="sub">Lo que vamos haciendo, contado a mano: qué construimos, cómo va
+          y qué viene después. Cada entrada es su propia página.</p>
+        </div>
+        <aside class="blog-hero-meta" aria-label="Resumen del blog">
+          <span class="count" id="mdCount">—</span>
+          <span class="label">publicadas hasta hoy</span>
+          <span class="note">✍️ Escrito en Markdown y publicado directo desde el repositorio.</span>
+        </aside>
       </div>
     </section>
 
-    <section class="section" id="entradas" style="padding-top:1.4rem;">
+    <section class="section blog-section" id="entradas">
       <div class="wrap">
         <div class="md-toolbar">
           <h2>Entradas</h2>
-          <span class="md-count" id="mdCount"></span>
+          <span class="md-hint">De la más reciente a la más antigua</span>
         </div>
         <div class="md-list" data-md-dir="/blog/posts" data-api-dir="blog/posts">
           <p class="md-loading">Cargando entradas…</p>
