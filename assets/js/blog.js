@@ -109,6 +109,18 @@
     return html;
   }
 
+  /* URL de una entrada: /blog/<slug> en producción (pineappleva.github.io),
+     donde GitHub Pages resuelve esas rutas con 404.html y main.js redirige.
+     En local o previsualización (servidores sin 404 personalizada) se usa el
+     respaldo directo entrada.html?p=<archivo>, para que los enlaces funcionen
+     igual de bien en ambos sitios. */
+  function postUrl(name) {
+    var file = String(name).replace(/\.md$/i, "");
+    var prod = location.hostname === "pineappleva.github.io";
+    return prod ? "/blog/" + encodeURIComponent(file)
+                : "entrada.html?p=" + encodeURIComponent(file) + ".md";
+  }
+
   /* ---------- Helpers ---------- */
 
   function fetchText(url) {
