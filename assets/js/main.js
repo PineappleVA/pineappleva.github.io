@@ -1,7 +1,8 @@
 /* ============================================================
    Pineapple — Portafolio · Scripts
-   Mínimo y sin dependencias: menú móvil, barra de progreso,
-   máquina de escribir, contadores, tilt 3D y animaciones.
+   Sin dependencias. Menú, barra de progreso, contadores,
+   tilt 3D, reproductor de juegos y animaciones de entrada.
+   (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
   'use strict';
@@ -31,7 +32,7 @@
     });
   }
 
-  /* ---------- Barra de progreso de scroll + sombra + volver arriba ---------- */
+  /* ---------- Barra de progreso + sombra del header + volver arriba ---------- */
   var progressBar = document.getElementById('progressBar');
   var header = document.querySelector('.site-header');
   var toTop = document.getElementById('toTop');
@@ -71,31 +72,6 @@
     revealEls.forEach(function (el) { el.classList.add('visible'); });
   }
 
-  /* ---------- Máquina de escribir ---------- */
-  var tw = document.getElementById('typewriter');
-  if (tw) {
-    var words = [];
-    try { words = JSON.parse(tw.getAttribute('data-words')) || []; } catch (e) { words = []; }
-    if (!words.length) words = [tw.textContent];
-
-    if (reduceMotion || !('MutationObserver' in window)) {
-      tw.textContent = words[0];
-    } else {
-      var wi = 0, ci = 0, deleting = false;
-      tw.textContent = '';
-      function tick() {
-        var word = words[wi];
-        ci += deleting ? -1 : 1;
-        tw.textContent = word.slice(0, ci);
-        var delay = deleting ? 38 : 78;
-        if (!deleting && ci === word.length) { delay = 1900; deleting = true; }
-        else if (deleting && ci === 0) { deleting = false; wi = (wi + 1) % words.length; delay = 350; }
-        window.setTimeout(tick, delay);
-      }
-      tick();
-    }
-  }
-
   /* ---------- Contadores animados ---------- */
   var counters = document.querySelectorAll('[data-count]');
   function animateCounter(el) {
@@ -128,7 +104,7 @@
     }
   }
 
-  /* ---------- Efecto tilt 3D en tarjetas ---------- */
+  /* ---------- Efecto tilt 3D ---------- */
   var finePointer = window.matchMedia('(pointer: fine)').matches;
   if (finePointer && !reduceMotion) {
     document.querySelectorAll('.tilt').forEach(function (card) {
@@ -150,6 +126,39 @@
     });
   }
 
+  /* ---------- Reproductor de juegos (juegos.html) ---------- */
+  var gameFrame = document.getElementById('gameFrame');
+  var playerShell = document.getElementById('player');
+  if (gameFrame && playerShell) {
+    var playerCaption = document.getElementById('playerCaption');
+    var playerStop = document.getElementById('playerStop');
+    var defaultCaption = playerCaption ? playerCaption.textContent : '';
+    var gameButtons = document.querySelectorAll('[data-game]');
+
+    gameButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var src = btn.getAttribute('data-game');
+        gameFrame.setAttribute('src', src);
+        playerShell.classList.add('playing');
+        if (playerCaption) playerCaption.textContent = btn.getAttribute('data-name') || 'Jugando…';
+        if (playerStop) playerStop.hidden = false;
+        gameButtons.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        playerShell.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+
+    if (playerStop) {
+      playerStop.addEventListener('click', function () {
+        gameFrame.removeAttribute('src');
+        playerShell.classList.remove('playing');
+        if (playerCaption) playerCaption.textContent = defaultCaption;
+        playerStop.hidden = true;
+        gameButtons.forEach(function (b) { b.classList.remove('active'); });
+      });
+    }
+  }
+
   /* ---------- Formulario de contacto → mailto ---------- */
   var form = document.getElementById('contactForm');
   if (form) {
@@ -158,8 +167,8 @@
       var name = (form.elements['nombre'] || {}).value || '';
       var topic = (form.elements['tema'] || {}).value || 'Consulta';
       var msg = (form.elements['mensaje'] || {}).value || '';
-      var subject = '[pineappleva.github.io] ' + topic + ' — ' + (name || 'Sin nombre');
-      var body = 'Hola Pineapple:\n\n' + msg + '\n\n— ' + (name || 'Anónimo');
+      var subject = '[web] ' + topic + ' — ' + (name || 'sin nombre');
+      var body = 'Hola Pineapple:\n\n' + msg + '\n\n— ' + (name || 'anónimo');
       location.href = 'mailto:pineapplevacorp@gmail.com' +
         '?subject=' + encodeURIComponent(subject) +
         '&body=' + encodeURIComponent(body);

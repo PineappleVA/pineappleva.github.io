@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Comunidad · Pineapple</title>
-  <meta name="description" content="Quiénes somos: Pineapple nace en Valladolid y hace productos digitales para alumnos, profesores y colegios. Nuestra historia, nuestros valores y cómo trabajamos.">
+  <title>Blog · Pineapple</title>
+  <meta name="description" content="El blog de Pineapple: lo que vamos haciendo, contado a mano. Escrito en Markdown y publicado directo desde el repositorio.">
   <meta name="theme-color" content="#131007">
-  <link rel="canonical" href="https://pineappleva.github.io/comunidad.html">
+  <link rel="canonical" href="https://pineappleva.github.io/blog.html">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Pineapple">
-  <meta property="og:title" content="Comunidad · Pineapple">
-  <meta property="og:description" content="Nacemos en Valladolid: productos digitales hechos para alumnos, profesores y colegios.">
-  <meta property="og:url" content="https://pineappleva.github.io/comunidad.html">
+  <meta property="og:title" content="Blog · Pineapple">
+  <meta property="og:description" content="Lo que vamos haciendo, contado a mano. Escrito en Markdown y publicado directo desde el repositorio.">
+  <meta property="og:url" content="https://pineappleva.github.io/blog.html">
   <meta property="og:image" content="https://pineappleva.github.io/assets/img/pineapple.png">
   <meta property="og:locale" content="es_ES">
   <meta name="twitter:card" content="summary">
@@ -45,9 +45,10 @@
           <li><a href="index.html">Inicio</a></li>
           <li><a href="proyectos.html">Proyectos</a></li>
           <li><a href="juegos.html">Juegos</a></li>
-          <li><a href="blog.html">Blog</a></li>
-          <li><a href="comunidad.html" aria-current="page">Comunidad</a></li>
+          <li><a href="blog.html" aria-current="page">Blog</a></li>
+          <li><a href="comunidad.html">Comunidad</a></li>
           <li><a href="contacto.html">Contacto</a></li>
+          <li class="nav-cta"><a href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">🎮 Jugar</a></li>
         </ul>
       </nav>
     </div>
@@ -63,113 +64,32 @@
     <section class="page-hero">
       <div class="orb orb-1" aria-hidden="true"></div>
       <div class="wrap">
-        <p class="kicker">Quiénes somos</p>
-        <h1>🏫 Comunidad</h1>
-        <p class="sub">Nacemos en Valladolid. Hacemos esto por y para los colegios,
-        y lo mantenemos escuchando a la gente que lo usa.</p>
+        <p class="kicker">Lo último de la casa</p>
+        <h1>📝 Blog</h1>
+        <p class="sub">Lo que vamos haciendo, contado a mano. Escrito en Markdown
+        y publicado directo desde el repositorio, como los anuncios de
+        <span translate="no">Pineapple Games</span>.</p>
       </div>
     </section>
 
-    <!-- ======================= De qué va esto ======================= -->
-    <section class="section" id="historia">
+    <!-- ======================= Entradas ======================= -->
+    <section class="section" id="entradas" style="padding-top:1.8rem;">
       <div class="wrap">
-        <h2 class="section-title reveal">De qué va esto</h2>
-        <div class="cards grid-3">
-          <article class="card reveal d1">
-            <div class="icon">🌱</div>
-            <h3>El origen</h3>
-            <p>Unos cuantos de Valladolid, un colegio de por medio y la costumbre de preguntarnos «¿y si lo hacemos nosotros?».</p>
-          </article>
-          <article class="card reveal d2">
-            <div class="icon">📍</div>
-            <h3>Ahora mismo</h3>
-            <p>Nuestros productos se usan en varios colegios de la ciudad. Somos pocos, pero ocupamos más de lo que parece.</p>
-          </article>
-          <article class="card reveal d3">
-            <div class="icon">🚀</div>
-            <h3>Lo siguiente</h3>
-            <p>Seguimos probando ideas. Si algo funciona, se queda. Si no, también sirve para aprender.</p>
-          </article>
-        </div>
+        <div class="md-posts"
+             data-md-dir="blog/posts"
+             data-api-dir="blog/posts"></div>
       </div>
     </section>
 
-    <!-- ======================= Valores ======================= -->
-    <section class="section alt" id="valores">
+    <!-- ======================= Cómo publicar ======================= -->
+    <section class="section alt" id="publicar">
       <div class="wrap">
-        <h2 class="section-title reveal">🎯 Qué nos mueve</h2>
-        <p class="section-sub reveal d1">Cuatro ideas, las mismas que en nuestro perfil de GitHub.</p>
-        <div class="cards grid-4">
-          <article class="card tilt reveal d1">
-            <div class="icon">🛠️</div>
-            <h3>Utilidad</h3>
-            <p>Resolvemos necesidades concretas del entorno escolar.</p>
-          </article>
-          <article class="card tilt reveal d2">
-            <div class="icon">✨</div>
-            <h3>Sencillez</h3>
-            <p>Interfaces claras que cualquiera pueda utilizar.</p>
-          </article>
-          <article class="card tilt reveal d3">
-            <div class="icon">💡</div>
-            <h3>Creatividad</h3>
-            <p>Probamos ideas nuevas, desde herramientas hasta juegos.</p>
-          </article>
-          <article class="card tilt reveal d4">
-            <div class="icon">🤝</div>
-            <h3>Comunidad</h3>
-            <p>Creamos productos que conectan a alumnos y centros.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================= Cómo trabajamos ======================= -->
-    <section class="section" id="como-trabajamos">
-      <div class="wrap">
-        <h2 class="section-title reveal">🧭 Cómo trabajamos</h2>
-        <p class="section-sub reveal d1">De una idea a una herramienta que la gente usa de verdad:</p>
-
-        <div class="steps">
-          <article class="step reveal d1">
-            <h3>Escuchamos</h3>
-            <p>Alumnos y profesores dicen qué falta. Ahí empieza todo.</p>
-          </article>
-          <article class="step reveal d2">
-            <h3>Lo hacemos</h3>
-            <p>Sin florituras: útil y sencillo primero, lo bonito después.</p>
-          </article>
-          <article class="step reveal d3">
-            <h3>Se usa</h3>
-            <p>Lo prueban aulas de verdad, no laboratorios limpios.</p>
-          </article>
-          <article class="step reveal d4">
-            <h3>Lo arreglamos</h3>
-            <p>Cada fallo que nos llega acaba en una mejora. O en una broma interna.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================= Nuestro GitHub ======================= -->
-    <section class="section alt" id="github">
-      <div class="wrap">
-        <h2 class="section-title center reveal">📊 Nuestro GitHub</h2>
-        <p class="section-sub center reveal d1">Todo lo que hacemos es público. Puedes mirar el código,
-        copiarlo o proponernos cambios.</p>
-        <div class="gh-cards reveal d2">
-          <img src="https://github-readme-stats.vercel.app/api?username=PineappleVA&amp;show_icons=true&amp;hide_border=true&amp;bg_color=00000000&amp;title_color=F5A623&amp;text_color=586069&amp;icon_color=F5A623"
-               alt="Estadísticas de GitHub de Pineapple" width="420" loading="lazy">
-          <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=PineappleVA&amp;layout=compact&amp;hide_border=true&amp;bg_color=00000000&amp;title_color=F5A623&amp;text_color=586069"
-               alt="Lenguajes más usados por Pineapple" width="360" loading="lazy">
-        </div>
-
-        <div class="banner-cta reveal d3">
-          <div>
-            <strong>¿Tu colegio quiere conocer nuestros productos?</strong>
-            <span>Nos gusta conocer a profesores y centros con ganas de probar cosas.</span>
-          </div>
-          <a class="btn primary" href="contacto.html">Hablemos</a>
+        <h2 class="section-title reveal">✍️ ¿Cómo se publica una entrada?</h2>
+        <p class="section-sub reveal d1">Sin paneles ni bases de datos. El blog es una carpeta del repositorio:</p>
+        <div class="notice reveal d2">
+          <p style="margin:0;">Crea un archivo en <code>blog/posts/</code> que empiece por la fecha
+          (<code>AAAA-MM-DD-titulo.md</code>), escríbelo en Markdown y sube el cambio.
+          La entrada aparece sola en esta página, ordenada de más nueva a más vieja.</p>
         </div>
       </div>
     </section>
@@ -249,5 +169,6 @@
   </button>
 
   <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/blog.js" defer></script>
 </body>
 </html>

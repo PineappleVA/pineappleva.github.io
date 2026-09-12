@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Juegos · Pineapple</title>
-  <meta name="description" content="Los juegos de Pineapple: Dopamina, FNAS (Five Nights at Skibidi's), iıRiS Games, Slop Central y más. Aquí no solo creamos: también jugamos.">
+  <meta name="description" content="Los juegos de Pineapple, jugables aquí mismo: Dopamina, FNAS (Five Nights at Skibidi's), iıRiS Games... Aquí no solo creamos: también jugamos.">
   <meta name="theme-color" content="#131007">
   <link rel="canonical" href="https://pineappleva.github.io/juegos.html">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Pineapple">
   <meta property="og:title" content="Juegos · Pineapple">
-  <meta property="og:description" content="Dopamina, FNAS, iıRiS Games y más: los juegos de Pineapple en un solo sitio.">
+  <meta property="og:description" content="Dopamina, FNAS, iıRiS Games y más. Juega directamente aquí, sin salir de la web.">
   <meta property="og:url" content="https://pineappleva.github.io/juegos.html">
   <meta property="og:image" content="https://pineappleva.github.io/assets/img/pineapple.png">
   <meta property="og:locale" content="es_ES">
@@ -45,9 +45,9 @@
           <li><a href="index.html">Inicio</a></li>
           <li><a href="proyectos.html">Proyectos</a></li>
           <li><a href="juegos.html" aria-current="page">Juegos</a></li>
+          <li><a href="blog.html">Blog</a></li>
           <li><a href="comunidad.html">Comunidad</a></li>
           <li><a href="contacto.html">Contacto</a></li>
-          <li class="nav-cta"><a href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">🎮 Jugar</a></li>
         </ul>
       </nav>
     </div>
@@ -55,49 +55,78 @@
 
   <main id="main">
 
+    <div class="wrap">
+      <a class="back-link" href="index.html">← Volver al inicio</a>
+    </div>
+
     <!-- ======================= Hero de página ======================= -->
     <section class="page-hero">
       <div class="orb orb-2" aria-hidden="true"></div>
       <div class="wrap">
-        <p class="kicker">Nuestro lado divertido</p>
+        <p class="kicker">También jugamos</p>
         <h1>🎮 Juegos</h1>
-        <p class="sub">Aquí no solo creamos: <strong>también jugamos</strong>. Experimentamos con ideas,
-        prototipos y experiencias interactivas porque construir también puede ser divertido.</p>
+        <p class="sub">Aquí no solo creamos: también jugamos. Prototipos, experimentos y
+        algún juego con más cariño del que aparenta.</p>
+      </div>
+    </section>
+
+    <!-- ======================= Reproductor ======================= -->
+    <section class="section" id="juega-aqui" style="padding-top:1.6rem;">
+      <div class="wrap">
+        <h2 class="section-title reveal">Juega aquí mismo</h2>
+        <p class="section-sub reveal d1">Elige un juego abajo y se carga en esta página. Sin instalar nada.</p>
+
+        <div id="player" class="player-shell reveal d2">
+          <div class="player-head">
+            <span class="player-dot" aria-hidden="true"></span>
+            <span class="player-dot" aria-hidden="true"></span>
+            <span class="player-dot" aria-hidden="true"></span>
+            <span id="playerCaption" class="player-caption">Elige un juego de la lista y pulsa «Jugar aquí»</span>
+            <button id="playerStop" class="btn small ghost" hidden>Expulsar juego</button>
+          </div>
+          <div class="player-screen">
+            <div class="player-placeholder" id="playerPlaceholder">
+              <span class="big" aria-hidden="true">🕹️</span>
+              <p>Ningún juego cargado.<br>Elige uno del catálogo de abajo.</p>
+            </div>
+            <iframe id="gameFrame" title="Juego de Pineapple" allow="fullscreen; autoplay; gamepad"></iframe>
+          </div>
+        </div>
+        <p class="player-note reveal d2">Los juegos cargan desde su casa,
+        <a href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">Pineapple Games</a>.
+        Si algo va raro, ahí funcionan siempre.</p>
       </div>
     </section>
 
     <!-- ======================= Catálogo ======================= -->
-    <section class="section" id="catalogo">
+    <section class="section alt" id="catalogo">
       <div class="wrap">
-        <h2 class="section-title reveal">🕹️ Nuestros juegos</h2>
-        <p class="section-sub reveal d1">Los que ya existen y los que están llegando. Todos viven en
-        <span translate="no">Pineapple Games</span>, nuestro hub de juegos.</p>
+        <h2 class="section-title reveal">El catálogo</h2>
+        <p class="section-sub reveal d1">Lo que hay ahora mismo en Pineapple Games.</p>
 
         <div class="cards grid-3">
           <article class="card tilt reveal d1">
             <div class="card-top">
               <span class="logo-tile emoji-tile" aria-hidden="true">🧠</span>
-              <span class="badge ok">🎮 Jugable</span>
+              <span class="badge ok">Jugable</span>
             </div>
             <h3 translate="no">Dopamina</h3>
-            <p>El clicker que lo empezó todo: mejoras, skins, recompensas diarias y renacimientos.
-            La partida se guarda sola. Diversión rápida y directa.</p>
+            <p>El clicker que lo empezó todo: mejoras, skins, recompensas diarias y renacimientos. La partida se guarda sola.</p>
             <div class="card-links">
-              <a class="btn small primary" href="https://pineappleva.github.io/Games/games/dopamina/" target="_blank" rel="noopener">Jugar ↗</a>
+              <button class="btn small primary" type="button" data-game="https://pineappleva.github.io/Games/games/dopamina/" data-name="Dopamina">Jugar aquí</button>
+              <a class="btn small ghost" href="https://pineappleva.github.io/Games/games/dopamina/" target="_blank" rel="noopener">Abrir ↗</a>
             </div>
           </article>
 
           <article class="card tilt reveal d2">
             <div class="card-top">
               <span class="logo-tile emoji-tile" aria-hidden="true">🎬</span>
-              <span class="badge ok">🔥 Jugable</span>
+              <span class="badge ok">Jugable</span>
             </div>
             <h3 translate="no">FNAS</h3>
-            <p><em>Five Nights at Skibidi's</em>: nuestro juego de terror y diversión, un fan-made
-            entre <span translate="no">Five Nights at Freddy's</span> y
-            <span translate="no">Skibidi Toilet</span>. Creado con creatividad y mucho humor.</p>
+            <p><em>Five Nights at Skibidi's</em>. Terror fan-made entre Five Nights at Freddy's y Skibidi Toilet, con más humor del que debería.</p>
             <div class="card-links">
-              <a class="btn small primary" href="https://pineappleva.github.io/Games/games/fine-at-skibidi/" target="_blank" rel="noopener">Jugar ↗</a>
+              <button class="btn small primary" type="button" data-game="https://pineappleva.github.io/Games/games/fine-at-skibidi/" data-name="FNAS · Five Nights at Skibidi's">Jugar aquí</button>
               <a class="btn small ghost" href="https://github.com/PineappleVA/FNAS" target="_blank" rel="noopener">GitHub</a>
             </div>
           </article>
@@ -105,24 +134,23 @@
           <article class="card tilt reveal d3">
             <div class="card-top">
               <span class="logo-tile emoji-tile" aria-hidden="true">🎰</span>
-              <span class="badge pending">🧰 Deteriorado</span>
+              <span class="badge pending">Deteriorado</span>
             </div>
             <h3 translate="no">iıRiS Games</h3>
-            <p>El arcade casero: tragaperras, dardos, un muñeco de pruebas y un escritorio
-            <span translate="no">Win98</span> que da respeto. Un clásico interno que sigue aguantando.</p>
+            <p>El arcade casero: tragaperras, dardos, un muñeco de pruebas y un escritorio Win98 que da respeto.</p>
             <div class="card-links">
-              <a class="btn small primary" href="https://pineappleva.github.io/Games/games/iris-games/" target="_blank" rel="noopener">Visitar ↗</a>
+              <button class="btn small primary" type="button" data-game="https://pineappleva.github.io/Games/games/iris-games/" data-name="iıRiS Games">Jugar aquí</button>
+              <a class="btn small ghost" href="https://pineappleva.github.io/Games/games/iris-games/" target="_blank" rel="noopener">Abrir ↗</a>
             </div>
           </article>
 
           <article class="card tilt reveal d1">
             <div class="card-top">
               <span class="logo-tile emoji-tile" aria-hidden="true">🤖</span>
-              <span class="badge closed">🔒 Bloqueado · Próximamente</span>
+              <span class="badge closed">Cerrado</span>
             </div>
             <h3 translate="no">Slop Central</h3>
-            <p>La nueva zona experimental: muchos juegos con contenido nuevo, bueno y actualizado.
-            Todavía cerrada con llave… pero se avecina.</p>
+            <p>La zona experimental: muchos juegos con contenido nuevo, bueno y actualizado. Bloqueada hasta nuevo aviso.</p>
             <div class="card-links">
               <a class="btn small ghost" href="https://pineappleva.github.io/Games/games/slop-central/" target="_blank" rel="noopener">Ver el anuncio ↗</a>
             </div>
@@ -130,65 +158,28 @@
 
           <article class="card tilt reveal d2">
             <div class="card-top">
-              <span class="logo-tile emoji-tile" aria-hidden="true">✨</span>
-              <span class="badge beta">Sorpresa</span>
+              <span class="logo-tile emoji-tile" aria-hidden="true">🗂️</span>
+              <span class="badge beta">6 juegos</span>
             </div>
-            <h3>Y más…</h3>
-            <p>Hay un par de juegos más esperándote en el hub: pequeños experimentos
-            que hicimos por diversión y que merecen una partida.</p>
+            <h3>Todos los juegos</h3>
+            <p>Hay un par más esperando en el hub: pequeños experimentos que hicimos por diversión.</p>
             <div class="card-links">
-              <a class="btn small primary" href="https://pineappleva.github.io/Games/games/all/" target="_blank" rel="noopener">Ver los 6 juegos ↗</a>
+              <a class="btn small primary" href="https://pineappleva.github.io/Games/games/all/" target="_blank" rel="noopener">Ver los 6 ↗</a>
             </div>
           </article>
 
           <article class="card tilt reveal d3">
             <div class="card-top">
-              <span class="logo-tile emoji-tile" aria-hidden="true">📢</span>
+              <span class="logo-tile emoji-tile" aria-hidden="true">📝</span>
               <span class="badge beta">Novedades</span>
             </div>
-            <h3>Anuncios</h3>
-            <p>Actualizaciones, lanzamientos y todo lo que cocinamos en el laboratorio de juegos,
-            contado en la sección de anuncios de <span translate="no">Pineapple Games</span>.</p>
+            <h3>Noticias</h3>
+            <p>Lo que pasa en la casa de los juegos, contado en nuestro blog y en los anuncios del hub.</p>
             <div class="card-links">
-              <a class="btn small primary" href="https://pineappleva.github.io/Games/anuncios/" target="_blank" rel="noopener">Leer anuncios ↗</a>
+              <a class="btn small primary" href="blog.html">Leer el blog</a>
+              <a class="btn small ghost" href="https://pineappleva.github.io/Games/anuncios/" target="_blank" rel="noopener">Anuncios ↗</a>
             </div>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================= Filosofía ======================= -->
-    <section class="section alt" id="filosofia">
-      <div class="wrap">
-        <h2 class="section-title reveal">🧪 ¿Por qué hacemos juegos?</h2>
-        <p class="section-sub reveal d1">Porque programar un juego enseña más rápido que cualquier
-        teoría: física, diseño, sonido, lógica… y porque ver a tus compañeros jugar a algo que has
-        hecho no tiene precio.</p>
-
-        <div class="cards grid-3">
-          <article class="card reveal d1">
-            <div class="icon">🛠️</div>
-            <h3>Aprender haciendo</h3>
-            <p>Cada juego es un laboratorio: probamos mecánicas, estilos y tecnologías nuevas.</p>
-          </article>
-          <article class="card reveal d2">
-            <div class="icon">😄</div>
-            <h3>Humor ante todo</h3>
-            <p>Nuestros juegos no se toman en serio a sí mismos. Y eso es parte de la gracia.</p>
-          </article>
-          <article class="card reveal d3">
-            <div class="icon">🏫</div>
-            <h3>Para jugar en clase</h3>
-            <p>Pensados para ratos libres en el colegio: ligeros, en el navegador y sin instalaciones.</p>
-          </article>
-        </div>
-
-        <div class="banner-cta reveal d2">
-          <div>
-            <strong>🍍 ¿Listo para jugar?</strong>
-            <span>Todos nuestros juegos son gratuitos y van directo en el navegador.</span>
-          </div>
-          <a class="btn primary" href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">Entrar en Pineapple Games ↗</a>
         </div>
       </div>
     </section>
@@ -198,15 +189,19 @@
   <!-- ======================= Pie ======================= -->
   <footer class="site-footer">
     <div class="wave" aria-hidden="true">
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" focusable="false">
+      <svg viewBox="0 0 2880 80" preserveAspectRatio="none" focusable="false">
         <defs>
-          <linearGradient id="waveGrad2" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="waveGrad2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2880" y2="0">
             <stop offset="0" stop-color="#f5a623"/>
             <stop offset="1" stop-color="#ffd166"/>
           </linearGradient>
         </defs>
-        <path d="M0,36 C240,76 480,-4 720,36 C960,76 1200,-4 1440,36 L1440,79 L0,79 Z" fill="#0d0b05"/>
-        <path d="M0,36 C240,76 480,-4 720,36 C960,76 1200,-4 1440,36" fill="none" stroke="url(#waveGrad2)" stroke-width="2.5" opacity="0.8"/>
+        <g class="wave-move">
+          <path d="M0,36 C240,76 480,-4 720,36 C960,76 1200,-4 1440,36 L1440,79 L0,79 Z" fill="#0d0b05"/>
+          <path d="M0,36 C240,76 480,-4 720,36 C960,76 1200,-4 1440,36" fill="none" stroke="url(#waveGrad2)" stroke-width="2.5" opacity=".8"/>
+          <path d="M1440,36 C1680,76 1920,-4 2160,36 C2400,76 2640,-4 2880,36 L2880,79 L1440,79 Z" fill="#0d0b05"/>
+          <path d="M1440,36 C1680,76 1920,-4 2160,36 C2400,76 2640,-4 2880,36" fill="none" stroke="url(#waveGrad2)" stroke-width="2.5" opacity=".8"/>
+        </g>
       </svg>
     </div>
 
@@ -226,6 +221,7 @@
           <li><a href="index.html">Inicio</a></li>
           <li><a href="proyectos.html">Proyectos</a></li>
           <li><a href="juegos.html">Juegos</a></li>
+          <li><a href="blog.html">Blog</a></li>
           <li><a href="comunidad.html">Comunidad</a></li>
           <li><a href="contacto.html">Contacto</a></li>
         </ul>
