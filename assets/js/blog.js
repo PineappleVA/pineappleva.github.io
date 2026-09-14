@@ -1,33 +1,48 @@
 /* ============================================================
    Pineapple — Blog en Markdown (índice + página de entrada)
 
-   Basado en el mismo sistema que los anuncios de Pineapple Games:
-   sube un archivo `AAAA-MM-DD-titulo.md` a `blog/posts/` y se
-   publica solo, ordenado de más reciente a más viejo.
+   Cada entrada vive en su propia carpeta, con el Markdown con la
+   fecha y sus imágenes al lado:
+
+     blog/posts/
+       posts.json                  ← manifiesto de respaldo
+       septiembre-ya-esta-aqui/
+         2026-09-15.md             ← la entrada (la fecha del nombre manda)
+         assets/
+           banner.png              ← portada de la tarjeta y del hero
+           lo-que-sea.png          ← imágenes para insertar en el .md
 
    CÓMO FUNCIONA POR DENTRO
    ------------------------
-   1. Listado: GET a la API de GitHub
-      api.github.com/repos/PineappleVA/pineappleva.github.io/
-      contents/blog/posts?ref=main → se quedan los .md (sin readme
-      ni ocultos). Si la API falla (límite de peticiones, sin
-      conexión), se lee el manifiesto blog/posts/posts.json.
-   2. Descarga: cada .md se trae de raw.githubusercontent.com (main).
-   3. Orden: descendente por nombre → la fecha del nombre manda.
+   1. Listado: UNA llamada a la API de GitHub (git/trees con
+      recursive=1) devuelve el árbol completo del repo; de ahí salen
+      las carpetas de blog/posts/, el .md de cada una (por su fecha)
+      y si tiene assets/banner.*. El resultado se cachea en
+      localStorage media hora para no chocar con el límite de la API.
+      Si la API falla (límite, sin conexión…), se lee el manifiesto
+      blog/posts/posts.json (acepta el formato nuevo y el antiguo).
+   2. Descarga del .md: primero del propio sitio (GitHub Pages sirve
+      los archivos tal cual) y, si falla, de raw.githubusercontent.
+   3. Orden: descendente por la fecha del nombre del .md.
    4. Render: mini-Markdown propio y seguro; primero se escapa TODO
       el HTML (& < > ") y después se convierte el subconjunto:
       #..####, listas - y 1., citas >, ```código```, ---,
       **negritas**, *cursivas*, `código`, [enlaces](url) e imágenes.
-   5. Dos modos según la página:
+      Novedades: las rutas relativas del .md (assets/…) se resuelven
+      a la carpeta de la entrada, las imágenes sueltas con alt se
+      convierten en <figure> con pie de foto y los h2–h4 reciben id
+      para poder enlazarlos (#ancla).
+   5. Portadas: si la entrada tiene assets/banner.*, la tarjeta del
+      índice y el hero de la entrada lo enseñan; si no existe (o si
+      falla la carga), se queda la portada de degradado de siempre.
+   6. Dos modos según la página:
       · /blog (.md-list) → tarjetas-resumen que enlazan a la URL
         limpia /blog/<slug>
-      · entrada.html (#mdPost) → plantilla de entrada. Se llega a
-        ella con la URL limpia mediante el enrutador de 404.html
-        (fetch-swap) o serve.py en local; lee el slug de
-        location.pathname (o ?p= como respaldo, validado con un
-        patrón estricto), renderiza el Markdown, actualiza el
-        <title> y pinta Anterior/Siguiente. El hero muestra solo el
-        titular de la entrada.
+      · entrada.html (#mdPost) → la entrada completa. Se llega con la
+        URL limpia /blog/<slug> (enrutador de 404.html o serve.py en
+        local) o con entrada.html?p=<slug>. Las URL antiguas con la
+        fecha delante (/blog/2026-09-15-slug) se redirigen solas a
+        la limpia.
    ============================================================ */
 (function () {
   "use strict";
@@ -35,7 +50,11 @@
   var ORG = "PineappleVA";
   var REPO = "pineappleva.github.io";
   var BRANCH = "main";
+  var POSTS_PATH = "blog/posts";
   var RAW_BASE = "https://raw.githubusercontent.com/" + ORG + "/" + REPO + "/" + BRANCH + "/";
+  var TREE_API = "https://api.github.com/repos/" + ORG + "/" + REPO + "/git/trees/" + BRANCH + "?recursive=1";
+  var TREE_CACHE_KEY = "pa-blog-tree-v2";
+  var TREE_CACHE_TTL = 1800e3; /* media hora */
 
   /* ---------- Mini-renderizador Markdown (subconjunto seguro) ---------- */
 
@@ -43,37 +62,78 @@
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
-  function renderInline(s) {
-    s = s.replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
+  /* id de ancla para títulos: minúsculas, sin acentos, con guiones */
+  function headingId(text, used) {
+    var base = String(text)
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 60);
+    if (!base) base = "seccion";
+    var id = base, n = 2;
+    while (used[id]) { id = base + "-" + n; n++; }
+    used[id] = true;
+    return id;
+  }
+
+  /* Resuelve las rutas relativas del Markdown (assets/x.png, ./x.png)
+     a la carpeta de la entrada. Las absolutas pasan tal cual. */
+  function makeResolver(post, localDir) {
+    return function (url) {
+      url = String(url).trim();
+      if (/^(https?:|\/|#|mailto:|data:|tel:)/i.test(url)) return url;
+      return localDir + "/" + post.slug + "/" + encodeURI(url.replace(/^\.\//, ""));
+    };
+  }
+
+  function renderInline(s, resolve) {
+    resolve = resolve || function (u) { return u; };
+    s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, function (m, alt, url) {
+      return '<img src="' + escapeHtml(resolve(url)) + '" alt="' + escapeHtml(alt) + '" loading="lazy" decoding="async">';
+    });
     s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-    /* enlaces internos (relativos): misma pestaña */
-    s = s.replace(/\[([^\]]+)\]\((?!https?:)([^)\s]+)\)/g, '<a href="$2">$1</a>');
+    /* enlaces internos (relativos o con / o #): misma pestaña */
+    s = s.replace(/\[([^\]]+)\]\((?!https?:)([^)\s]+)\)/g, function (m, text, url) {
+      return '<a href="' + escapeHtml(resolve(url)) + '">' + text + "</a>";
+    });
     s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     s = s.replace(/(^|[^*])\*([^\*\n]+)\*/g, "$1<em>$2</em>");
     s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
     return s;
   }
 
-  function renderMarkdown(md) {
+  function renderMarkdown(md, resolve) {
     var lines = String(md).replace(/\r\n/g, "\n").split("\n");
     var html = "", para = [], quote = [], list = null, items = [], inCode = false, codeBuf = [];
+    var usedIds = {};
 
     /* Los párrafos escritos con líneas partidas (wrap a ~80 columnas)
        se vuelven a unir con espacios: el texto fluye y no hay saltos
        raros a mitad de frase. Igual con las listas: una línea que no
        empieza con "- " pero sigue a un elemento es SU continuación. */
     function flushPara() {
-      if (para.length) { html += "<p>" + para.map(renderInline).join(" ") + "</p>"; para = []; }
+      if (!para.length) return;
+      /* párrafo de una sola imagen → <figure> con pie de foto (alt) */
+      if (para.length === 1) {
+        var im = para[0].match(/^<img src="([^"]*)" alt="([^"]*)" loading="lazy" decoding="async">$/);
+        if (im) {
+          html += im[2]
+            ? '<figure><img src="' + im[1] + '" alt="' + im[2] + '" loading="lazy" decoding="async"><figcaption>' + im[2] + "</figcaption></figure>"
+            : "<p>" + para[0] + "</p>";
+          para = [];
+          return;
+        }
+      }
+      html += "<p>" + para.join(" ") + "</p>";
+      para = [];
     }
     function flushList() {
       if (list) {
-        html += items.map(function (it) { return "<li>" + renderInline(it) + "</li>"; }).join("") +
+        html += items.map(function (it) { return "<li>" + renderInline(it, resolve) + "</li>"; }).join("") +
           "</" + list + ">";
         list = null; items = [];
       }
     }
     function flushQuote() {
-      if (quote.length) { html += "<blockquote>" + quote.map(renderInline).join(" ") + "</blockquote>"; quote = []; }
+      if (quote.length) { html += "<blockquote>" + quote.map(function (q) { return renderInline(q, resolve); }).join(" ") + "</blockquote>"; quote = []; }
     }
     function flushAll() { flushPara(); flushList(); flushQuote(); }
 
@@ -93,7 +153,13 @@
 
       if ((m = t.match(/^(#{1,4})\s+(.*)$/))) {
         flushAll();
-        html += "<h" + m[1].length + ">" + renderInline(escapeHtml(m[2])) + "</h" + m[1].length + ">";
+        var lvl = m[1].length;
+        var inner = renderInline(escapeHtml(m[2]), resolve);
+        if (lvl >= 2) {
+          html += "<h" + lvl + ' id="' + headingId(m[2], usedIds) + '">' + inner + "</h" + lvl + ">";
+        } else {
+          html += "<h" + lvl + ">" + inner + "</h" + lvl + ">";
+        }
         continue;
       }
       if ((m = t.match(/^>\s?(.*)$/))) {
@@ -114,18 +180,18 @@
          línea pertenece al último elemento, no abre un párrafo nuevo */
       if (list) { items[items.length - 1] += " " + escapeHtml(t); continue; }
       if (quote.length) { quote.push(escapeHtml(t)); continue; }
-      para.push(escapeHtml(t));
+      para.push(renderInline(escapeHtml(t), resolve));
     }
     if (inCode) html += "<pre><code>" + escapeHtml(codeBuf.join("\n")) + "</code></pre>";
     flushAll();
     return html;
   }
 
-  /* URL limpia de una entrada: /blog/<slug>.
+  /* URL limpia de una entrada: /blog/<slug-de-la-carpeta>.
      En producción la resuelve el enrutador de 404.html (fetch-swap
      manteniendo la URL bonita); en local lo hace serve.py. */
-  function postUrl(name) {
-    return "/blog/" + encodeURIComponent(String(name).replace(/\.md$/i, ""));
+  function postUrl(slug) {
+    return "/blog/" + encodeURIComponent(slug);
   }
 
   /* ---------- Helpers ---------- */
@@ -139,8 +205,9 @@
 
   var MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
-  function postDate(name) {
-    var m = String(name).match(/^(\d{4})-(\d{2})-(\d{2})-/);
+  /* fecha a partir del nombre del .md: 2026-09-15.md (o con sufijo) */
+  function postDate(file) {
+    var m = String(file).match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (!m) return null;
     return parseInt(m[3], 10) + " " + MESES[parseInt(m[2], 10) - 1] + " " + m[1];
   }
@@ -153,12 +220,6 @@
       }
     }
     return md;
-  }
-
-  function postDateParts(name) {
-    var m = String(name).match(/^(\d{4})-(\d{2})-(\d{2})-/);
-    if (!m) return null;
-    return { d: parseInt(m[3], 10), mon: MESES[parseInt(m[2], 10) - 1] || "", y: m[1] };
   }
 
   function readingMinutes(md) {
@@ -184,9 +245,9 @@
 
   var COVERS = ["cov-amber", "cov-sunset", "cov-violet", "cov-teal", "cov-blue", "cov-rose"];
 
-  /* portada estable por entrada: sale del nombre del archivo */
-  function coverClass(name) {
-    var h = 0, str = String(name);
+  /* portada estable por entrada: sale del slug de la carpeta */
+  function coverClass(slug) {
+    var h = 0, str = String(slug);
     for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
     return COVERS[h % COVERS.length];
   }
@@ -218,67 +279,142 @@
     return (sp > 90 ? cut.slice(0, sp) : cut).replace(/[,;:.—-]+$/, "") + "…";
   }
 
-  /* Listado de archivos: API de GitHub con fallback a posts.json */
-  function fetchList(apiDir, localDir) {
-    function viaApi() {
-      if (!apiDir) return Promise.reject(new Error("sin api"));
-      var url = "https://api.github.com/repos/" + ORG + "/" + REPO + "/contents/" +
-        apiDir.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(BRANCH);
-      return fetch(url, { headers: { Accept: "application/vnd.github+json" } })
-        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-        .then(function (items) {
-          return (Array.isArray(items) ? items : [])
-            .filter(function (it) {
-              return it.type === "file" && /\.md$/i.test(it.name) &&
-                it.name.toLowerCase() !== "readme.md" && it.name.charAt(0) !== ".";
-            })
-            .map(function (it) { return it.name; })
-            .sort().reverse();
+  /* ---------- Listado de entradas ----------
+     Cada entrada = una carpeta de blog/posts con un .md cuyo nombre
+     empieza por la fecha. Devuelve {posts, optimistic} ordenadas de
+     la más reciente a la más antigua. "optimistic" = no sabemos si
+     hay banner (modo manifiesto) y se prueba con assets/banner.png. */
+
+  function sortPosts(posts) {
+    posts.sort(function (a, b) {
+      if (a.file !== b.file) return a.file < b.file ? 1 : -1; /* fecha desc */
+      return a.slug < b.slug ? 1 : -1;
+    });
+    return posts;
+  }
+
+  function readTreeCache() {
+    try {
+      var raw = localStorage.getItem(TREE_CACHE_KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      if (!data || typeof data.t !== "number" || Date.now() - data.t > TREE_CACHE_TTL) return null;
+      if (!Array.isArray(data.posts) || !data.posts.length) return null;
+      return data.posts;
+    } catch (e) { return null; }
+  }
+  function writeTreeCache(posts) {
+    try { localStorage.setItem(TREE_CACHE_KEY, JSON.stringify({ t: Date.now(), posts: posts })); } catch (e) {}
+  }
+
+  /* una sola llamada: el árbol completo del repo */
+  function viaTrees() {
+    return fetch(TREE_API, { headers: { Accept: "application/vnd.github+json" } })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (tree) {
+        var entries = (tree && Array.isArray(tree.tree)) ? tree.tree : [];
+        var mdRe = new RegExp("^" + POSTS_PATH + "/([^/]+)/(\\d{4}-\\d{2}-\\d{2}(?:-[a-z0-9\\-]+)?)\\.md$", "i");
+        var bnRe = new RegExp("^" + POSTS_PATH + "/([^/]+)/assets/(banner\\.(?:png|jpe?g|webp|gif|svg))$", "i");
+        var posts = {}, banners = {};
+        entries.forEach(function (it) {
+          var p = String((it && it.path) || ""), m;
+          if ((m = p.match(mdRe))) {
+            /* si una carpeta tuviera varios .md, manda el más reciente */
+            if (!posts[m[1]] || posts[m[1]].file < m[2] + ".md") {
+              posts[m[1]] = { slug: m[1], file: m[2] + ".md", banner: "" };
+            }
+          } else if ((m = p.match(bnRe))) {
+            banners[m[1]] = m[2];
+          }
         });
-    }
-    function viaManifest() {
-      return fetchText(localDir + "/posts.json").then(function (text) {
-        return (JSON.parse(text).posts || []).slice().sort().reverse();
+        var list = [];
+        Object.keys(posts).forEach(function (slug) {
+          posts[slug].banner = banners[slug] || "";
+          list.push(posts[slug]);
+        });
+        if (!list.length) throw new Error("sin entradas en el árbol");
+        sortPosts(list);
+        writeTreeCache(list);
+        return list;
       });
-    }
-    return viaApi().catch(viaManifest);
+  }
+
+  /* manifiesto de respaldo: acepta {"slug","file"} y el formato
+     antiguo de nombres "2026-09-15-titulo.md" */
+  function viaManifest(localDir) {
+    return fetchText(localDir + "/posts.json").then(function (text) {
+      var raw = (JSON.parse(text).posts || []);
+      var list = [];
+      raw.forEach(function (entry) {
+        if (entry && typeof entry === "object") {
+          if (entry.slug && /^\d{4}-\d{2}-\d{2}(-[a-z0-9\-]+)?\.md$/i.test(entry.file || "")) {
+            list.push({ slug: String(entry.slug), file: String(entry.file), banner: entry.banner || "" });
+          }
+          return;
+        }
+        var m = String(entry).match(/^(\d{4}-\d{2}-\d{2})-([a-z0-9\-]+)\.md$/i);
+        if (m) list.push({ slug: m[2], file: m[1] + ".md", banner: "" });
+      });
+      return sortPosts(list);
+    });
+  }
+
+  function fetchPosts(localDir) {
+    var cached = readTreeCache();
+    if (cached) return Promise.resolve({ posts: cached, optimistic: false });
+    return viaTrees()
+      .then(function (posts) { return { posts: posts, optimistic: false }; })
+      .catch(function () {
+        return viaManifest(localDir).then(function (posts) { return { posts: posts, optimistic: true }; });
+      });
   }
 
   /* ============================================================
-     MODO ÍNDICE (/blog): revista — cada entrada con su portada de
-     color, la última destacada a todo lo ancho
+     MODO ÍNDICE (/blog): revista — banner o portada de color, la
+     última entrada destacada a todo lo ancho
      ============================================================ */
   var listEl = document.querySelector(".md-list");
   if (listEl) {
-    var apiDir = listEl.getAttribute("data-api-dir") || "";
-    var localDir = (listEl.getAttribute("data-md-dir") || "blog/posts").replace(/\/$/, "");
+    var apiDir = listEl.getAttribute("data-api-dir") || POSTS_PATH;
+    var localDir = (listEl.getAttribute("data-md-dir") || "/" + POSTS_PATH).replace(/\/+$/, "");
     var countEl = document.getElementById("mdCount");
+    var optimistic = false;
 
-    fetchList(apiDir, localDir).then(function (files) {
-      if (countEl) countEl.textContent = files.length + (files.length === 1 ? " entrada" : " entradas");
-      if (!files.length) return Promise.reject(new Error("vacío"));
-      return Promise.all(files.map(function (name) {
-        /* cada archivo se pide primero en local (GitHub Pages también
-           sirve los .md) y, si falla, en raw.githubusercontent.com */
-        return fetchText(localDir + "/" + name)
-          .catch(function () { return fetchText(RAW_BASE + apiDir + "/" + name); })
-          .then(function (md) { return { name: name, md: md }; });
+    fetchPosts(localDir).then(function (res) {
+      optimistic = res.optimistic;
+      if (countEl) countEl.textContent = res.posts.length + (res.posts.length === 1 ? " entrada" : " entradas");
+      if (!res.posts.length) throw new Error("vacío");
+      return Promise.all(res.posts.map(function (post) {
+        /* cada .md se pide primero en local (GitHub Pages también lo
+           sirve) y, si falla, en raw.githubusercontent.com */
+        return fetchText(localDir + "/" + post.slug + "/" + post.file)
+          .catch(function () { return fetchText(RAW_BASE + apiDir + "/" + post.slug + "/" + post.file); })
+          .then(function (md) { return { post: post, md: md }; })
+          .catch(function () { return null; }); /* una entrada rota no tumba el índice */
       }));
-    }).then(function (posts) {
+    }).then(function (items) {
+      items = (items || []).filter(Boolean);
+      if (!items.length) throw new Error("sin entradas");
+
       listEl.innerHTML = "";
-      posts.forEach(function (p, idx) {
-        var title = extractTitle(p.md) || p.name.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
-        var date = postDate(p.name) || "";
-        var mins = readingMinutes(p.md);
-        var excerpt = extractExcerpt(p.md);
+      items.forEach(function (it, idx) {
+        var p = it.post, md = it.md;
+        var title = extractTitle(md) || p.slug.replace(/-/g, " ");
+        var date = postDate(p.file) || "";
+        var mins = readingMinutes(md);
+        var excerpt = extractExcerpt(md);
+        var bannerFile = p.banner || (optimistic ? "banner.png" : "");
 
         var a = document.createElement("a");
         a.className = "post-card" + (idx === 0 ? " featured" : "");
-        a.href = postUrl(p.name);
+        a.href = postUrl(p.slug);
         a.style.animationDelay = (idx * 90) + "ms";
 
         var cover =
-          '<span class="post-cover ' + coverClass(p.name) + '" aria-hidden="true">' +
+          '<span class="post-cover ' + coverClass(p.slug) + (bannerFile ? " has-img" : "") + '" aria-hidden="true">' +
+          (bannerFile
+            ? '<img class="cov-img" src="' + escapeHtml(localDir + "/" + p.slug + "/assets/" + bannerFile) + '" alt="" loading="lazy" decoding="async">'
+            : "") +
           '<span class="cov-no">\u2116 ' + pad2(idx + 1) + "</span>" +
           '<span class="cov-pine">\uD83C\uDF51</span>' +
           "</span>";
@@ -304,6 +440,15 @@
 
         listEl.appendChild(a);
       });
+
+      /* banner que falle al cargar → portada de degradado */
+      Array.prototype.forEach.call(listEl.querySelectorAll(".cov-img"), function (img) {
+        img.addEventListener("error", function () {
+          var cov = img.closest(".post-cover");
+          img.remove();
+          if (cov) cov.classList.remove("has-img");
+        });
+      });
     }).catch(function () {
       if (countEl) countEl.textContent = "0 entradas";
       listEl.innerHTML =
@@ -313,23 +458,31 @@
   }
 
   /* ============================================================
-     MODO ENTRADA (entrada.html?p=nombre.md)
+     MODO ENTRADA (/blog/<slug> o entrada.html?p=<slug>)
      ============================================================ */
   var postEl = document.getElementById("mdPost");
   if (postEl) {
-    var apiDir2 = postEl.getAttribute("data-api-dir") || "";
-    var localDir2 = (postEl.getAttribute("data-md-dir") || "blog/posts").replace(/\/$/, "");
+    var apiDir2 = postEl.getAttribute("data-api-dir") || POSTS_PATH;
+    var localDir2 = (postEl.getAttribute("data-md-dir") || "/" + POSTS_PATH).replace(/\/+$/, "");
 
     var params = new URLSearchParams(location.search);
-    var fileName = params.get("p") || "";
-    /* URL bonita: /blog/<slug> → archivo <slug>.md (404.html la reenvía aquí) */
-    if (!fileName) {
+    var slug = (params.get("p") || "").trim().replace(/\.md$/i, "");
+    /* URL bonita: /blog/<slug> (404.html y serve.py la traen aquí) */
+    if (!slug) {
       var pm = location.pathname.match(/\/blog\/([A-Za-z0-9\-]+)\/?$/);
-      if (pm) fileName = decodeURIComponent(pm[1]) + ".md";
+      if (pm) slug = decodeURIComponent(pm[1]);
     }
-    var VALID = /^\d{4}-\d{2}-\d{2}-[a-z0-9\-]+\.md$/i;
+    /* URL antigua con la fecha delante → URL limpia */
+    var legacy = slug.match(/^\d{4}-\d{2}-\d{2}-(.+)$/);
+    if (legacy) {
+      slug = legacy[1];
+      if (history.replaceState) history.replaceState(null, "", "/blog/" + encodeURIComponent(slug));
+    }
+    var VALID = /^[a-z0-9][a-z0-9\-]*$/i;
 
     var titleEl = document.getElementById("postTitle");
+    var metaEl = document.getElementById("postMeta");
+    var bannerEl = document.getElementById("postBanner");
     var pagerEl = document.getElementById("postPager");
     var shareBtn = document.getElementById("shareBtn");
 
@@ -337,89 +490,113 @@
       postEl.innerHTML =
         '<div class="notice"><h3>Esta entrada no aparece</h3>' +
         "<p>" + escapeHtml(msg) + "</p>" +
-        '<p style="margin-top:.6rem;"><a href="/blog">← Volver al blog</a></p></div>';
+        '<p style="margin-top:.6rem;"><a href="/blog">\u2190 Volver al blog</a></p></div>';
       if (titleEl) titleEl.textContent = "Entrada no encontrada";
+      if (metaEl) metaEl.setAttribute("hidden", "");
+      if (bannerEl) bannerEl.setAttribute("hidden", "");
       document.title = "Entrada no encontrada · Blog · Pineapple";
     }
 
-    if (!VALID.test(fileName)) {
+    if (!VALID.test(slug)) {
       renderError("No hay ninguna entrada con esta dirección.");
     } else {
-      fetchText(localDir2 + "/" + fileName)
-        .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + fileName); })
-        .then(function (md) {
-          var title = extractTitle(md) || fileName;
+      fetchPosts(localDir2).then(function (res) {
+        var post = null, idx = -1;
+        for (var i = 0; i < res.posts.length; i++) {
+          if (res.posts[i].slug === slug) { post = res.posts[i]; idx = i; break; }
+        }
+        if (!post) throw new Error("no está");
+        return fetchText(localDir2 + "/" + post.slug + "/" + post.file)
+          .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + post.slug + "/" + post.file); })
+          .then(function (md) {
+            return { post: post, posts: res.posts, idx: idx, optimistic: res.optimistic, md: md };
+          });
+      }).then(function (data) {
+        var post = data.post, md = data.md;
+        var title = extractTitle(md) || post.slug.replace(/-/g, " ");
+        var date = postDate(post.file) || "";
+        var mins = readingMinutes(md);
 
-          document.title = title + " · Blog · Pineapple";
-          if (titleEl) titleEl.textContent = title;
-          /* el hero de la página ya pinta el titular: fuera el h1 del cuerpo */
-          postEl.innerHTML = renderMarkdown(stripFirstHeading(md));
+        document.title = title + " · Blog · Pineapple";
+        if (titleEl) titleEl.textContent = title;
 
-          if (shareBtn && !shareBtn.dataset.bound) {
-            shareBtn.dataset.bound = "1";
-            shareBtn.addEventListener("click", function () {
-              var url = location.href;
-              function done() {
-                var old = shareBtn.textContent;
-                shareBtn.textContent = "¡Copiado!";
-                setTimeout(function () { shareBtn.textContent = old; }, 1600);
-              }
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(done, function () { prompt("Copia el enlace:", url); });
-              } else {
-                prompt("Copia el enlace:", url);
-              }
+        /* fecha, tiempo de lectura y autor bajo el titular */
+        if (metaEl) {
+          metaEl.innerHTML =
+            (date ? '<span class="pill">\uD83D\uDCC5 ' + escapeHtml(date) + "</span>" : "") +
+            '<span class="pill">\u2615 ' + mins + " min</span>" +
+            '<span class="pill author">Por Pineapple</span>';
+          metaEl.removeAttribute("hidden");
+        }
+
+        /* banner de la entrada, si tiene (o se prueba, en modo manifiesto) */
+        if (bannerEl) {
+          var bFile = post.banner || (data.optimistic ? "banner.png" : "");
+          if (bFile) {
+            bannerEl.addEventListener("error", function () { bannerEl.setAttribute("hidden", ""); });
+            bannerEl.addEventListener("load", function () { bannerEl.classList.add("show"); });
+            bannerEl.src = localDir2 + "/" + post.slug + "/assets/" + bFile;
+            bannerEl.removeAttribute("hidden");
+          } else {
+            bannerEl.setAttribute("hidden", "");
+          }
+        }
+
+        /* el hero de la página ya pinta el titular: fuera el h1 del cuerpo */
+        postEl.innerHTML = renderMarkdown(stripFirstHeading(md), makeResolver(post, localDir2));
+
+        /* Compartir: copiar el enlace limpio */
+        if (shareBtn && !shareBtn.dataset.bound) {
+          shareBtn.dataset.bound = "1";
+          shareBtn.addEventListener("click", function () {
+            var url = location.href;
+            function done() {
+              var old = shareBtn.textContent;
+              shareBtn.textContent = "¡Copiado!";
+              setTimeout(function () { shareBtn.textContent = old; }, 1600);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(url).then(done, function () { prompt("Copia el enlace:", url); });
+            } else {
+              prompt("Copia el enlace:", url);
+            }
+          });
+        }
+
+        /* Anterior (más reciente) / Siguiente (más antigua) */
+        if (pagerEl) {
+          var newer = data.idx > 0 ? data.posts[data.idx - 1] : null;
+          var older = data.idx < data.posts.length - 1 ? data.posts[data.idx + 1] : null;
+          if (newer || older) {
+            function cardOf(p, dir, label) {
+              return (
+                '<a class="pager-card ' + dir + '" href="' + postUrl(p.slug) + '">' +
+                '<span class="dir">' + label + "</span>" +
+                '<span class="t">' + escapeHtml(p.slug.replace(/-/g, " ")) + "</span></a>"
+              );
+            }
+            pagerEl.innerHTML =
+              (newer ? cardOf(newer, "prev", "\u2190 M\u00E1s reciente") : "<span></span>") +
+              (older ? cardOf(older, "next", "M\u00E1s antigua \u2192") : "<span></span>");
+            pagerEl.removeAttribute("hidden");
+
+            /* títulos de verdad descargando las vecinas */
+            [newer, older].forEach(function (np) {
+              if (!np) return;
+              fetchText(localDir2 + "/" + np.slug + "/" + np.file)
+                .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + np.slug + "/" + np.file); })
+                .then(function (md2) {
+                  var t = extractTitle(md2);
+                  var link = pagerEl.querySelector('a[href="' + postUrl(np.slug) + '"] .t');
+                  if (t && link) link.textContent = t;
+                })
+                .catch(function () {});
             });
           }
-
-          /* Anterior (más reciente) / Siguiente (más antigua) */
-          if (pagerEl) {
-            fetchList(apiDir2, localDir2).then(function (files) {
-              var i = files.indexOf(fileName);
-              if (i === -1) return;
-              var newer = i > 0 ? files[i - 1] : null;      /* más reciente */
-              var older = i < files.length - 1 ? files[i + 1] : null; /* más antigua */
-              if (!newer && !older) return;
-
-              function card(file, dir, label) {
-                return (
-                  '<a class="pager-card ' + dir + '" href="' + postUrl(file) + '">' +
-                  '<span class="dir">' + label + "</span>" +
-                  '<span class="t">' + escapeHtml(extractTitleCache(file) || file) + "</span></a>"
-                );
-              }
-              /* títulos del listado sin descargar todo: los resolvemos
-                 solo si la entrada ya está en caché; si no, nombre limpio */
-              var cache = {};
-              cache[fileName] = title;
-              function extractTitleCache(file) {
-                return cache[file] ||
-                  file.replace(/\.md$/i, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
-              }
-
-              pagerEl.innerHTML =
-                (newer ? card(newer, "prev", "← Más reciente") : "<span></span>") +
-                (older ? card(older, "next", "Más antigua →") : "<span></span>");
-              pagerEl.removeAttribute("hidden");
-
-              /* intenta poner títulos reales descargando los vecinos */
-              [newer, older].forEach(function (file) {
-                if (!file) return;
-                fetchText(localDir2 + "/" + file)
-                  .catch(function () { return fetchText(RAW_BASE + apiDir2 + "/" + file); })
-                  .then(function (md2) {
-                    cache[file] = extractTitle(md2);
-                    var link = pagerEl.querySelector('a[href="' + postUrl(file) + '"] .t');
-                    if (link) link.textContent = cache[file];
-                  })
-                  .catch(function () {});
-              });
-            }).catch(function () {});
-          }
-        })
-        .catch(function () {
-          renderError("Puede que se haya borrado, renombrado o que la dirección esté mal escrita.");
-        });
+        }
+      }).catch(function () {
+        renderError("Puede que se haya borrado, renombrado o que la dirección esté mal escrita.");
+      });
     }
   }
 })();

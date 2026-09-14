@@ -1642,7 +1642,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 
 .js .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(24px) scale(.985);
   transition: opacity .65s var(--ease), transform .65s var(--ease);
 }
 .js .reveal.visible { opacity: 1; transform: none; }
@@ -1726,3 +1726,126 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 @media (max-width: 680px) {
   .post-card.featured .post-card-body { padding: 1.5rem 1.4rem; }
 }
+
+/* ============================================================
+   Blog v2: portadas con banner, hero de la entrada, skeletons
+   y mejoras de render del artículo
+   ============================================================ */
+
+/* --- portada de la tarjeta cuando la entrada tiene banner --- */
+.post-cover .cov-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform .55s var(--ease);
+}
+.post-card:hover .post-cover .cov-img { transform: scale(1.06); }
+.post-cover.has-img .cov-pine { display: none; }
+.post-cover.has-img .cov-no {
+  padding: .14rem .55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* flecha «Leer la entrada» se desliza al pasar por la tarjeta */
+.post-card-more { display: inline-block; transition: transform .2s var(--ease); }
+.post-card:hover .post-card-more { transform: translateX(4px); }
+
+/* --- hero de la entrada: fecha, lectura, autor y banner --- */
+.post-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .9rem;
+}
+.post-hero-meta .pill {
+  font-size: .74rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .12rem .65rem;
+  background: var(--bg-soft);
+}
+.post-hero-meta .pill.author {
+  color: var(--brand-strong);
+  font-weight: 600;
+  border-color: var(--border);
+}
+.post-banner {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  margin-top: 1.6rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .55s ease, transform .55s var(--ease);
+}
+.post-banner.show { opacity: 1; transform: none; }
+
+/* --- imágenes del artículo: figure con pie de foto --- */
+.md-post img { max-width: 100%; height: auto; border-radius: 12px; }
+.md-post figure { margin: 1.2rem 0; }
+.md-post figure img {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.md-post figcaption {
+  margin-top: .55rem;
+  text-align: center;
+  font-size: .84rem;
+  color: var(--text-dim);
+}
+
+/* anclas a los títulos del artículo */
+.md-post h2[id], .md-post h3[id], .md-post h4[id] { scroll-margin-top: 96px; }
+
+/* --- skeletons de carga (mientras llegan las entradas) --- */
+.skel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.4rem;
+}
+.skel-card,
+.skel-line {
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(100deg, var(--bg-soft) 32%, var(--card-hover) 50%, var(--bg-soft) 68%);
+  background-size: 220% 100%;
+  animation: skelShine 1.35s ease-in-out infinite;
+}
+.skel-card { height: 300px; }
+.skel-card.skel-featured { grid-column: 1 / -1; height: 250px; }
+.skel-post { display: flex; flex-direction: column; gap: .85rem; }
+.skel-line { height: .95rem; border-radius: 8px; }
+.skel-line.w100 { width: 100%; }
+.skel-line.w90 { width: 90%; }
+.skel-line.w60 { width: 60%; height: 1.45rem; }
+.skel-line.w45 { width: 45%; }
+@keyframes skelShine { to { background-position: -220% 0; } }
+
+/* --- ajustes generales de efectos --- */
+/* halo de marca sutil al pasar por las tarjetas */
+.card:hover { box-shadow: var(--shadow-md), 0 0 26px rgba(245, 166, 35, .10); }
+
+@media (prefers-reduced-motion: reduce) {
+  .skel-card, .skel-line { animation: none; }
+  .post-banner { transition: none; opacity: 1; transform: none; }
+  .post-cover .cov-img { transition: none; }
+}
+
+/* El atributo hidden manda sobre cualquier display (evita que reglas
+   como .post-banner { display:block } lo anulen). Mismo patrón que
+   .dropdown-menu[hidden] de la cabecera. */
+[hidden] { display: none !important; }

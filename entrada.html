@@ -91,13 +91,22 @@
       <div class="wrap">
         <p class="kicker">Blog · Pineapple</p>
         <h1 id="postTitle">Cargando…</h1>
+        <p class="post-hero-meta" id="postMeta" hidden></p>
+        <img id="postBanner" class="post-banner" alt="" hidden>
       </div>
     </section>
 
     <section class="section post-section">
       <div class="wrap">
         <article class="md-post single" id="mdPost" data-md-dir="/blog/posts" data-api-dir="blog/posts">
-          <p class="md-loading">Cargando entrada…</p>
+          <div class="skel-post" aria-hidden="true">
+            <div class="skel-line w60"></div>
+            <div class="skel-line w100"></div>
+            <div class="skel-line w100"></div>
+            <div class="skel-line w90"></div>
+            <div class="skel-line w100"></div>
+            <div class="skel-line w45"></div>
+          </div>
         </article>
 
         <div class="post-actions">

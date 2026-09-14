@@ -11,7 +11,7 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 | --- | --- |
 | `index.html` | Portada: typing SVG, colegios, lo publicado, cifras |
 | `proyectos.html` | Fichas: School Utilities, Y, Better Discovery y Games |
-| `juegos.html` | Juegos jugables en la propia página (iframe) + catálogo |
+| `juegos.html` | Escaparate del catálogo: cada juego enlaza a su página de Pineapple Games |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
 | `entrada.html` (se ve en `/blog/<slug>`) | Página individual de cada entrada del blog |
 | `comunidad.html` | Historia, valores, cómo trabajamos y stats de GitHub |
@@ -24,43 +24,70 @@ Navegación: **Inicio · Blog · Información ▾** (Proyectos, Juegos, Comunida
 ## 📝 Blog (cómo funciona por dentro)
 
 El mismo sistema que los anuncios de [Pineapple Games](https://pineappleva.github.io/Games/anuncios/):
-**sube un Markdown y aparece solo**, ahora con página propia por entrada.
+**sube una carpeta y aparece solo**, ahora con assets propios por entrada.
 
-1. Crea un archivo en `blog/posts/` llamado `AAAA-MM-DD-titulo.md`
-2. Escríbelo en Markdown (títulos `#`, listas, **negritas**, *cursivas*, `código`,
-   citas `>`, imágenes `![alt](url)`, separadores `---`)
-3. Push → aparece en el índice de `blog.html` y en su página con URL limpia:
-   `https://pineappleva.github.io/blog/AAAA-MM-DD-titulo`
+1. Crea una carpeta en `blog/posts/` con el título de la entrada:
+   `blog/posts/mi-entrada/`
+2. Dentro, un Markdown cuyo nombre empiece por la fecha:
+   `blog/posts/mi-entrada/2026-09-15.md` (la fecha del nombre manda en el orden)
+3. Si quieres portada, añade `assets/banner.png` dentro de la carpeta: se
+   muestra en la tarjeta del índice y en el hero de la entrada. Cualquier otra
+   imagen en `assets/` se puede insertar en el texto:
+   `![pie de foto](assets/lo-que-sea.png)` (las imágenes sueltas con texto alt
+   se convierten en `<figure>` con pie de foto)
+4. Escríbelo en Markdown (títulos `#`, listas, **negritas**, *cursivas*,
+   `código`, citas `>`, enlaces, separadores `---`)
+5. Push → aparece en el índice de `blog.html` y en su página con URL limpia:
+   `https://pineappleva.github.io/blog/mi-entrada`
+
+```
+blog/posts/
+  posts.json                    ← manifiesto de respaldo
+  septiembre-ya-esta-aqui/
+    2026-09-15.md               ← la entrada (la fecha manda)
+    assets/banner.png           ← portada de tarjeta + hero
+```
 
 Pipeline técnico (`assets/js/blog.js`):
 
-- **Listado**: `GET api.github.com/repos/PineappleVA/pineappleva.github.io/contents/blog/posts?ref=main`
-  → se filtran los `.md` (sin `readme.md` ni ocultos).
-- **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el manifiesto
-  `blog/posts/posts.json`.
-- **Descarga**: cada `.md` se trae de `raw.githubusercontent.com` (rama `main`).
-- **Orden**: descendente por nombre → la fecha del nombre manda.
-- **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML (`& < > "`)
-  y después se convierte el subconjunto soportado. No se puede inyectar HTML.
-  Los párrafos escritos con líneas partidas se re-uni­en con espacios (el texto fluye,
-  sin saltos a mitad de frase) y las listas agrupan sus líneas de continuación en el
-  mismo elemento (`<li>`) en lugar de romperse.
-- **Extractos**: se lee el primer párrafo completo tras el título (enlaces convertidos
-  a su texto) y se corta en un límite de palabra con elipsis.
-- **Índice** (`/blog`): estilo revista — cada entrada lleva una portada de degradado
-  propio (paleta fija por archivo) con número de edición; la más reciente va
-  destacada a todo lo ancho. Fecha, tiempo de lectura (~180 palabras/min) y
-  extracto con fundido en todas las tarjetas.
+- **Listado**: UNA llamada a la API de GitHub (`git/trees?recursive=1`) trae el
+  árbol completo del repo: de ahí salen las carpetas de `blog/posts/`, el `.md`
+  de cada una y si tiene `assets/banner.*`. Se cachea en `localStorage` media
+  hora para no chocar con el límite de la API.
+- **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el
+  manifiesto `blog/posts/posts.json` (acepta el formato nuevo y el antiguo de
+  nombres con fecha).
+- **Descarga**: el `.md` se pide primero al propio sitio (GitHub Pages sirve los
+  archivos tal cual) y, si falla, a `raw.githubusercontent.com` (rama `main`).
+- **Orden**: descendente por la fecha del nombre del `.md`.
+- **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML
+  (`& < > "`) y después se convierte el subconjunto soportado. No se puede
+  inyectar HTML. Las rutas relativas (`assets/…`) se resuelven a la carpeta de
+  la entrada; los `h2`–`h4` reciben `id` para enlazarlos (`#ancla`); los
+  párrafos con líneas partidas se re-unen con espacios y las listas agrupan sus
+  líneas de continuación en el mismo `<li>`.
+- **Portadas**: si la entrada tiene `assets/banner.*`, la tarjeta del índice y
+  el hero de la entrada lo muestran (con zoom suave al pasar el ratón); si no
+  existe o falla la carga, se queda la portada de degradado de siempre.
+- **Carga**: mientras llegan las entradas se ven *skeletons* animados en vez de
+  un «Cargando…».
+- **Extractos**: se lee el primer párrafo completo tras el título (enlaces
+  convertidos a su texto) y se corta en un límite de palabra con elipsis.
+- **Índice** (`/blog`): estilo revista — cada entrada con su portada (banner o
+  degradado propio) y número de edición; la más reciente va destacada a todo lo
+  ancho. Fecha, tiempo de lectura (~180 palabras/min) y extracto.
 - **URLs limpias** (todo el sitio sin `.html`): los enlaces internos apuntan a
-  `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`, `/contacto`…
-  En GitHub Pages esas rutas no existen → Pages sirve `404.html`, cuyo enrutador
-  hace *fetch-swap*: trae la página real con `fetch`, sustituye el documento y deja
-  la URL limpia con `replaceState` (sin recargas ni saltos a `.html`).
-  El `?p=` directo de `entrada.html` sigue funcionando como respaldo, siempre
-  validado con el patrón `AAAA-MM-DD-[a-z0-9-].md` (sin acceso a rutas arbitrarias).
-- **Entrada** (`/blog/<slug>`): héroe izquierdo con **solo el titular** (el cuerpo no
-  lo repite), artículo a medida de lectura con barra lateral «Compartir» fija y
-  navegación Anterior/Siguiente.
+  `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`,
+  `/contacto`… En GitHub Pages esas rutas no existen → Pages sirve `404.html`,
+  cuyo enrutador hace *fetch-swap*: trae la página real con `fetch`, sustituye
+  el documento y deja la URL limpia con `replaceState` (sin recargas ni saltos
+  a `.html`). El `?p=<slug>` directo de `entrada.html` sigue funcionando como
+  respaldo, siempre validado (solo letras, números y guiones).
+- **Compatibilidad**: las URL antiguas con la fecha delante
+  (`/blog/2026-09-15-titulo`) se redirigen solas a la limpia (`/blog/titulo`).
+- **Entrada** (`/blog/<slug>`): hero con titular, fecha, tiempo de lectura,
+  autor y banner; artículo a medida con imágenes con pie de foto, botón
+  «Compartir» (copiar enlace) y navegación Anterior/Siguiente.
 - **Juegos → Pineapple Games**: `juegos.html` es el escaparate; cada tarjeta enlaza
   a su página del hub (y el deep-link `/juegos?g=<id>` redirige allí directamente
   mediante el mapa de `assets/js/main.js`).
