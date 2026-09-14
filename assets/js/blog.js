@@ -56,16 +56,24 @@
 
   function renderMarkdown(md) {
     var lines = String(md).replace(/\r\n/g, "\n").split("\n");
-    var html = "", para = [], quote = [], list = null, inCode = false, codeBuf = [];
+    var html = "", para = [], quote = [], list = null, items = [], inCode = false, codeBuf = [];
 
+    /* Los párrafos escritos con líneas partidas (wrap a ~80 columnas)
+       se vuelven a unir con espacios: el texto fluye y no hay saltos
+       raros a mitad de frase. Igual con las listas: una línea que no
+       empieza con "- " pero sigue a un elemento es SU continuación. */
     function flushPara() {
-      if (para.length) { html += "<p>" + para.map(renderInline).join("<br>") + "</p>"; para = []; }
+      if (para.length) { html += "<p>" + para.map(renderInline).join(" ") + "</p>"; para = []; }
     }
     function flushList() {
-      if (list) { html += "</" + list + ">"; list = null; }
+      if (list) {
+        html += items.map(function (it) { return "<li>" + renderInline(it) + "</li>"; }).join("") +
+          "</" + list + ">";
+        list = null; items = [];
+      }
     }
     function flushQuote() {
-      if (quote.length) { html += "<blockquote>" + quote.map(renderInline).join("<br>") + "</blockquote>"; quote = []; }
+      if (quote.length) { html += "<blockquote>" + quote.map(renderInline).join(" ") + "</blockquote>"; quote = []; }
     }
     function flushAll() { flushPara(); flushList(); flushQuote(); }
 
@@ -95,14 +103,17 @@
       if ((m = t.match(/^[-*•]\s+(.*)$/))) {
         flushPara(); flushQuote();
         if (list !== "ul") { flushList(); list = "ul"; html += "<ul>"; }
-        html += "<li>" + renderInline(escapeHtml(m[1])) + "</li>"; continue;
+        items.push(escapeHtml(m[1])); continue;
       }
       if ((m = t.match(/^\d+[.)]\s+(.*)$/))) {
         flushPara(); flushQuote();
         if (list !== "ol") { flushList(); list = "ol"; html += "<ol>"; }
-        html += "<li>" + renderInline(escapeHtml(m[1])) + "</li>"; continue;
+        items.push(escapeHtml(m[1])); continue;
       }
-      flushList(); flushQuote();
+      /* continuación: mientras haya una lista o una cita abierta, la
+         línea pertenece al último elemento, no abre un párrafo nuevo */
+      if (list) { items[items.length - 1] += " " + escapeHtml(t); continue; }
+      if (quote.length) { quote.push(escapeHtml(t)); continue; }
       para.push(escapeHtml(t));
     }
     if (inCode) html += "<pre><code>" + escapeHtml(codeBuf.join("\n")) + "</code></pre>";
@@ -183,15 +194,28 @@
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
 
   function extractExcerpt(md) {
-    var lines = String(md).split("\n");
-    var foundTitle = false;
+    var lines = String(md).replace(/\r\n/g, "\n").split("\n");
+    var foundTitle = false, buf = [];
     for (var i = 0; i < lines.length; i++) {
       var t = lines[i].trim();
-      if (!t || /^[-*#>!]/.test(t) || /^```/.test(t)) { if (!t) foundTitle = foundTitle; continue; }
-      if (!foundTitle) { foundTitle = true; continue; } /* la primera línea suele ser el título */
-      return t.replace(/[*_`\[\]()]+/g, "").trim().slice(0, 150) + (t.length > 150 ? "…" : "");
+      if (!t) { if (buf.length) break; continue; }
+      if (!foundTitle) {
+        if (/^#{1,3}\s+/.test(t)) foundTitle = true;
+        continue;
+      }
+      if (/^[-*#>|!]/.test(t) || /^(-{3,}|\*{3,})$/.test(t) || /^```/.test(t)) break;
+      buf.push(t);
+      if (buf.join(" ").length > 170) break;
     }
-    return "";
+    var text = buf.join(" ")
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")  /* enlaces → solo el texto */
+      .replace(/[*_`]+/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (text.length <= 170) return text;
+    var cut = text.slice(0, 170);
+    var sp = cut.lastIndexOf(" ");
+    return (sp > 90 ? cut.slice(0, sp) : cut).replace(/[,;:.—-]+$/, "") + "…";
   }
 
   /* Listado de archivos: API de GitHub con fallback a posts.json */
@@ -268,15 +292,15 @@
 
         a.innerHTML =
           cover +
-          '<span class="post-card-body">' +
+          '<div class="post-card-body">' +
           head +
           "<h3>" + escapeHtml(title) + "</h3>" +
           (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
-          '<span class="post-card-meta">' +
+          '<div class="post-card-meta">' +
           (idx === 0 ? "<span>Por Pineapple</span>" : "<span></span>") +
           '<span class="post-card-more">Leer la entrada \u2192</span>' +
-          "</span>" +
-          "</span>";
+          "</div>" +
+          "</div>";
 
         listEl.appendChild(a);
       });

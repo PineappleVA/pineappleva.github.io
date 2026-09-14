@@ -42,6 +42,11 @@ Pipeline técnico (`assets/js/blog.js`):
 - **Orden**: descendente por nombre → la fecha del nombre manda.
 - **Render**: mini-Markdown propio y seguro. Primero se escapa **todo** el HTML (`& < > "`)
   y después se convierte el subconjunto soportado. No se puede inyectar HTML.
+  Los párrafos escritos con líneas partidas se re-uni­en con espacios (el texto fluye,
+  sin saltos a mitad de frase) y las listas agrupan sus líneas de continuación en el
+  mismo elemento (`<li>`) en lugar de romperse.
+- **Extractos**: se lee el primer párrafo completo tras el título (enlaces convertidos
+  a su texto) y se corta en un límite de palabra con elipsis.
 - **Índice** (`/blog`): estilo revista — cada entrada lleva una portada de degradado
   propio (paleta fija por archivo) con número de edición; la más reciente va
   destacada a todo lo ancho. Fecha, tiempo de lectura (~180 palabras/min) y
