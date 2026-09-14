@@ -128,9 +128,12 @@ para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se
 ## Resto de características
 
 - ✨ Animaciones: orbes, barra de progreso, contadores, tilt 3D, cinta de palabras
-  con fundido en los bordes, brillo en botones, aparición al hacer scroll y
-  aperturas con fundido (desplegable, menú móvil, pager, FAQ) — todo respeta
-  `prefers-reduced-motion`.
+  con fundido en los bordes, brillo en botones, aparición al hacer scroll con
+  easing común (`--ease`) y aperturas con fundido (desplegable, menú móvil, pager,
+  FAQ) — todo respeta `prefers-reduced-motion`.
+- 📐 Layout editorial: contenedor de 1120px, secciones de 5rem de aire, héroes y
+  títulos alineados a la izquierda con filete ámbar y regla inferior; el centro
+  se reserva para lo que de verdad es central (404, algunos formularios).
 - 🇪🇸 Contenido en español.
 - ♿ HTML semántico, navegación por teclado, foco visible, desplegable accesible
   (`aria-expanded`, cierre con Escape/clic fuera).
