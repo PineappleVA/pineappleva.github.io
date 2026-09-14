@@ -112,11 +112,11 @@ locales que **siempre se renderizan**:
 - **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
   barra de lenguajes, adaptadas a ambos temas.
 
-## 🎮 Pineapple Games
+## 🎮 Juegos embebidos
 
-`juegos.html` es el escaparate: banda de acceso al hub y una tarjeta por juego que
-enlaza directo a su página de Pineapple Games. El deep-link `/juegos?g=<id>` redirige
-al juego del hub con el mapa de `assets/js/main.js`.
+`juegos.html` carga cada juego en un `iframe` solo cuando pulsas «Jugar aquí»
+(`data-game="URL"` en el botón; `assets/js/main.js` lo conecta). Botón «Expulsar juego»
+para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se embeben.
 
 ## 👥 Equipo
 

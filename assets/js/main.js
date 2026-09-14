@@ -68,6 +68,31 @@
     });
   });
 
+  /* ---------- Typing del hero (local, sin servicios externos) ---------- */
+  var tw = document.getElementById('typeline');
+  if (tw) {
+    var words = [];
+    try { words = JSON.parse(tw.getAttribute('data-words')) || []; } catch (e) { words = []; }
+    if (!words.length) words = [tw.textContent];
+
+    if (reduceMotion) {
+      tw.textContent = words[0];
+    } else {
+      var wi = 0, ci = words[0].length, deleting = false;
+      function tick() {
+        var word = words[wi];
+        ci += deleting ? -1 : 1;
+        tw.textContent = word.slice(0, ci);
+        var delay = deleting ? 38 : 78;
+        if (!deleting && ci === word.length) { delay = 2100; deleting = true; }
+        else if (deleting && ci === 0) { deleting = false; wi = (wi + 1) % words.length; delay = 380; }
+        window.setTimeout(tick, delay);
+      }
+      /* arranca tras la animación de entrada del hero */
+      window.setTimeout(tick, 1400);
+    }
+  }
+
   /* ---------- Año del pie ---------- */
   var year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());
