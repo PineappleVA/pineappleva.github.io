@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>404 · Página no encontrada · Pineapple</title>
+  <meta name="description" content="Esta página no existe, pero Pineapple sigue en pie.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#131007">
+
+  <!-- Rutas ABSOLUTAS a propósito: esta página también se sirve en rutas
+       limpias (/proyectos, /blog/<slug>) y las relativas se romperían. -->
+  <link rel="icon" type="image/png" href="/assets/img/pineapple.png">
+  <meta name="color-scheme" content="dark light">
+  <script>
+    /* Tema: se aplica ANTES de pintar para evitar parpadeo.
+       Orden: localStorage('pa-theme') -> prefers-color-scheme -> dark */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('pa-theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') {
+        t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="Pineapple — inicio">
+        <img src="/assets/img/pineapple.png" alt="" width="34" height="34">
+        <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
+      </a>
+
+      <button id="themeToggle" class="theme-toggle" type="button" aria-label="Cambiar entre tema oscuro y claro" title="Cambiar tema">
+        <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6"/></svg>
+        <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="error-hero">
+      <div class="wrap">
+        <p class="big"><span>404</span> 🍍</p>
+        <h1>Esta página se ha escapado</h1>
+        <p class="lead" style="margin-top:.6rem;">
+          O nunca existió o la hemos movido. Da igual: el resto de la web sigue ahí.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="/">Volver al inicio</a>
+          <a class="btn ghost" href="/juegos">🎮 Mejor me echo una partida</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-bottom" style="border-top:0;">
+      <p>© <span id="year">2026</span> <span translate="no">Pineapple</span> · Hecho con 🍍 en Valladolid</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+  <script>
+  /* ============================================================
+     Enrutador de URLs limpias (GitHub Pages)
+     ------------------------------------------------------------
+     Pages solo sirve archivos reales; una ruta como /proyectos o
+     /blog/<slug> cae aquí. En lugar de mandar a un .html (feo en la
+     barra de direcciones), se trae la página de verdad con fetch,
+     sustituye el documento y guarda la URL limpia con replaceState.
+
+     - /blog/<slug>        → /entrada.html (lee el slug del pathname)
+     - /proyectos|juegos|blog|comunidad|equipo|contacto → /<página>.html
+     Cualquier otra ruta se queda en este 404 de verdad.
+     ============================================================ */
+  (function () {
+    "use strict";
+    var path = location.pathname.replace(/\/+$/, "") || "/";
+    var target = null;
+
+    var mPost = path.match(/^\/blog\/([A-Za-z0-9\-]+)$/);
+    var mPage = path.match(/^\/(proyectos|juegos|blog|comunidad|equipo|contacto)$/);
+
+    if (mPost) {
+      target = { src: "/entrada.html", url: path + location.search + location.hash };
+    } else if (mPage) {
+      target = { src: "/" + mPage[1] + ".html", url: path + location.search + location.hash };
+    }
+    if (!target) return; /* 404 legítimo: no hay nada que remapear */
+
+    fetch(target.src, { headers: { Accept: "text/html" } })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        if (!doc || !doc.body) throw new Error("documento vacío");
+
+        /* 1) URL limpia en la barra antes de ejecutar los scripts nuevos */
+        if (history.replaceState) history.replaceState(null, "", target.url);
+
+        /* 2) sustituir todo el documento por el de la página real */
+        document.documentElement.replaceChildren(doc.head, doc.body);
+
+        /* 3) los <script> traídos por fetch no se ejecutan solos:
+              recrearlos en el mismo orden (async=false conserva el orden) */
+        var scripts = document.querySelectorAll("script");
+        for (var i = 0; i < scripts.length; i++) {
+          var old = scripts[i];
+          var s = document.createElement("script");
+          if (old.src) {
+            s.src = old.src;
+            s.async = false; /* ejecutar en orden de inserción */
+          } else {
+            s.textContent = old.textContent;
+          }
+          old.parentNode.replaceChild(s, old);
+        }
+      })
+      .catch(function () {
+        /* sin fetch disponible o error: deja el 404 tal cual */
+      });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pineapple · Making things a little bit better</title>
+  <meta name="description" content="Pineapple es un equipo de Valladolid que hace webs, herramientas y juegos para los colegios. School Utilities, Y, Better Discovery, Pineapple Games y más.">
+  <meta name="theme-color" content="#131007">
+  <link rel="canonical" href="https://pineappleva.github.io/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pineapple">
+  <meta property="og:title" content="Pineapple · Making things a little bit better">
+  <meta property="og:description" content="Webs, herramientas y juegos hechos con 🍍 en Valladolid.">
+  <meta property="og:url" content="https://pineappleva.github.io/">
+  <meta property="og:image" content="https://pineappleva.github.io/assets/img/pineapple.png">
+  <meta property="og:locale" content="es_ES">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@pineapplevacorp">
+
+  <link rel="icon" type="image/png" href="/assets/img/pineapple.png">
+  <link rel="apple-touch-icon" href="/assets/img/pineapple.png">
+  <meta name="color-scheme" content="dark light">
+  <script>
+    /* Tema: se aplica ANTES de pintar para evitar parpadeo.
+       Orden: localStorage('pa-theme') -> prefers-color-scheme -> dark */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('pa-theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') {
+        t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Pineapple",
+    "slogan": "Making things a little bit better",
+    "url": "https://pineappleva.github.io/",
+    "logo": "https://pineappleva.github.io/assets/img/pineapple.png",
+    "email": "pineapplevacorp@gmail.com",
+    "sameAs": [
+      "https://github.com/PineappleVA",
+      "https://x.com/pineapplevacorp",
+      "https://www.youtube.com/@pacorp-oficial"
+    ],
+    "address": { "@type": "PostalAddress", "addressLocality": "Valladolid", "addressCountry": "ES" }
+  }
+  </script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <!-- ======================= Cabecera ======================= -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="Pineapple — inicio">
+        <img src="/assets/img/pineapple.png" alt="" width="34" height="34">
+        <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="siteNav" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+<nav id="siteNav" class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="/" aria-current="page">Inicio</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li class="dropdown">
+            <button type="button" class="drop-btn" aria-expanded="false" aria-haspopup="true">
+              Información
+              <svg class="caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="dropdown-menu" hidden>
+        <li><a href="/proyectos">🚀 Proyectos</a></li>
+        <li><a href="/juegos">🎮 Juegos</a></li>
+        <li><a href="/comunidad">🏫 Comunidad</a></li>
+        <li><a href="/equipo">👥 Equipo</a></li>
+        <li><a href="/contacto">📬 Contacto</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <button id="themeToggle" class="theme-toggle" type="button" aria-label="Cambiar entre tema oscuro y claro" title="Cambiar tema">
+        <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6"/></svg>
+        <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ======================= Hero ======================= -->
+    <section class="hero" id="inicio">
+      <div class="orb orb-1" aria-hidden="true"></div>
+      <div class="orb orb-2" aria-hidden="true"></div>
+      <div class="wrap">
+        <img class="hero-logo" src="/assets/img/pineapple.png" alt="Logo de Pineapple: una piña dibujada en trazo blanco" width="112" height="112">
+        <p class="eyebrow" data-animate="1">Hola, somos <span translate="no">Pineapple</span></p>
+
+        <p class="typing-line" data-animate="2" aria-live="off">
+          <span id="typeline" data-words='["Productos digitales para colegios","Herramientas útiles y fáciles de usar","Ideas, juegos y muchas ganas de crear"]'>Productos digitales para colegios</span><span class="tw-caret" aria-hidden="true"></span>
+        </p>
+
+        <p class="lead" data-animate="3">
+          Somos de <strong>Valladolid</strong>. Hacemos webs, herramientas y juegos para los colegios,
+          y todo acaba publicado aquí. Si algo nos sirve en clase, probablemente acabe siendo un producto.
+        </p>
+
+        <div class="hero-actions" data-animate="4">
+          <a class="btn primary" href="/proyectos">Ver proyectos</a>
+          <a class="btn ghost" href="/contacto">Escríbenos</a>
+        </div>
+
+        <div class="badges-row" data-animate="5">
+          <a class="x-badge" href="https://sites.google.com/safa-grial.es/school-utilities/inicio" target="_blank" rel="noopener">
+            <span class="k">School Utilities</span><span class="v v-blue">Safa-Grial</span>
+          </a>
+          <a class="x-badge" href="/juegos">
+            <span class="k">Pineapple Games</span><span class="v v-brand">La casa de los juegos</span>
+          </a>
+          <a class="x-badge" href="https://x.com/pineapplevacorp" target="_blank" rel="noopener">
+            <span class="k">X</span><span class="v v-black">@pineapplevacorp</span>
+          </a>
+          <a class="x-badge" href="https://www.youtube.com/@pacorp-oficial" target="_blank" rel="noopener">
+            <span class="k">YouTube</span><span class="v v-red">@pacorp-oficial</span>
+          </a>
+        </div>
+        <ul class="chips" data-animate="6" aria-label="Datos rápidos sobre Pineapple">
+          <li>Valladolid</li>
+          <li>Hecho para colegios</li>
+          <li>Todo en GitHub</li>
+          <li>Todo gratis</li>
+        </ul>
+      </div>
+
+      <div class="wave wave-soft" aria-hidden="true">
+        <div class="wave-layer wave-front">
+          <div class="wave-track"><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,32.0 L16,32.1 L32,32.3 L48,32.6 L64,33.0 L80,33.6 L96,34.2 L112,35.0 L128,36.0 L144,37.0 L160,38.1 L176,39.3 L192,40.6 L208,42.0 L224,43.5 L240,45.0 L256,46.6 L272,48.3 L288,50.0 L304,51.7 L320,53.5 L336,55.3 L352,57.1 L368,58.9 L384,60.7 L400,62.5 L416,64.3 L432,66.0 L448,67.7 L464,69.4 L480,71.0 L496,72.5 L512,74.0 L528,75.4 L544,76.7 L560,77.9 L576,79.0 L592,80.0 L608,81.0 L624,81.8 L640,82.4 L656,83.0 L672,83.4 L688,83.7 L704,83.9 L720,84.0 L736,83.9 L752,83.7 L768,83.4 L784,83.0 L800,82.4 L816,81.8 L832,81.0 L848,80.0 L864,79.0 L880,77.9 L896,76.7 L912,75.4 L928,74.0 L944,72.5 L960,71.0 L976,69.4 L992,67.7 L1008,66.0 L1024,64.3 L1040,62.5 L1056,60.7 L1072,58.9 L1088,57.1 L1104,55.3 L1120,53.5 L1136,51.7 L1152,50.0 L1168,48.3 L1184,46.6 L1200,45.0 L1216,43.5 L1232,42.0 L1248,40.6 L1264,39.3 L1280,38.1 L1296,37.0 L1312,36.0 L1328,35.0 L1344,34.2 L1360,33.6 L1376,33.0 L1392,32.6 L1408,32.3 L1424,32.1 L1440,32.0 L1456,32.1 L1472,32.3 L1488,32.6 L1504,33.0 L1520,33.6 L1536,34.2 L1552,35.0 L1568,36.0 L1584,37.0 L1600,38.1 L1616,39.3 L1632,40.6 L1648,42.0 L1664,43.5 L1680,45.0 L1696,46.6 L1712,48.3 L1728,50.0 L1744,51.7 L1760,53.5 L1776,55.3 L1792,57.1 L1808,58.9 L1824,60.7 L1840,62.5 L1856,64.3 L1872,66.0 L1888,67.7 L1904,69.4 L1920,71.0 L1936,72.5 L1952,74.0 L1968,75.4 L1984,76.7 L2000,77.9 L2016,79.0 L2032,80.0 L2048,81.0 L2064,81.8 L2080,82.4 L2096,83.0 L2112,83.4 L2128,83.7 L2144,83.9 L2160,84.0 L2176,83.9 L2192,83.7 L2208,83.4 L2224,83.0 L2240,82.4 L2256,81.8 L2272,81.0 L2288,80.0 L2304,79.0 L2320,77.9 L2336,76.7 L2352,75.4 L2368,74.0 L2384,72.5 L2400,71.0 L2416,69.4 L2432,67.7 L2448,66.0 L2464,64.3 L2480,62.5 L2496,60.7 L2512,58.9 L2528,57.1 L2544,55.3 L2560,53.5 L2576,51.7 L2592,50.0 L2608,48.3 L2624,46.6 L2640,45.0 L2656,43.5 L2672,42.0 L2688,40.6 L2704,39.3 L2720,38.1 L2736,37.0 L2752,36.0 L2768,35.0 L2784,34.2 L2800,33.6 L2816,33.0 L2832,32.6 L2848,32.3 L2864,32.1 L2880,32.0 L2880,120 L0,120 Z" fill="var(--bg-deep)"/></svg><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,32.0 L16,32.1 L32,32.3 L48,32.6 L64,33.0 L80,33.6 L96,34.2 L112,35.0 L128,36.0 L144,37.0 L160,38.1 L176,39.3 L192,40.6 L208,42.0 L224,43.5 L240,45.0 L256,46.6 L272,48.3 L288,50.0 L304,51.7 L320,53.5 L336,55.3 L352,57.1 L368,58.9 L384,60.7 L400,62.5 L416,64.3 L432,66.0 L448,67.7 L464,69.4 L480,71.0 L496,72.5 L512,74.0 L528,75.4 L544,76.7 L560,77.9 L576,79.0 L592,80.0 L608,81.0 L624,81.8 L640,82.4 L656,83.0 L672,83.4 L688,83.7 L704,83.9 L720,84.0 L736,83.9 L752,83.7 L768,83.4 L784,83.0 L800,82.4 L816,81.8 L832,81.0 L848,80.0 L864,79.0 L880,77.9 L896,76.7 L912,75.4 L928,74.0 L944,72.5 L960,71.0 L976,69.4 L992,67.7 L1008,66.0 L1024,64.3 L1040,62.5 L1056,60.7 L1072,58.9 L1088,57.1 L1104,55.3 L1120,53.5 L1136,51.7 L1152,50.0 L1168,48.3 L1184,46.6 L1200,45.0 L1216,43.5 L1232,42.0 L1248,40.6 L1264,39.3 L1280,38.1 L1296,37.0 L1312,36.0 L1328,35.0 L1344,34.2 L1360,33.6 L1376,33.0 L1392,32.6 L1408,32.3 L1424,32.1 L1440,32.0 L1456,32.1 L1472,32.3 L1488,32.6 L1504,33.0 L1520,33.6 L1536,34.2 L1552,35.0 L1568,36.0 L1584,37.0 L1600,38.1 L1616,39.3 L1632,40.6 L1648,42.0 L1664,43.5 L1680,45.0 L1696,46.6 L1712,48.3 L1728,50.0 L1744,51.7 L1760,53.5 L1776,55.3 L1792,57.1 L1808,58.9 L1824,60.7 L1840,62.5 L1856,64.3 L1872,66.0 L1888,67.7 L1904,69.4 L1920,71.0 L1936,72.5 L1952,74.0 L1968,75.4 L1984,76.7 L2000,77.9 L2016,79.0 L2032,80.0 L2048,81.0 L2064,81.8 L2080,82.4 L2096,83.0 L2112,83.4 L2128,83.7 L2144,83.9 L2160,84.0 L2176,83.9 L2192,83.7 L2208,83.4 L2224,83.0 L2240,82.4 L2256,81.8 L2272,81.0 L2288,80.0 L2304,79.0 L2320,77.9 L2336,76.7 L2352,75.4 L2368,74.0 L2384,72.5 L2400,71.0 L2416,69.4 L2432,67.7 L2448,66.0 L2464,64.3 L2480,62.5 L2496,60.7 L2512,58.9 L2528,57.1 L2544,55.3 L2560,53.5 L2576,51.7 L2592,50.0 L2608,48.3 L2624,46.6 L2640,45.0 L2656,43.5 L2672,42.0 L2688,40.6 L2704,39.3 L2720,38.1 L2736,37.0 L2752,36.0 L2768,35.0 L2784,34.2 L2800,33.6 L2816,33.0 L2832,32.6 L2848,32.3 L2864,32.1 L2880,32.0 L2880,120 L0,120 Z" fill="var(--bg-deep)"/></svg></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= Cinta ======================= -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>Herramientas escolares</span>
+        <span><b>🍍</b></span>
+        <span>Juegos caseros</span>
+        <span><b>🍍</b></span>
+        <span>Hecho en Valladolid</span>
+        <span><b>🍍</b></span>
+        <span>Sencillez ante todo</span>
+        <span><b>🍍</b></span>
+        <span>Making things a little bit better</span>
+        <span><b>🍍</b></span>
+        <span>Herramientas escolares</span>
+        <span><b>🍍</b></span>
+        <span>Juegos caseros</span>
+        <span><b>🍍</b></span>
+        <span>Hecho en Valladolid</span>
+        <span><b>🍍</b></span>
+        <span>Sencillez ante todo</span>
+        <span><b>🍍</b></span>
+        <span>Making things a little bit better</span>
+        <span><b>🍍</b></span>
+      </div>
+    </div>
+
+    <!-- ======================= Colegios (como la web clásica) ======================= -->
+    <section class="section alt" id="colegios">
+      <div class="wrap">
+        <h2 class="section-title reveal">Somos los creadores de varios productos en muchos colegios de Valladolid</h2>
+        <p class="section-sub reveal d1">Como, por ejemplo, <span translate="no">School Utilities</span> — esa web «famosa» entre
+        nuestros alumnos. De momento solo está disponible en el Safa-Grial: todavía no hemos llevado
+        el producto a otros colegios.</p>
+        <div class="hero-actions" style="justify-content:flex-start;margin-top:0;">
+          <a class="btn primary" href="https://sites.google.com/safa-grial.es/school-utilities/inicio" target="_blank" rel="noopener">Ver School Utilities ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= Valores ======================= -->
+    <section class="section" id="valores">
+      <div class="wrap">
+        <h2 class="section-title reveal">Qué nos mueve</h2>
+        <p class="section-sub reveal d1">Cuatro ideas, las mismas que en nuestro perfil de GitHub.</p>
+        <div class="cards grid-4">
+          <article class="card tilt reveal d1">
+            <div class="icon">🛠️</div>
+            <h3>Utilidad</h3>
+            <p>Resolvemos necesidades concretas del entorno escolar.</p>
+          </article>
+          <article class="card tilt reveal d2">
+            <div class="icon">✨</div>
+            <h3>Sencillez</h3>
+            <p>Interfaces claras que cualquiera pueda utilizar.</p>
+          </article>
+          <article class="card tilt reveal d3">
+            <div class="icon">💡</div>
+            <h3>Creatividad</h3>
+            <p>Probamos ideas nuevas, desde herramientas hasta juegos.</p>
+          </article>
+          <article class="card tilt reveal d4">
+            <div class="icon">🤝</div>
+            <h3>Comunidad</h3>
+            <p>Creamos productos que conectan a alumnos y centros.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= Lo publicado ======================= -->
+    <section class="section alt" id="destacados">
+      <div class="wrap">
+        <h2 class="section-title reveal">Lo que hay publicado</h2>
+        <p class="section-sub reveal d1">Un poco de todo. Unos proyectos están más cuidados que otros, pero todos se usan.</p>
+
+        <div class="cards grid-3">
+          <article class="card tilt reveal d1">
+            <div class="card-top">
+              <span class="logo-tile">
+                <img src="/assets/img/school-utilities.png" alt="Logo de School Utilities" width="64" height="64" loading="lazy">
+              </span>
+              <span class="badge beta">Solo en Safa-Grial</span>
+            </div>
+            <h3 translate="no">School Utilities</h3>
+            <p>Una web con utilidades para el día a día escolar, la «famosa» entre nuestros alumnos. De momento, solo en el Safa-Grial.</p>
+            <div class="card-links">
+              <a class="btn small primary" href="https://sites.google.com/safa-grial.es/school-utilities/inicio" target="_blank" rel="noopener">Visitar ↗</a>
+              <a class="btn small ghost" href="/proyectos">Saber más</a>
+            </div>
+          </article>
+
+          <article class="card tilt reveal d2">
+            <div class="card-top">
+              <span class="logo-tile">
+                <img src="/assets/img/y.png" alt="Logo de Y: la letra Y en blanco" width="64" height="64" loading="lazy">
+              </span>
+              <span class="badge ok">Disponible</span>
+            </div>
+            <h3><span translate="no">Y</span> · Red social</h3>
+            <p>Un espacio diferente para compartir y conectar, alternativa a <span translate="no">X</span>.</p>
+            <div class="card-links">
+              <a class="btn small primary" href="https://complain.base44.app/" target="_blank" rel="noopener">Conocer Y ↗</a>
+              <a class="btn small ghost" href="/proyectos">Saber más</a>
+            </div>
+          </article>
+
+          <article class="card tilt reveal d3">
+            <div class="card-top">
+              <span class="logo-tile emoji-tile" aria-hidden="true">🎮</span>
+              <span class="badge beta">6 juegos</span>
+            </div>
+            <h3 translate="no">Pineapple Games</h3>
+            <p>Nuestro hub de juegos. Aquí no solo creamos: también jugamos.</p>
+            <div class="card-links">
+              <a class="btn small primary" href="/juegos">Ver juegos</a>
+              <a class="btn small ghost" href="/blog">Novedades</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="banner-cta reveal d2">
+          <div>
+            <strong>📝 También tenemos blog</strong>
+            <span>Lo que vamos haciendo, contado sin filtros.</span>
+          </div>
+          <a class="btn primary" href="/blog">Leer el blog</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= Cifras ======================= -->
+    <section class="section" id="cifras">
+      <div class="wrap">
+        <h2 class="section-title reveal">En números</h2>
+        <p class="section-sub reveal d1">Contando lo que está publicado ahora mismo.</p>
+        <div class="stats grid-4">
+          <div class="stat reveal d1">
+            <span class="stat-num" data-count="3">3</span>
+            <span class="stat-label">Productos</span>
+            <span class="stat-desc">School Utilities, Y y Better Discovery.</span>
+          </div>
+          <div class="stat reveal d2">
+            <span class="stat-num" data-count="6">6</span>
+            <span class="stat-label">Juegos</span>
+            <span class="stat-desc">En Pineapple Games.</span>
+          </div>
+          <div class="stat reveal d3">
+            <span class="stat-num">0€</span>
+            <span class="stat-label">Precio</span>
+            <span class="stat-desc">Todo lo que hacemos es gratis.</span>
+          </div>
+          <div class="stat reveal d4">
+            <span class="stat-num">🏫</span>
+            <span class="stat-label">Safa-Grial</span>
+            <span class="stat-desc">El colegio donde todo se usa a diario.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================= Pie ======================= -->
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <img src="/assets/img/pineapple.png" alt="" width="38" height="38">
+          <span><span translate="no">Pineapple</span><small>Making things a little bit better</small></span>
+        </a>
+        <p class="footer-note">Hecho con 🍍 en Valladolid.<br>
+        Productos digitales, herramientas y juegos para colegios: útiles, sencillos y cercanos.</p>
+      </div>
+
+      <nav class="footer-col" aria-label="Enlaces del sitio">
+        <h3>Explora</h3>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/proyectos">Proyectos</a></li>
+          <li><a href="/juegos">Juegos</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/comunidad">Comunidad</a></li>
+          <li><a href="/equipo">Equipo</a></li>
+          <li><a href="/contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Nuestros productos">
+        <h3>Productos</h3>
+        <ul>
+          <li><a href="https://sites.google.com/safa-grial.es/school-utilities/inicio" target="_blank" rel="noopener">School Utilities ↗</a></li>
+          <li><a href="https://pineappleva.github.io/Games/" target="_blank" rel="noopener">Pineapple Games ↗</a></li>
+          <li><a href="https://pineappleva.github.io/Better-Discovery/" target="_blank" rel="noopener">Better Discovery ↗</a></li>
+          <li><a href="https://complain.base44.app/" target="_blank" rel="noopener">Y · Red social ↗</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Síguenos">
+        <h3>Síguenos</h3>
+        <ul>
+          <li><a href="https://github.com/PineappleVA" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <li><a href="https://x.com/pineapplevacorp" target="_blank" rel="noopener">X (Twitter) ↗</a></li>
+          <li><a href="https://www.youtube.com/@pacorp-oficial" target="_blank" rel="noopener">YouTube ↗</a></li>
+          <li><a href="mailto:pineapplevacorp@gmail.com">Email ✉</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="wrap footer-bottom">
+      <p>© <span id="year">2026</span> <span translate="no">Pineapple</span> · <span translate="no">Making things a little bit better</span></p>
+      <p>Hecho con 🍍 en Valladolid</p>
+    </div>
+
+    <div class="wave wave-footer" aria-hidden="true">
+      <svg class="wave-defs" width="0" height="0" focusable="false" aria-hidden="true">
+        <defs>
+          <linearGradient id="wgrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1440" y2="0">
+            <stop offset="0" stop-color="#f5a623"/>
+            <stop offset="0.25" stop-color="#ffd166"/>
+            <stop offset="0.5" stop-color="#f5a623"/>
+            <stop offset="0.75" stop-color="#ffd166"/>
+            <stop offset="1" stop-color="#f5a623"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="wave-layer wave-back">
+        <div class="wave-track wave-track-rev"><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,54.9 L16,56.2 L32,57.5 L48,58.8 L64,60.2 L80,61.6 L96,63.0 L112,64.4 L128,65.8 L144,67.1 L160,68.5 L176,69.9 L192,71.2 L208,72.5 L224,73.7 L240,74.9 L256,76.0 L272,77.1 L288,78.1 L304,79.1 L320,80.0 L336,80.8 L352,81.5 L368,82.1 L384,82.7 L400,83.1 L416,83.5 L432,83.8 L448,83.9 L464,84.0 L480,84.0 L496,83.8 L512,83.6 L528,83.3 L544,82.9 L560,82.4 L576,81.8 L592,81.1 L608,80.4 L624,79.5 L640,78.6 L656,77.6 L672,76.6 L688,75.5 L704,74.3 L720,73.1 L736,71.8 L752,70.5 L768,69.2 L784,67.8 L800,66.4 L816,65.0 L832,63.6 L848,62.2 L864,60.9 L880,59.5 L896,58.1 L912,56.8 L928,55.5 L944,54.3 L960,53.1 L976,52.0 L992,50.9 L1008,49.9 L1024,48.9 L1040,48.0 L1056,47.2 L1072,46.5 L1088,45.9 L1104,45.3 L1120,44.9 L1136,44.5 L1152,44.2 L1168,44.1 L1184,44.0 L1200,44.0 L1216,44.2 L1232,44.4 L1248,44.7 L1264,45.1 L1280,45.6 L1296,46.2 L1312,46.9 L1328,47.6 L1344,48.5 L1360,49.4 L1376,50.4 L1392,51.4 L1408,52.5 L1424,53.7 L1440,54.9 L1456,56.2 L1472,57.5 L1488,58.8 L1504,60.2 L1520,61.6 L1536,63.0 L1552,64.4 L1568,65.8 L1584,67.1 L1600,68.5 L1616,69.9 L1632,71.2 L1648,72.5 L1664,73.7 L1680,74.9 L1696,76.0 L1712,77.1 L1728,78.1 L1744,79.1 L1760,80.0 L1776,80.8 L1792,81.5 L1808,82.1 L1824,82.7 L1840,83.1 L1856,83.5 L1872,83.8 L1888,83.9 L1904,84.0 L1920,84.0 L1936,83.8 L1952,83.6 L1968,83.3 L1984,82.9 L2000,82.4 L2016,81.8 L2032,81.1 L2048,80.4 L2064,79.5 L2080,78.6 L2096,77.6 L2112,76.6 L2128,75.5 L2144,74.3 L2160,73.1 L2176,71.8 L2192,70.5 L2208,69.2 L2224,67.8 L2240,66.4 L2256,65.0 L2272,63.6 L2288,62.2 L2304,60.9 L2320,59.5 L2336,58.1 L2352,56.8 L2368,55.5 L2384,54.3 L2400,53.1 L2416,52.0 L2432,50.9 L2448,49.9 L2464,48.9 L2480,48.0 L2496,47.2 L2512,46.5 L2528,45.9 L2544,45.3 L2560,44.9 L2576,44.5 L2592,44.2 L2608,44.1 L2624,44.0 L2640,44.0 L2656,44.2 L2672,44.4 L2688,44.7 L2704,45.1 L2720,45.6 L2736,46.2 L2752,46.9 L2768,47.6 L2784,48.5 L2800,49.4 L2816,50.4 L2832,51.4 L2848,52.5 L2864,53.7 L2880,54.9 L2880,120 L0,120 Z" fill="url(#wgrad)"/></svg><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,54.9 L16,56.2 L32,57.5 L48,58.8 L64,60.2 L80,61.6 L96,63.0 L112,64.4 L128,65.8 L144,67.1 L160,68.5 L176,69.9 L192,71.2 L208,72.5 L224,73.7 L240,74.9 L256,76.0 L272,77.1 L288,78.1 L304,79.1 L320,80.0 L336,80.8 L352,81.5 L368,82.1 L384,82.7 L400,83.1 L416,83.5 L432,83.8 L448,83.9 L464,84.0 L480,84.0 L496,83.8 L512,83.6 L528,83.3 L544,82.9 L560,82.4 L576,81.8 L592,81.1 L608,80.4 L624,79.5 L640,78.6 L656,77.6 L672,76.6 L688,75.5 L704,74.3 L720,73.1 L736,71.8 L752,70.5 L768,69.2 L784,67.8 L800,66.4 L816,65.0 L832,63.6 L848,62.2 L864,60.9 L880,59.5 L896,58.1 L912,56.8 L928,55.5 L944,54.3 L960,53.1 L976,52.0 L992,50.9 L1008,49.9 L1024,48.9 L1040,48.0 L1056,47.2 L1072,46.5 L1088,45.9 L1104,45.3 L1120,44.9 L1136,44.5 L1152,44.2 L1168,44.1 L1184,44.0 L1200,44.0 L1216,44.2 L1232,44.4 L1248,44.7 L1264,45.1 L1280,45.6 L1296,46.2 L1312,46.9 L1328,47.6 L1344,48.5 L1360,49.4 L1376,50.4 L1392,51.4 L1408,52.5 L1424,53.7 L1440,54.9 L1456,56.2 L1472,57.5 L1488,58.8 L1504,60.2 L1520,61.6 L1536,63.0 L1552,64.4 L1568,65.8 L1584,67.1 L1600,68.5 L1616,69.9 L1632,71.2 L1648,72.5 L1664,73.7 L1680,74.9 L1696,76.0 L1712,77.1 L1728,78.1 L1744,79.1 L1760,80.0 L1776,80.8 L1792,81.5 L1808,82.1 L1824,82.7 L1840,83.1 L1856,83.5 L1872,83.8 L1888,83.9 L1904,84.0 L1920,84.0 L1936,83.8 L1952,83.6 L1968,83.3 L1984,82.9 L2000,82.4 L2016,81.8 L2032,81.1 L2048,80.4 L2064,79.5 L2080,78.6 L2096,77.6 L2112,76.6 L2128,75.5 L2144,74.3 L2160,73.1 L2176,71.8 L2192,70.5 L2208,69.2 L2224,67.8 L2240,66.4 L2256,65.0 L2272,63.6 L2288,62.2 L2304,60.9 L2320,59.5 L2336,58.1 L2352,56.8 L2368,55.5 L2384,54.3 L2400,53.1 L2416,52.0 L2432,50.9 L2448,49.9 L2464,48.9 L2480,48.0 L2496,47.2 L2512,46.5 L2528,45.9 L2544,45.3 L2560,44.9 L2576,44.5 L2592,44.2 L2608,44.1 L2624,44.0 L2640,44.0 L2656,44.2 L2672,44.4 L2688,44.7 L2704,45.1 L2720,45.6 L2736,46.2 L2752,46.9 L2768,47.6 L2784,48.5 L2800,49.4 L2816,50.4 L2832,51.4 L2848,52.5 L2864,53.7 L2880,54.9 L2880,120 L0,120 Z" fill="url(#wgrad)"/></svg></div>
+      </div>
+      <div class="wave-layer wave-front">
+        <div class="wave-track"><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,32.0 L16,32.1 L32,32.3 L48,32.6 L64,33.0 L80,33.6 L96,34.2 L112,35.0 L128,36.0 L144,37.0 L160,38.1 L176,39.3 L192,40.6 L208,42.0 L224,43.5 L240,45.0 L256,46.6 L272,48.3 L288,50.0 L304,51.7 L320,53.5 L336,55.3 L352,57.1 L368,58.9 L384,60.7 L400,62.5 L416,64.3 L432,66.0 L448,67.7 L464,69.4 L480,71.0 L496,72.5 L512,74.0 L528,75.4 L544,76.7 L560,77.9 L576,79.0 L592,80.0 L608,81.0 L624,81.8 L640,82.4 L656,83.0 L672,83.4 L688,83.7 L704,83.9 L720,84.0 L736,83.9 L752,83.7 L768,83.4 L784,83.0 L800,82.4 L816,81.8 L832,81.0 L848,80.0 L864,79.0 L880,77.9 L896,76.7 L912,75.4 L928,74.0 L944,72.5 L960,71.0 L976,69.4 L992,67.7 L1008,66.0 L1024,64.3 L1040,62.5 L1056,60.7 L1072,58.9 L1088,57.1 L1104,55.3 L1120,53.5 L1136,51.7 L1152,50.0 L1168,48.3 L1184,46.6 L1200,45.0 L1216,43.5 L1232,42.0 L1248,40.6 L1264,39.3 L1280,38.1 L1296,37.0 L1312,36.0 L1328,35.0 L1344,34.2 L1360,33.6 L1376,33.0 L1392,32.6 L1408,32.3 L1424,32.1 L1440,32.0 L1456,32.1 L1472,32.3 L1488,32.6 L1504,33.0 L1520,33.6 L1536,34.2 L1552,35.0 L1568,36.0 L1584,37.0 L1600,38.1 L1616,39.3 L1632,40.6 L1648,42.0 L1664,43.5 L1680,45.0 L1696,46.6 L1712,48.3 L1728,50.0 L1744,51.7 L1760,53.5 L1776,55.3 L1792,57.1 L1808,58.9 L1824,60.7 L1840,62.5 L1856,64.3 L1872,66.0 L1888,67.7 L1904,69.4 L1920,71.0 L1936,72.5 L1952,74.0 L1968,75.4 L1984,76.7 L2000,77.9 L2016,79.0 L2032,80.0 L2048,81.0 L2064,81.8 L2080,82.4 L2096,83.0 L2112,83.4 L2128,83.7 L2144,83.9 L2160,84.0 L2176,83.9 L2192,83.7 L2208,83.4 L2224,83.0 L2240,82.4 L2256,81.8 L2272,81.0 L2288,80.0 L2304,79.0 L2320,77.9 L2336,76.7 L2352,75.4 L2368,74.0 L2384,72.5 L2400,71.0 L2416,69.4 L2432,67.7 L2448,66.0 L2464,64.3 L2480,62.5 L2496,60.7 L2512,58.9 L2528,57.1 L2544,55.3 L2560,53.5 L2576,51.7 L2592,50.0 L2608,48.3 L2624,46.6 L2640,45.0 L2656,43.5 L2672,42.0 L2688,40.6 L2704,39.3 L2720,38.1 L2736,37.0 L2752,36.0 L2768,35.0 L2784,34.2 L2800,33.6 L2816,33.0 L2832,32.6 L2848,32.3 L2864,32.1 L2880,32.0 L2880,120 L0,120 Z" fill="url(#wgrad)"/></svg><svg viewBox="0 0 1440 120" preserveAspectRatio="none" focusable="false"><path d="M0,32.0 L16,32.1 L32,32.3 L48,32.6 L64,33.0 L80,33.6 L96,34.2 L112,35.0 L128,36.0 L144,37.0 L160,38.1 L176,39.3 L192,40.6 L208,42.0 L224,43.5 L240,45.0 L256,46.6 L272,48.3 L288,50.0 L304,51.7 L320,53.5 L336,55.3 L352,57.1 L368,58.9 L384,60.7 L400,62.5 L416,64.3 L432,66.0 L448,67.7 L464,69.4 L480,71.0 L496,72.5 L512,74.0 L528,75.4 L544,76.7 L560,77.9 L576,79.0 L592,80.0 L608,81.0 L624,81.8 L640,82.4 L656,83.0 L672,83.4 L688,83.7 L704,83.9 L720,84.0 L736,83.9 L752,83.7 L768,83.4 L784,83.0 L800,82.4 L816,81.8 L832,81.0 L848,80.0 L864,79.0 L880,77.9 L896,76.7 L912,75.4 L928,74.0 L944,72.5 L960,71.0 L976,69.4 L992,67.7 L1008,66.0 L1024,64.3 L1040,62.5 L1056,60.7 L1072,58.9 L1088,57.1 L1104,55.3 L1120,53.5 L1136,51.7 L1152,50.0 L1168,48.3 L1184,46.6 L1200,45.0 L1216,43.5 L1232,42.0 L1248,40.6 L1264,39.3 L1280,38.1 L1296,37.0 L1312,36.0 L1328,35.0 L1344,34.2 L1360,33.6 L1376,33.0 L1392,32.6 L1408,32.3 L1424,32.1 L1440,32.0 L1456,32.1 L1472,32.3 L1488,32.6 L1504,33.0 L1520,33.6 L1536,34.2 L1552,35.0 L1568,36.0 L1584,37.0 L1600,38.1 L1616,39.3 L1632,40.6 L1648,42.0 L1664,43.5 L1680,45.0 L1696,46.6 L1712,48.3 L1728,50.0 L1744,51.7 L1760,53.5 L1776,55.3 L1792,57.1 L1808,58.9 L1824,60.7 L1840,62.5 L1856,64.3 L1872,66.0 L1888,67.7 L1904,69.4 L1920,71.0 L1936,72.5 L1952,74.0 L1968,75.4 L1984,76.7 L2000,77.9 L2016,79.0 L2032,80.0 L2048,81.0 L2064,81.8 L2080,82.4 L2096,83.0 L2112,83.4 L2128,83.7 L2144,83.9 L2160,84.0 L2176,83.9 L2192,83.7 L2208,83.4 L2224,83.0 L2240,82.4 L2256,81.8 L2272,81.0 L2288,80.0 L2304,79.0 L2320,77.9 L2336,76.7 L2352,75.4 L2368,74.0 L2384,72.5 L2400,71.0 L2416,69.4 L2432,67.7 L2448,66.0 L2464,64.3 L2480,62.5 L2496,60.7 L2512,58.9 L2528,57.1 L2544,55.3 L2560,53.5 L2576,51.7 L2592,50.0 L2608,48.3 L2624,46.6 L2640,45.0 L2656,43.5 L2672,42.0 L2688,40.6 L2704,39.3 L2720,38.1 L2736,37.0 L2752,36.0 L2768,35.0 L2784,34.2 L2800,33.6 L2816,33.0 L2832,32.6 L2848,32.3 L2864,32.1 L2880,32.0 L2880,120 L0,120 Z" fill="url(#wgrad)"/></svg></div>
+      </div>
+    </div>
+  </footer>
+
+  <button id="toTop" class="to-top" aria-label="Volver arriba">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>
