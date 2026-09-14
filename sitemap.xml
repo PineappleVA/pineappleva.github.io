@@ -21,6 +21,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://pineappleva.github.io/blog/2026-09-15-septiembre-ya-esta-aqui</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pineappleva.github.io/blog/2026-09-12-que-estamos-haciendo</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pineappleva.github.io/blog/2026-09-12-ya-tenemos-web-nueva</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://pineappleva.github.io/comunidad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

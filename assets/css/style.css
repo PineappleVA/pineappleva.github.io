@@ -481,6 +481,16 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   to { background-position: 200% center; }
 }
 
+/* El «eyebrow» del hero es el <h1> de la página (SEO + accesibilidad).
+   Mismos estilos que .eyebrow, anulando los de .hero h1 para que el
+   aspecto no cambie ni un píxel. */
+.hero h1.eyebrow {
+  margin: 1.5rem 0 0;
+  font-size: .78rem;
+  line-height: inherit;
+  letter-spacing: .16em;
+}
+
 .lead {
   max-width: 56ch;
   margin: 0;
