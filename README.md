@@ -9,7 +9,7 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 
 | Página | Descripción |
 | --- | --- |
-| `index.html` | Portada: typing SVG, colegios, lo publicado, cifras |
+| `index.html` | Portada: titular, insignias, colegios, lo publicado, cifras |
 | `proyectos.html` | Fichas: School Utilities, Y, Better Discovery y Games |
 | `juegos.html` | Juegos jugables en la propia página (iframe) + catálogo |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
@@ -105,18 +105,20 @@ Los servicios de imágenes del perfil (typing SVG, shields.io, github-readme-sta
 fallan a menudo (rate limits o caídas), así que se sustituyeron por equivalentes
 locales que **siempre se renderizan**:
 
-- **Typing del hero**: efecto máquina de escribir en `assets/js/main.js`
-  (`#typeline` + `data-words`), con caret parpadeante CSS.
-- **Insignias** (`.x-badge`): dos segmentos HTML/CSS con los colores de cada
-  plataforma, mismo look `for-the-badge`.
+- **Hero estático**: titular `<h1>` con acento en degradado; sin efectos de
+  máquina de escribir ni adornos — tipografía y jerarquía hacen el trabajo.
+- **Insignias** (`.x-badge`): icono + nombre + descriptor sobre una sola
+  superficie sobria. Sin escudos bicolor ni colores chillones.
+  el **logotipo real en SVG inline** (School Utilities, Games, X, YouTube); el
+  valor no va en versalitas para que los usuarios se lean bien.
 - **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
   barra de lenguajes, adaptadas a ambos temas.
 
-## 🎮 Juegos embebidos
+## 🎮 Juegos → Pineapple Games
 
-`juegos.html` carga cada juego en un `iframe` solo cuando pulsas «Jugar aquí»
-(`data-game="URL"` en el botón; `assets/js/main.js` lo conecta). Botón «Expulsar juego»
-para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se embeben.
+`juegos.html` es el escaparate: banda de acceso al hub y una tarjeta por juego que
+enlaza directo a su página de Pineapple Games. El deep-link `/juegos?g=<id>` redirige
+al juego del hub con el mapa de `assets/js/main.js`.
 
 ## 👥 Equipo
 
@@ -136,6 +138,9 @@ para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se
   con fundido en los bordes, brillo en botones, aparición al hacer scroll con
   easing común (`--ease`) y aperturas con fundido (desplegable, menú móvil, pager,
   FAQ) — todo respeta `prefers-reduced-motion`.
+- 🎴 Iconografía propia: monogramas tipográficos en las tarjetas (D, FN, iR, SG,
+  TU, SC, BD, PG) y marcadores numerados en valores/timeline — cero emojis como
+  iconos.
 - 📐 Layout editorial: contenedor de 1120px, secciones de 5rem de aire, héroes y
   títulos alineados a la izquierda con filete ámbar y regla inferior; el centro
   se reserva para lo que de verdad es central (404, algunos formularios).

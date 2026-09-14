@@ -443,25 +443,6 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
 }
 
 /* Typing del hero: efecto local (sin servicios externos) */
-.typing-line {
-  margin: 1.15rem 0 .4rem;
-  min-height: 1.7em;
-  font-size: clamp(1.3rem, 3.2vw, 1.8rem);
-  font-weight: 700;
-  letter-spacing: -.015em;
-  color: var(--text);
-}
-.typing-line .tw-text { color: var(--brand-strong); }
-.tw-caret {
-  display: inline-block;
-  width: 2px;
-  height: 1.05em;
-  background: var(--brand);
-  margin-left: 2px;
-  vertical-align: -.15em;
-  animation: blink 1s steps(1) infinite;
-}
-@keyframes blink { 50% { opacity: 0; } }
 
 .hero h1 {
   font-size: clamp(2.2rem, 6.4vw, 3.6rem);
@@ -470,15 +451,10 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   letter-spacing: -.025em;
 }
 .hero h1 .grad {
-  background: linear-gradient(92deg, var(--brand), var(--brand-soft), var(--brand));
-  background-size: 200% auto;
+  background: linear-gradient(92deg, var(--brand), var(--brand-soft));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 6s linear infinite;
-}
-@keyframes shimmer {
-  to { background-position: 200% center; }
 }
 
 .lead {
@@ -500,48 +476,53 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
 
 /* Insignias locales estilo for-the-badge (sin servicios externos) */
 .badges-row {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   display: flex;
   flex-wrap: wrap;
-  gap: .5rem;
-  justify-content: center;
+  gap: .7rem;
+  justify-content: flex-start;
 }
+/* Insignia sobria: icono + nombre + descriptor, una sola superficie */
 .x-badge {
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
+  gap: .65rem;
+  padding: .45rem .95rem .45rem .5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   text-decoration: none;
-  border-radius: 8px;
+  color: var(--text);
+  transition: transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease), background-color .25s ease;
+}
+.x-badge:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 166, 35, .55);
+  box-shadow: var(--shadow-md);
+}
+.x-badge .bi {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  flex: 0 0 auto;
   overflow: hidden;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  box-shadow: var(--shadow-sm);
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 }
-.x-badge:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--brand), var(--shadow-md); }
-.x-badge:active { transform: translateY(0); filter: brightness(.96); }
-.x-badge .k {
-  background: #34301f;
-  color: #f5f0e4;
-  padding: .45rem .7rem;
-  display: inline-flex;
-  align-items: center;
+.x-badge .bi img { width: 22px; height: 22px; object-fit: contain; }
+.x-badge .bi .mi { color: var(--brand); }
+html[data-theme="light"] .x-badge .bi { background: #fff; }
+.x-badge .bt {
+  display: flex;
+  flex-direction: column;
+  gap: .08rem;
+  line-height: 1.25;
 }
-html[data-theme="light"] .x-badge .k { background: #33290f; color: #fff; }
-.x-badge .v {
-  padding: .45rem .7rem;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-}
-.x-badge .v-brand  { background: #f5a623; color: #1a1408; }
-.x-badge .v-blue   { background: #4285F4; }
-.x-badge .v-dark   { background: #181717; }
-.x-badge .v-black  { background: #000; }
-.x-badge .v-red    { background: #e62117; }
-.x-badge .v-purple { background: #7c4dbe; }
-.x-badge .v-teal   { background: #0e8a72; }
+.x-badge .bt strong { font-size: .86rem; font-weight: 700; }
+.x-badge .bt small { font-size: .74rem; color: var(--text-dim); letter-spacing: .01em; }
 
 .chips {
   list-style: none;
@@ -736,10 +717,14 @@ html[data-theme="light"] .x-badge .k { background: #33290f; color: #fff; }
   box-shadow: var(--shadow-md);
 }
 .card .icon {
-  font-size: 1.7rem;
-  transition: transform .25s ease;
+  font-size: .95rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+  transition: color .2s ease;
 }
-.card:hover .icon { transform: scale(1.2) rotate(-6deg); }
+.card:hover .icon { color: var(--brand-strong); }
 .card h3 { font-size: 1.08rem; }
 .card p { font-size: .88rem; color: var(--text-dim); flex: 1; }
 
@@ -752,6 +737,14 @@ html[data-theme="light"] .x-badge .k { background: #33290f; color: #fff; }
 }
 
 /* Los logos son blancos: el tile SIEMPRE es oscuro, también en claro */
+.logo-tile.mono {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -.03em;
+  user-select: none;
+}
+.logo-tile.big.mono { font-size: 1.6rem; }
 .logo-tile {
   width: 64px;
   height: 64px;
@@ -991,32 +984,24 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
   padding: .9rem 1.1rem;
   overflow: hidden;
 }
-.post-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 42%);
-}
 .cov-no {
   position: relative;
   z-index: 1;
-  font-weight: 800;
-  font-size: .95rem;
-  letter-spacing: .08em;
-  color: rgba(255, 255, 255, .95);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .35);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .22em;
+  color: rgba(255, 255, 255, .92);
 }
 .cov-pine {
   position: absolute;
-  right: -.55rem;
-  bottom: -1.4rem;
+  right: -.35rem;
+  bottom: -1rem;
   z-index: 1;
-  font-size: 5rem;
+  font-size: 3.4rem;
   line-height: 1;
-  opacity: .28;
-  transform: rotate(-10deg);
-  transition: transform .3s ease;
-  filter: saturate(.9);
+  opacity: .16;
+  transform: rotate(-12deg);
+  transition: transform .3s var(--ease);
 }
 .post-card:hover .cov-pine { transform: rotate(-4deg) scale(1.06); }
 
@@ -1087,7 +1072,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 /* La última entrada, a todo lo ancho: portada grande a la izquierda */
 .post-card.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 42%) 1fr; }
 .post-card.featured .post-cover { height: auto; min-height: 250px; }
-.post-card.featured .cov-pine { font-size: 8.5rem; right: -1rem; bottom: -2.8rem; }
+.post-card.featured .cov-pine { font-size: 5.5rem; right: -.6rem; bottom: -1.8rem; }
 .post-card.featured .post-card-body { justify-content: center; gap: .7rem; padding: 2rem 2.2rem; }
 .post-card.featured h3 { font-size: clamp(1.5rem, 3vw, 1.9rem); line-height: 1.2; }
 .post-card.featured p { font-size: .97rem; -webkit-line-clamp: 4; }
@@ -1659,7 +1644,6 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
   .hero [data-animate] { opacity: 1; animation: none; }
   .orb { animation: none; }
   .ticker-track { animation: none; }
-  .hero h1 .grad { animation: none; }
   .wave-track { animation: none; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
