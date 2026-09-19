@@ -1880,15 +1880,15 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 html[data-theme="light"] {
   --ink: #1c1812;
   /* tema claro = papel crema, no blanco */
-  --bg: #f4ecd7;
-  --bg-soft: #ece1c6;
-  --bg-deep: #e3d6b4;
-  --card: #fdf8ec;
-  --card-hover: #f6eed9;
-  --border: rgba(28, 24, 18, .38);
+  --bg: #faf6ec;
+  --bg-soft: #f2ecdc;
+  --bg-deep: #e9e1cb;
+  --card: #fffdf7;
+  --card-hover: #f7f1e2;
+  --border: rgba(28, 24, 18, .34);
   --text: #201a10;
   --text-dim: #6f6653;
-  --header-bg: rgba(244, 236, 215, .92);
+  --header-bg: rgba(250, 246, 236, .92);
 }
 
 /* --- papel con grano --- */
@@ -1901,17 +1901,17 @@ body::after {
   pointer-events: none;
   background-image: var(--grain);
   background-size: 240px 240px;
-  opacity: .06;
+  opacity: .035;
   mix-blend-mode: overlay;
 }
-html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
+html[data-theme="light"] body::after { opacity: .05; mix-blend-mode: multiply; }
 
 ::selection { background: var(--brand); color: #1a1408; }
 
 /* --- rotulador para kickers y eyebrows --- */
 .kicker, .eyebrow, .kicker-label {
   font-family: var(--f-hand);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   text-transform: none;
   letter-spacing: .02em;
@@ -1950,13 +1950,11 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
    Botones: tinta dura, sin brillos, con efecto de "pulsar"
    ============================================================ */
 .btn {
-  border-radius: 2px;
+  border-radius: 8px;
   border: 2px solid var(--ink);
   font-family: var(--f-body);
   font-weight: 700;
-  font-size: .8rem;
-  text-transform: uppercase;
-  letter-spacing: .06em;
+  font-size: .84rem;
   box-shadow: 3px 3px 0 var(--ink);
   transition: transform .1s ease, box-shadow .1s ease, background-color .15s ease, color .15s ease, border-color .15s ease;
 }
@@ -1984,11 +1982,9 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
    ============================================================ */
 .site-header { border-bottom: 2px solid var(--ink); }
 .main-nav a, .drop-btn {
-  border-radius: 0;
-  font-weight: 700;
-  font-size: .78rem;
-  text-transform: uppercase;
-  letter-spacing: .06em;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: .84rem;
 }
 .main-nav a:hover {
   background: transparent;
@@ -2003,31 +1999,29 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
 }
 .dropdown-menu {
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 6px;
   box-shadow: 6px 6px 0 rgba(245, 166, 35, .9);
   padding: .45rem;
 }
 .dropdown-menu a {
-  border-radius: 0;
+  border-radius: 4px;
   font-weight: 600;
-  text-transform: uppercase;
-  font-size: .78rem;
-  letter-spacing: .04em;
+  font-size: .86rem;
 }
 .dropdown-menu a:hover { background: var(--card-hover); box-shadow: inset 3px 0 0 var(--brand); }
 .dropdown-menu a[aria-current="page"] { background: var(--brand); color: #1a1408; }
-.nav-toggle { border: 2px solid var(--ink); border-radius: 2px; background: var(--card); }
+.nav-toggle { border: 2px solid var(--ink); border-radius: 6px; background: var(--card); }
 
 /* ============================================================
    Tarjetas: tinta y sombra dura; al pasar, se empinan
    ============================================================ */
 .card {
   border: 2px solid var(--ink);
-  border-radius: 3px;
+  border-radius: 6px;
   box-shadow: 5px 5px 0 rgba(245, 166, 35, .85);
 }
 .card:hover {
-  transform: translate(-3px, -3px) rotate(-.4deg);
+  transform: translate(-3px, -3px);
   border-color: var(--ink);
   box-shadow: 8px 8px 0 rgba(245, 166, 35, .9);
 }
@@ -2036,7 +2030,7 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
 .card .icon svg { width: 32px; height: 32px; }
 
 /* tiles de logo: con tinta; los de letra, en color riso */
-.logo-tile { border: 2px solid var(--ink); border-radius: 3px; }
+.logo-tile { border: 2px solid var(--ink); border-radius: 6px; }
 .logo-tile.emoji-tile {
   font-family: var(--f-display);
   font-size: 1.45rem;
@@ -2056,12 +2050,11 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
 /* insignias → pegatinas */
 .badge {
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 6px;
   font-weight: 700;
   text-transform: uppercase;
   font-size: .66rem;
   letter-spacing: .07em;
-  transform: rotate(1.5deg);
   box-shadow: 2px 2px 0 var(--ink);
   background: var(--card);
   color: var(--text);
@@ -2073,38 +2066,34 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
    Píldoras → etiquetas a rotulador
    ============================================================ */
 .pill, .post-card-head .pill, .post-hero-meta .pill, .md-post .post-meta .pill {
-  font-family: var(--f-hand);
+  font-family: var(--f-body);
   font-weight: 600;
-  font-size: 1.02rem;
-  border: 1.5px dashed var(--text-dim);
-  border-radius: 0;
-  padding: 0 .45rem;
+  font-size: .78rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: .1rem .65rem;
   color: var(--text-dim);
-  line-height: 1.4;
+  line-height: 1.5;
   background: transparent;
 }
-.post-card-head .pill:nth-child(odd)  { transform: rotate(-1.4deg); }
-.post-card-head .pill:nth-child(even) { transform: rotate(1.2deg); }
 .post-hero-meta .pill.author { border-style: solid; color: var(--brand-strong); }
 .post-card-head .pill-brand, .md-post .post-meta .pill-brand {
   background: var(--brand);
   color: #1a1408;
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 999px;
   font-weight: 700;
-  transform: rotate(-2deg);
   box-shadow: 2px 2px 0 var(--ink);
 }
 
 /* ============================================================
-   Portada (hero de index): titular póster + pegatina
+   Portada (hero de index): titular póster
    ============================================================ */
-.hero-sticker-line { margin: .5rem 0 0; }
 .hero-h1 { margin-top: 1.4rem; }
 .h1-hand {
   display: block;
   font-family: var(--f-hand);
-  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
   font-weight: 700;
   color: var(--brand-strong);
   line-height: 1.05;
@@ -2113,7 +2102,7 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
   display: block;
   font-family: var(--f-display);
   font-weight: 400;
-  font-size: clamp(3rem, 11vw, 6.2rem);
+  font-size: clamp(2.7rem, 8.5vw, 4.6rem);
   line-height: .95;
   letter-spacing: -.015em;
   color: var(--text);
@@ -2128,43 +2117,17 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
-.hero-note {
-  font-family: var(--f-hand);
-  font-size: 1.2rem;
-  color: var(--text-dim);
-  transform: rotate(-2deg);
-  align-self: center;
-}
-
-/* pegatina genérica */
-.sticker {
-  display: inline-block;
-  font-family: var(--f-hand);
-  font-weight: 700;
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: .3rem .75rem;
-  background: var(--riso-red);
-  color: #fffaf0;
-  border: 2px solid var(--ink);
-  border-radius: 2px;
-  box-shadow: 3px 3px 0 var(--ink);
-  transform: rotate(-3deg);
-}
-
 /* insignias del hero (badges-row) → pegatinas */
 .badges-row { gap: .8rem .9rem; }
 .x-badge {
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 6px;
   box-shadow: 3px 3px 0 var(--brand);
   background: var(--card);
-  transform: rotate(-1.6deg);
   overflow: hidden;
 }
-.badges-row .x-badge:nth-child(even) { transform: rotate(1.4deg); }
 .x-badge:hover {
-  transform: rotate(0deg) translate(-2px, -2px);
+  transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0 var(--brand);
   border-color: var(--ink);
 }
@@ -2172,10 +2135,11 @@ html[data-theme="light"] body::after { opacity: .09; mix-blend-mode: multiply; }
 .x-badge .k {
   background: var(--ink);
   color: var(--bg);
-  font-family: var(--f-hand);
+  font-family: var(--f-body);
   font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: .02em;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
 }
 html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg); }
 .x-badge .v {
@@ -2190,40 +2154,25 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
 
 /* chips → etiquetas a rotulador */
 .chips li {
-  font-family: var(--f-hand);
-  font-size: 1.08rem;
+  font-family: var(--f-body);
+  font-size: .82rem;
   font-weight: 600;
   background: transparent;
-  border: 1.5px dashed var(--text-dim);
-  border-radius: 0;
-  padding: 0 .5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: .1rem .65rem;
 }
-.chips li:nth-child(odd) { transform: rotate(-1.2deg); }
-.chips li:nth-child(even) { transform: rotate(1deg); }
-.chips li:hover { transform: rotate(0deg); border-color: var(--brand); color: var(--text); }
+.chips li:hover { border-color: var(--brand); color: var(--text); }
 
 /* ============================================================
    Valores → notas pegadas con cinta (dibujos a línea)
    ============================================================ */
-.note { position: relative; }
-.note::before {
-  /* trocito de cinta arriba */
-  content: "";
-  position: absolute;
-  top: -11px;
-  left: 50%;
-  width: 64px;
-  height: 18px;
-  transform: translateX(-50%) rotate(-2deg);
-  background: rgba(245, 166, 35, .35);
-  border: 1.5px dashed rgba(245, 166, 35, .55);
-}
-.note-a { background: rgba(245, 166, 35, .13);  transform: rotate(-1.4deg); }
-.note-b { background: rgba(255, 92, 57, .12);   transform: rotate(1.1deg); }
-.note-c { background: rgba(31, 178, 166, .12);  transform: rotate(-.9deg); }
-.note-d { background: rgba(77, 124, 255, .13);  transform: rotate(1.5deg); }
-.note:hover { transform: rotate(0deg) translate(-2px, -2px); }
-.note h3 { font-family: var(--f-hand); font-weight: 700; font-size: 1.5rem; }
+.note-a { background: rgba(245, 166, 35, .13); }
+.note-b { background: rgba(255, 92, 57, .12); }
+.note-c { background: rgba(31, 178, 166, .12); }
+.note-d { background: rgba(77, 124, 255, .13); }
+.note:hover { transform: translate(-2px, -2px); }
+.note h3 { font-family: var(--f-body); font-weight: 700; font-size: 1.12rem; }
 .note .icon { color: var(--brand-strong); }
 
 /* ============================================================
@@ -2250,17 +2199,17 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
 .stats .stat:nth-child(2) .stat-num { border-color: var(--riso-red); }
 .stats .stat:nth-child(3) .stat-num { border-color: var(--riso-teal); }
 .stats .stat:nth-child(4) .stat-num { border-color: var(--riso-blue); }
-.stat-label { font-weight: 700; font-size: .95rem; text-transform: uppercase; letter-spacing: .05em; }
+.stat-label { font-weight: 700; font-size: .98rem; }
 
 /* banner del blog → nota discontinue */
 .banner-cta {
-  border: 2px dashed var(--ink);
-  border-radius: 3px;
-  background: transparent;
-  box-shadow: none;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--card);
+  box-shadow: 5px 5px 0 rgba(245, 166, 35, .85);
 }
 .banner-cta strong { font-family: var(--f-display); font-weight: 400; letter-spacing: 0; }
-.banner-cta span { font-family: var(--f-hand); font-size: 1.15rem; color: var(--text-dim); }
+.banner-cta span { font-size: .92rem; color: var(--text-dim); }
 
 /* ============================================================
    Ticker: cinta de imprenta
@@ -2278,11 +2227,11 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
    ============================================================ */
 .post-card {
   border: 2px solid var(--ink);
-  border-radius: 3px;
+  border-radius: 6px;
   box-shadow: 5px 5px 0 rgba(245, 166, 35, .85);
 }
 .post-card:hover {
-  transform: translate(-3px, -3px) rotate(-.3deg);
+  transform: translate(-3px, -3px);
   border-color: var(--ink);
   box-shadow: 8px 8px 0 rgba(245, 166, 35, .9);
 }
@@ -2304,20 +2253,19 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
   background: var(--ink);
   color: var(--bg);
   padding: .12rem .5rem;
-  border-radius: 0;
-  transform: rotate(-2.5deg);
+  border-radius: 4px;
   text-shadow: none;
 }
 .post-cover .cov-pine { opacity: .34; }
 .post-card.featured .cov-pine { opacity: .34; }
 
 /* banner del hero de la entrada */
-.post-banner { border-radius: 3px; box-shadow: 6px 6px 0 rgba(245, 166, 35, .8); }
+.post-banner { border-radius: 6px; box-shadow: 6px 6px 0 rgba(245, 166, 35, .8); }
 
 /* anterior / siguiente */
 .pager-card {
   border: 2px solid var(--ink);
-  border-radius: 3px;
+  border-radius: 6px;
   box-shadow: 4px 4px 0 rgba(245, 166, 35, .85);
   transition: transform .12s ease, box-shadow .12s ease;
 }
@@ -2331,14 +2279,14 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
 /* artículo */
 .md-post blockquote { border-radius: 0 2px 2px 0; }
 .md-post figure img { border-radius: 2px; }
-.notice { border: 2px dashed var(--ink); border-radius: 3px; }
+.notice { border: 2px solid var(--ink); border-radius: 6px; }
 
 /* ============================================================
    Formularios, footer y detalles
    ============================================================ */
 .contact-form input, .contact-form select, .contact-form textarea {
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 6px;
   background: var(--card);
   font-family: var(--f-body);
 }
@@ -2354,12 +2302,11 @@ html[data-theme="light"] .x-badge .k { background: var(--ink); color: var(--bg);
 }
 
 .site-footer { border-top: 2px solid var(--ink); }
-.footer-col h3 { font-family: var(--f-hand); font-size: 1.4rem; color: var(--brand-strong); }
-.footer-bottom { border-top: 2px dashed var(--border) !important; }
+.footer-col h3 { font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--brand-strong); }
 
 .to-top {
   border: 2px solid var(--ink);
-  border-radius: 2px;
+  border-radius: 8px;
   background: var(--brand);
   color: #1a1408;
   box-shadow: 3px 3px 0 var(--ink);
