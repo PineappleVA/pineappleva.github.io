@@ -422,8 +422,8 @@
         var head =
           '<span class="post-card-head">' +
           (idx === 0 ? '<span class="pill pill-brand">\u00DAltima entrada</span>' : "") +
-          (date ? '<span class="pill">\uD83D\uDCC5 ' + escapeHtml(date) + "</span>" : "") +
-          '<span class="pill">\u2615 ' + mins + " min</span>" +
+          (date ? '<span class="pill">' + escapeHtml(date) + "</span>" : "") +
+          '<span class="pill">' + mins + " min</span>" +
           "</span>";
 
         a.innerHTML =
@@ -523,8 +523,8 @@
         /* fecha, tiempo de lectura y autor bajo el titular */
         if (metaEl) {
           metaEl.innerHTML =
-            (date ? '<span class="pill">\uD83D\uDCC5 ' + escapeHtml(date) + "</span>" : "") +
-            '<span class="pill">\u2615 ' + mins + " min</span>" +
+            (date ? '<span class="pill">' + escapeHtml(date) + "</span>" : "") +
+            '<span class="pill">' + mins + " min</span>" +
             '<span class="pill author">Por Pineapple</span>';
           metaEl.removeAttribute("hidden");
         }

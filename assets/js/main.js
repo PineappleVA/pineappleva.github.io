@@ -1,7 +1,7 @@
 /* ============================================================
    Pineapple — Portafolio · Scripts comunes
    Sin dependencias: tema claro/oscuro, menú móvil, desplegable
-   de Información, barra de progreso, contadores, tilt 3D y
+   de Información, barra de progreso, contadores y
    reproductor de juegos. (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
@@ -67,31 +67,6 @@
       if (e.key === 'Escape') setOpen(false);
     });
   });
-
-  /* ---------- Typing del hero (local, sin servicios externos) ---------- */
-  var tw = document.getElementById('typeline');
-  if (tw) {
-    var words = [];
-    try { words = JSON.parse(tw.getAttribute('data-words')) || []; } catch (e) { words = []; }
-    if (!words.length) words = [tw.textContent];
-
-    if (reduceMotion) {
-      tw.textContent = words[0];
-    } else {
-      var wi = 0, ci = words[0].length, deleting = false;
-      function tick() {
-        var word = words[wi];
-        ci += deleting ? -1 : 1;
-        tw.textContent = word.slice(0, ci);
-        var delay = deleting ? 38 : 78;
-        if (!deleting && ci === word.length) { delay = 2100; deleting = true; }
-        else if (deleting && ci === 0) { deleting = false; wi = (wi + 1) % words.length; delay = 380; }
-        window.setTimeout(tick, delay);
-      }
-      /* arranca tras la animación de entrada del hero */
-      window.setTimeout(tick, 1400);
-    }
-  }
 
   /* ---------- Año del pie ---------- */
   var year = document.getElementById('year');
@@ -184,28 +159,6 @@
     } else {
       counters.forEach(animateCounter);
     }
-  }
-
-  /* ---------- Efecto tilt 3D ---------- */
-  var finePointer = window.matchMedia('(pointer: fine)').matches;
-  if (finePointer && !reduceMotion) {
-    document.querySelectorAll('.tilt').forEach(function (card) {
-      var raf = null;
-      card.addEventListener('pointermove', function (e) {
-        var rect = card.getBoundingClientRect();
-        var px = (e.clientX - rect.left) / rect.width - 0.5;
-        var py = (e.clientY - rect.top) / rect.height - 0.5;
-        if (raf) cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(function () {
-          card.style.transform =
-            'perspective(700px) rotateX(' + (-py * 5).toFixed(2) + 'deg) rotateY(' + (px * 5).toFixed(2) + 'deg) translateY(-4px)';
-        });
-      });
-      card.addEventListener('pointerleave', function () {
-        if (raf) cancelAnimationFrame(raf);
-        card.style.transform = '';
-      });
-    });
   }
 
   /* ---------- Juegos: /juegos?g=<id> lleva a su página de Pineapple Games.

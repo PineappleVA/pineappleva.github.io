@@ -112,7 +112,7 @@ Pipeline técnico (`assets/js/blog.js`):
   2. Si no, se respeta `prefers-color-scheme` del sistema.
   3. Si nada de lo anterior, oscuro (el de la marca).
 - Todo el color vive en **variables CSS**: `:root` define el tema oscuro y
-  `html[data-theme="light"]` lo sobreescribe (blanco limpio con acentos ámbar).
+  `html[data-theme="light"]` lo sobreescribe (papel crema con acentos ámbar).
 - Detalles de adaptación del tema claro:
   - El logo de la piña es blanco, así que en claro se invierte con `filter: invert(1)`.
   - Los *tiles* de logos (`school-utilities.png`, `y.png`) **siguen siendo negros** en claro:
@@ -120,6 +120,22 @@ Pipeline técnico (`assets/js/blog.js`):
   - Las insignias de estado tienen colores específicos por tema (legibilidad).
   - El botón alterna sol/luna con CSS (`html[data-theme]`) y guarda en `localStorage`.
   - `meta name="theme-color"` cambia al alternar (color del navegador móvil).
+
+## 🖨️ Capa de diseño «riso» (fanzine)
+
+Sobre los estilos base hay una **capa final** en `assets/css/style.css`
+(buscad `RISO · capa fanzine`) que redefine el lenguaje visual sin tocar los
+componentes originales — en empates de especificidad gana por ir después:
+
+- **Tipografía**: Space Grotesk (texto), Archivo Black (titulares póster) y
+  Caveat (kickers, etiquetas, notas) vía Google Fonts con `display=swap`.
+- **Tinta y papel**: bordes de 2px sólidos, sombras duras desplazadas en ámbar
+  y botones que se «hunden» al pulsarlos (`translate` + sombra al mínimo).
+- **Tema claro = papel crema** (`#f4ecd7`) con grano de papel (`feTurbulence`
+  como data-URI con `mix-blend-mode`); el oscuro mantiene la tinta clara.
+- **Portadas del blog**: tintas riso planas (rojo/teal/azul/violeta/rosa) con
+  trama de puntos; los emoji de interfaz se retiraron (la piña 🍍 queda solo
+  como marca) y los tiles de juegos son letras póster sobre tinta.
 
 ## 🌊 Olas (cómo funcionan por dentro)
 
@@ -145,8 +161,8 @@ Los servicios de imágenes del perfil (typing SVG, shields.io, github-readme-sta
 fallan a menudo (rate limits o caídas), así que se sustituyeron por equivalentes
 locales que **siempre se renderizan**:
 
-- **Typing del hero**: efecto máquina de escribir en `assets/js/main.js`
-  (`#typeline` + `data-words`), con caret parpadeante CSS.
+- **Titular del hero**: pegatina a rotulador (`Caveat`) + nombre póster en
+  `Archivo Black` con subrayado ondulado SVG, sin efectos de máquina de escribir.
 - **Insignias** (`.x-badge`): dos segmentos HTML/CSS con los colores de cada
   plataforma, mismo look `for-the-badge`.
 - **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
