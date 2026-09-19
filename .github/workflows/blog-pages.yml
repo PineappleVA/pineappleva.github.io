@@ -1,0 +1,58 @@
+# Páginas estáticas de las entradas del blog
+# ------------------------------------------------------------
+# GitHub Pages solo sirve archivos reales: /blog/<slug> caería en el
+# 404 (con estado HTTP 404), y Google no indexa lo que responde 404.
+# Este workflow genera una copia indexable de entrada.html en
+# blog/<slug>/index.html para cada carpeta de blog/posts/, de modo que
+# la entrada se sirva con estado 200 y la URL limpia siga funcionando
+# igual (la plantilla lee el slug del pathname).
+#
+# Se dispara solo cuando cambian las entradas o la plantilla, y se
+# commitea con [skip ci] para no re-dispararse a sí mismo.
+
+name: Blog — páginas estáticas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "blog/posts/**"
+      - "entrada.html"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generar blog/<slug>/index.html desde entrada.html
+        run: |
+          set -e
+          # una página por entrada (sin el noindex de la plantilla)
+          for d in blog/posts/*/; do
+            slug="$(basename "$d")"
+            mkdir -p "blog/$slug"
+            sed -e '/<meta name="robots" content="noindex">/d' entrada.html > "blog/$slug/index.html"
+          done
+          # limpia las páginas de entradas borradas
+          for d in blog/*/; do
+            name="$(basename "$d")"
+            [ "$name" = "posts" ] && continue
+            [ -d "blog/posts/$name" ] || rm -rf "$d"
+          done
+
+      - name: Commit (sin re-disparar el workflow)
+        run: |
+          git config user.name "pineapple-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog
+          if git diff --cached --quiet; then
+            echo "Sin cambios: las páginas ya estaban generadas."
+            exit 0
+          fi
+          git commit -m "ci: páginas estáticas del blog [skip ci]"
+          git push

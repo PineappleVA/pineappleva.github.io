@@ -105,6 +105,12 @@
         var doc = new DOMParser().parseFromString(html, "text/html");
         if (!doc || !doc.body) throw new Error("documento vacío");
 
+        /* la página que llega ya no es una plantilla: si trae noindex
+           (entrada.html lo lleva para no indexar la plantilla), fuera —
+           en su URL limpia sí debe poder indexarse */
+        var robots = doc.head && doc.head.querySelector('meta[name="robots"]');
+        if (robots) robots.remove();
+
         /* 1) URL limpia en la barra antes de ejecutar los scripts nuevos */
         if (history.replaceState) history.replaceState(null, "", target.url);
 

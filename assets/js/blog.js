@@ -529,12 +529,80 @@
           metaEl.removeAttribute("hidden");
         }
 
+        /* ---------- meta dinámicas: canonical, description, og y JSON-LD ---------- */
+        var head = document.head || document.getElementsByTagName("head")[0];
+        var desc = extractExcerpt(md) || "Una entrada del blog de Pineapple.";
+        var absUrl = location.origin + "/blog/" + encodeURIComponent(post.slug);
+        var dateIso = (String(post.file).match(/^\d{4}-\d{2}-\d{2}/) || [""])[0];
+
+        function upsertMeta(attr, key, content) {
+          var el = head.querySelector('meta[' + attr + '="' + key + '"]');
+          if (!el) {
+            el = document.createElement("meta");
+            el.setAttribute(attr, key);
+            head.appendChild(el);
+          }
+          el.setAttribute("content", content);
+          return el;
+        }
+
+        if (head) {
+          /* una entrada real es indexable (la plantilla /entrada no lo es) */
+          var robots = head.querySelector('meta[name="robots"]');
+          if (robots) robots.remove();
+
+          /* canonical → la URL limpia de la entrada */
+          var canonical = head.querySelector('link[rel="canonical"]');
+          if (!canonical) {
+            canonical = document.createElement("link");
+            canonical.setAttribute("rel", "canonical");
+            head.appendChild(canonical);
+          }
+          canonical.setAttribute("href", absUrl);
+
+          upsertMeta("name", "description", desc);
+          upsertMeta("property", "og:title", title);
+          upsertMeta("property", "og:description", desc);
+          upsertMeta("property", "og:url", absUrl);
+          upsertMeta("property", "og:type", "article");
+          if (dateIso) upsertMeta("property", "article:published_time", dateIso);
+          upsertMeta("property", "og:image",
+            post.banner ? location.origin + localDir2 + "/" + post.slug + "/assets/" + post.banner
+                        : location.origin + "/assets/img/icon-512.png");
+
+          /* datos estructurados para buscadores */
+          var ld = head.querySelector('script[type="application/ld+json"]');
+          if (!ld) {
+            ld = document.createElement("script");
+            ld.setAttribute("type", "application/ld+json");
+            head.appendChild(ld);
+          }
+          ld.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: title,
+            description: desc,
+            datePublished: dateIso || undefined,
+            dateModified: dateIso || undefined,
+            image: [post.banner ? location.origin + localDir2 + "/" + post.slug + "/assets/" + post.banner
+                                : location.origin + "/assets/img/icon-512.png"],
+            inLanguage: "es",
+            mainEntityOfPage: absUrl,
+            author: { "@type": "Organization", name: "Pineapple", url: location.origin + "/" },
+            publisher: { "@type": "Organization", name: "Pineapple", url: location.origin + "/" }
+          });
+        }
+
         /* banner de la entrada, si tiene (o se prueba, en modo manifiesto) */
         if (bannerEl) {
           var bFile = post.banner || (data.optimistic ? "banner.png" : "");
           if (bFile) {
             bannerEl.addEventListener("error", function () { bannerEl.setAttribute("hidden", ""); });
-            bannerEl.addEventListener("load", function () { bannerEl.classList.add("show"); });
+            bannerEl.addEventListener("load", function () {
+              bannerEl.classList.add("show");
+              /* el banner que carga es la mejor og:image */
+              if (head) upsertMeta("property", "og:image", bannerEl.src);
+            });
             bannerEl.src = localDir2 + "/" + post.slug + "/assets/" + bFile;
             bannerEl.removeAttribute("hidden");
           } else {

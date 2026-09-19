@@ -88,6 +88,19 @@ Pipeline técnico (`assets/js/blog.js`):
 - **Entrada** (`/blog/<slug>`): hero con titular, fecha, tiempo de lectura,
   autor y banner; artículo a medida con imágenes con pie de foto, botón
   «Compartir» (copiar enlace) y navegación Anterior/Siguiente.
+- **Meta dinámicas** (`blog.js`): al renderizar una entrada se actualizan
+  `canonical` (a la URL limpia), `description` (el extracto), `og:*`
+  (título, descripción, URL, imagen = banner) y se añade JSON-LD
+  `BlogPosting`. La plantilla `entrada.html` lleva `noindex` para no
+  indexarse a secas; el enrutador del 404 y el render lo retiran cuando
+  la página es una entrada de verdad.
+- **Indexabilidad real** (`.github/workflows/blog-pages.yml`): GitHub Pages
+  serviría `/blog/<slug>` con estado 404 (y Google no indexa un 404), así
+  que un workflow genera `blog/<slug>/index.html` (copia indexable de
+  `entrada.html`) cada vez que cambian las entradas. Con eso la URL
+  limpia responde 200 y el sitemap no da errores en Search Console.
+- **Sitemap** (`sitemap.xml`): todas las páginas y las entradas, con
+  `lastmod` (la fecha del `.md` para las entradas).
 - **Juegos → Pineapple Games**: `juegos.html` es el escaparate; cada tarjeta enlaza
   a su página del hub (y el deep-link `/juegos?g=<id>` redirige allí directamente
   mediante el mapa de `assets/js/main.js`).
