@@ -121,21 +121,21 @@ Pipeline técnico (`assets/js/blog.js`):
   - El botón alterna sol/luna con CSS (`html[data-theme]`) y guarda en `localStorage`.
   - `meta name="theme-color"` cambia al alternar (color del navegador móvil).
 
-## 🖨️ Capa de diseño «riso» (fanzine)
+## 🧼 Capa de diseño «minimal»
 
 Sobre los estilos base hay una **capa final** en `assets/css/style.css`
-(buscad `RISO · capa fanzine`) que redefine el lenguaje visual sin tocar los
-componentes originales — en empates de especificidad gana por ir después:
+(buscad `MINIMAL · capa de estilo`) que redefine el lenguaje visual sin tocar
+los componentes originales — en empates de especificidad gana por ir después:
 
-- **Tipografía**: Space Grotesk (texto), Archivo Black (titulares póster) y
-  Caveat (kickers, etiquetas, notas) vía Google Fonts con `display=swap`.
-- **Tinta y papel**: bordes de 2px sólidos, sombras duras desplazadas en ámbar
-  y botones que se «hunden» al pulsarlos (`translate` + sombra al mínimo).
-- **Tema claro = papel crema** (`#f4ecd7`) con grano de papel (`feTurbulence`
-  como data-URI con `mix-blend-mode`); el oscuro mantiene la tinta clara.
-- **Portadas del blog**: tintas riso planas (rojo/teal/azul/violeta/rosa) con
-  trama de puntos; los emoji de interfaz se retiraron (la piña 🍍 queda solo
-  como marca) y los tiles de juegos son letras póster sobre tinta.
+- **Tipografía**: Space Grotesk para todo y Archivo Black reservado a la
+  palabra grande del hero, vía Google Fonts con `display=swap`.
+- **Superficies tranquilas**: bordes de 1px, radios generosos (10–14px) y
+  sombras suaves que solo aparecen al pasar el ratón.
+- **Un solo acento**: el ámbar de la marca (botón primario, activo del menú,
+  foco de los formularios, hover de las tarjetas).
+- **Tema claro** blanco cálido (`#fafaf7`); el oscuro es el de la marca.
+- Los emoji de interfaz se retiraron (la piña 🍍 queda solo como marca) y los
+  tiles de juegos son letras sobre colores planos.
 
 ## 🌊 Olas (cómo funcionan por dentro)
 
