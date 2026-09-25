@@ -101,6 +101,12 @@ Pipeline técnico (`assets/js/blog.js`):
   limpia responde 200 y el sitemap no da errores en Search Console.
 - **Sitemap** (`sitemap.xml`): todas las páginas y las entradas, con
   `lastmod` (la fecha del `.md` para las entradas).
+- **Entidad «Pineapple VA»** (para buscadores y motores de respuestas con IA):
+  `Organization` JSON-LD en el índice con `alternateName` (Pineapple/PineappleVA),
+  descripción y `sameAs` a GitHub/X/YouTube; `FAQPage` JSON-LD en Contacto;
+  `llms.txt` en la raíz con el resumen de quién somos y qué hacemos; y
+  `robots.txt` que da la bienvenida explícita a los crawlers de IA (GPTBot,
+  ClaudeBot, PerplexityBot…). Títulos y `og:site_name` usan «Pineapple VA».
 - **Juegos → Pineapple Games**: `juegos.html` es el escaparate; cada tarjeta enlaza
   a su página del hub (y el deep-link `/juegos?g=<id>` redirige allí directamente
   mediante el mapa de `assets/js/main.js`).
@@ -198,7 +204,7 @@ para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se
 - 🇪🇸 Contenido en español.
 - ♿ HTML semántico, navegación por teclado, foco visible, desplegable accesible
   (`aria-expanded`, cierre con Escape/clic fuera).
-- 🔍 SEO: Open Graph, Twitter Cards, JSON-LD, `sitemap.xml`, `robots.txt`.
+- 🔍 SEO: Open Graph, Twitter Cards, JSON-LD, `sitemap.xml`, `robots.txt`, `llms.txt` y entidad «Pineapple VA» para las respuestas de IA.
 - 🚫 Sin frameworks ni dependencias de paquetería.
 
 ## Estructura
@@ -210,10 +216,10 @@ entrada.html           ← plantilla de entrada (se sirve en /blog/<slug>)
 blog/posts/*.md        ← entradas (AAAA-MM-DD-titulo.md)
 blog/posts/posts.json  ← manifiesto de respaldo
 assets/css/style.css   ← estilos (temas dark/light por variables)
-assets/js/main.js      ← tema, menú, desplegable, progreso, contadores, tilt, redirección ?g=
+assets/js/main.js      ← tema, menú, desplegable, progreso, contadores, redirección ?g=
 assets/js/blog.js      ← pipeline Markdown: índice + página de entrada
 assets/img/            ← logos oficiales
-robots.txt · sitemap.xml
+robots.txt · sitemap.xml · llms.txt
 ```
 
 ## Probar en local
