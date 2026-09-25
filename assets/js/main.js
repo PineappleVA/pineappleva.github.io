@@ -170,6 +170,7 @@
       'dopamina': 'dopamina',
       'fnas': 'fine-at-skibidi',
       'iris': 'iris-games',
+      'imtlazarus': 'imtlazarus-games',
       'simulagoal': 'simulagoal',
       'trade-up': 'trade-up'
     };
