@@ -52,14 +52,18 @@ Pipeline técnico (`assets/js/blog.js`):
 
 - **Listado**: UNA llamada a la API de GitHub (`git/trees?recursive=1`) trae el
   árbol completo del repo: de ahí salen las carpetas de `blog/posts/`, el `.md`
-  de cada una y si tiene `assets/banner.*`. Se cachea en `localStorage` media
-  hora para no chocar con el límite de la API.
-- **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el
-  manifiesto `blog/posts/posts.json` (acepta el formato nuevo y el antiguo de
-  nombres con fecha). Fuera del sitio real (local con `serve.py` o una vista
-  previa) el listado se lee **siempre** del manifiesto: el árbol de `main` no
-  coincide con lo que sirve el servidor. Por eso `posts.json` se mantiene al
-  día con cada entrada nueva (slug, `.md` y banner).
+  de cada una y si tiene `assets/banner.*`. Se guarda en `localStorage` y se
+  muestra al instante; en cada visita, si han pasado cinco minutos desde la
+  última consulta, se revalida en segundo plano (`cache: "no-cache"`, para
+  validar también la respuesta HTTP). Si el
+  árbol ha cambiado, las tarjetas se actualizan sin recargar; si falla la API,
+  se conserva la caché para no dejar el índice vacío.
+- **Fallback**: sin caché, si la API falla (límite de peticiones, sin conexión),
+  se lee el manifiesto `blog/posts/posts.json` (acepta el formato nuevo y el
+  antiguo de nombres con fecha). Fuera del sitio real (local con `serve.py` o
+  una vista previa) el listado se lee **siempre** del manifiesto: el árbol de
+  `main` no coincide con lo que sirve el servidor. Por eso `posts.json` se
+  mantiene al día con cada entrada nueva (slug, `.md` y banner).
 - **Descarga**: el `.md` se pide primero al propio sitio (GitHub Pages sirve los
   archivos tal cual) y, si falla, a `raw.githubusercontent.com` (rama `main`).
 - **Orden**: descendente por la fecha del nombre del `.md`.

@@ -17,10 +17,12 @@
    1. Listado: en pineappleva.github.io, UNA llamada a la API de GitHub
       (git/trees con recursive=1) devuelve el árbol completo del repo;
       de ahí salen las carpetas de blog/posts/, el .md de cada una (por
-      su fecha) y si tiene assets/banner.*. El resultado se cachea en
-      localStorage media hora para no chocar con el límite de la API.
-      Si la API falla (límite, sin conexión…), se lee el manifiesto
-      blog/posts/posts.json (acepta el formato nuevo y el antiguo).
+      su fecha) y si tiene assets/banner.*. El resultado se guarda en
+      localStorage para mostrarlo al instante y, si han pasado cinco
+      minutos desde la última consulta, se revalida en segundo plano.
+      Si la API falla, se conserva la caché;
+      sin caché, se lee el manifiesto blog/posts/posts.json (acepta el
+      formato nuevo y el antiguo).
       Fuera del sitio real (local, vistas previa) el listado se lee
       siempre del manifiesto: el árbol de main no coincide con lo que
       sirve el servidor.
@@ -57,7 +59,7 @@
   var RAW_BASE = "https://raw.githubusercontent.com/" + ORG + "/" + REPO + "/" + BRANCH + "/";
   var TREE_API = "https://api.github.com/repos/" + ORG + "/" + REPO + "/git/trees/" + BRANCH + "?recursive=1";
   var TREE_CACHE_KEY = "pa-blog-tree-v2";
-  var TREE_CACHE_TTL = 1800e3; /* media hora */
+  var TREE_REVALIDATE_TTL = 5 * 60e3; /* como máximo, una consulta cada cinco minutos */
 
   /* ---------- Mini-renderizador Markdown (subconjunto seguro) ---------- */
 
@@ -301,18 +303,38 @@
       var raw = localStorage.getItem(TREE_CACHE_KEY);
       if (!raw) return null;
       var data = JSON.parse(raw);
-      if (!data || typeof data.t !== "number" || Date.now() - data.t > TREE_CACHE_TTL) return null;
+      if (!data || typeof data.t !== "number" || !isFinite(data.t)) return null;
       if (!Array.isArray(data.posts) || !data.posts.length) return null;
-      return data.posts;
+      return {
+        t: data.t,
+        /* Cachés anteriores solo guardaban t: sigue contando como última consulta. */
+        checkedAt: typeof data.checkedAt === "number" && isFinite(data.checkedAt) ? data.checkedAt : data.t,
+        posts: data.posts
+      };
     } catch (e) { return null; }
   }
   function writeTreeCache(posts) {
-    try { localStorage.setItem(TREE_CACHE_KEY, JSON.stringify({ t: Date.now(), posts: posts })); } catch (e) {}
+    var now = Date.now();
+    try { localStorage.setItem(TREE_CACHE_KEY, JSON.stringify({ t: now, checkedAt: now, posts: posts })); } catch (e) {}
+  }
+  function markTreeCacheChecked(cache) {
+    cache.checkedAt = Date.now();
+    try {
+      localStorage.setItem(TREE_CACHE_KEY, JSON.stringify({ t: cache.t, checkedAt: cache.checkedAt, posts: cache.posts }));
+    } catch (e) {}
+  }
+  function samePostList(a, b) {
+    if (a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].slug !== b[i].slug || a[i].file !== b[i].file || (a[i].banner || "") !== (b[i].banner || "")) return false;
+    }
+    return true;
   }
 
-  /* una sola llamada: el árbol completo del repo */
+  /* una sola llamada: el árbol completo del repo. no-cache pide al navegador
+     revalidar su respuesta HTTP (y reutilizarla si el servidor responde 304). */
   function viaTrees() {
-    return fetch(TREE_API, { headers: { Accept: "application/vnd.github+json" } })
+    return fetch(TREE_API, { headers: { Accept: "application/vnd.github+json" }, cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (tree) {
         var entries = (tree && Array.isArray(tree.tree)) ? tree.tree : [];
@@ -363,18 +385,52 @@
   }
 
   /* En el sitio real el listado sale del árbol de GitHub (rama main):
-     una sola llamada detecta carpetas nuevas y sus banners. En local o
-     en una vista previa (cualquier otro host) ese árbol no coincide con
-     lo que sirve el servidor, así que el listado se lee del manifiesto
+     una sola llamada detecta carpetas nuevas y sus banners. La caché se
+     muestra al instante y, si han pasado cinco minutos desde la última
+     consulta, se revalida en segundo plano; si hay cambios se avisa al
+     índice para que se actualice.
+     En local o en una vista previa (cualquier otro host) ese árbol no coincide
+     con lo que sirve el servidor, así que el listado se lee del manifiesto
      que viaja con la propia rama (posts.json). */
   var IS_PROD_SITE = location.hostname === "pineappleva.github.io";
 
-  function fetchPosts(localDir) {
+  function fetchPosts(localDir, options) {
+    options = options || {};
     if (!IS_PROD_SITE) {
       return viaManifest(localDir).then(function (posts) { return { posts: posts, optimistic: true }; });
     }
     var cached = readTreeCache();
-    if (cached) return Promise.resolve({ posts: cached, optimistic: false });
+    if (cached) {
+      var hasRequiredSlug = !options.requiredSlug || cached.posts.some(function (post) {
+        return post && post.slug === options.requiredSlug;
+      });
+
+      /* Una URL nueva puede no estar en la caché local: en ese caso espera
+         una consulta fresca en vez de enseñar un falso «no existe». */
+      if (!hasRequiredSlug) {
+        markTreeCacheChecked(cached);
+        return viaTrees()
+          .then(function (posts) { return { posts: posts, optimistic: false }; })
+          .catch(function () {
+            return viaManifest(localDir)
+              .then(function (posts) { return { posts: posts, optimistic: true }; })
+              .catch(function () { return { posts: cached.posts, optimistic: false }; });
+          });
+      }
+
+      var age = Date.now() - cached.checkedAt;
+      if (age < 0 || age >= TREE_REVALIDATE_TTL) {
+        /* Se guarda el intento antes de la petición para no duplicarla en
+           recargas o pestañas simultáneas. Si falla, la caché sigue sirviendo. */
+        markTreeCacheChecked(cached);
+        viaTrees().then(function (posts) {
+          if (!samePostList(cached.posts, posts) && typeof options.onRevalidated === "function") {
+            options.onRevalidated({ posts: posts, optimistic: false });
+          }
+        }).catch(function () {});
+      }
+      return Promise.resolve({ posts: cached.posts, optimistic: false });
+    }
     return viaTrees()
       .then(function (posts) { return { posts: posts, optimistic: false }; })
       .catch(function () {
@@ -391,82 +447,112 @@
     var apiDir = listEl.getAttribute("data-api-dir") || POSTS_PATH;
     var localDir = (listEl.getAttribute("data-md-dir") || "/" + POSTS_PATH).replace(/\/+$/, "");
     var countEl = document.getElementById("mdCount");
-    var optimistic = false;
+    var renderToken = 0;
+    var initialListReady = false;
+    var pendingRevalidation = null;
 
-    fetchPosts(localDir).then(function (res) {
-      optimistic = res.optimistic;
-      if (countEl) countEl.textContent = res.posts.length + (res.posts.length === 1 ? " entrada" : " entradas");
-      if (!res.posts.length) throw new Error("vacío");
-      return Promise.all(res.posts.map(function (post) {
+    function renderPostList(posts, isOptimistic, keepCurrent) {
+      var token = ++renderToken;
+      if (!posts.length) return Promise.reject(new Error("vacío"));
+      return Promise.all(posts.map(function (post) {
         /* cada .md se pide primero en local (GitHub Pages también lo
            sirve) y, si falla, en raw.githubusercontent.com */
         return fetchText(localDir + "/" + post.slug + "/" + post.file)
           .catch(function () { return fetchText(RAW_BASE + apiDir + "/" + post.slug + "/" + post.file); })
           .then(function (md) { return { post: post, md: md }; })
           .catch(function () { return null; }); /* una entrada rota no tumba el índice */
-      }));
-    }).then(function (items) {
-      items = (items || []).filter(Boolean);
-      if (!items.length) throw new Error("sin entradas");
+      })).then(function (items) {
+        if (token !== renderToken) return;
+        items = (items || []).filter(Boolean);
+        if (!items.length) throw new Error("sin entradas");
 
-      listEl.innerHTML = "";
-      items.forEach(function (it, idx) {
-        var p = it.post, md = it.md;
-        var title = extractTitle(md) || p.slug.replace(/-/g, " ");
-        var date = postDate(p.file) || "";
-        var mins = readingMinutes(md);
-        var excerpt = extractExcerpt(md);
-        var bannerFile = p.banner || (optimistic ? "banner.png" : "");
+        if (countEl) countEl.textContent = items.length + (items.length === 1 ? " entrada" : " entradas");
+        listEl.innerHTML = "";
+        items.forEach(function (it, idx) {
+          var p = it.post, md = it.md;
+          var title = extractTitle(md) || p.slug.replace(/-/g, " ");
+          var date = postDate(p.file) || "";
+          var mins = readingMinutes(md);
+          var excerpt = extractExcerpt(md);
+          var bannerFile = p.banner || (isOptimistic ? "banner.png" : "");
 
-        var a = document.createElement("a");
-        a.className = "post-card" + (idx === 0 ? " featured" : "");
-        a.href = postUrl(p.slug);
-        a.style.animationDelay = (idx * 90) + "ms";
+          var a = document.createElement("a");
+          a.className = "post-card" + (idx === 0 ? " featured" : "");
+          a.href = postUrl(p.slug);
+          a.style.animationDelay = (idx * 90) + "ms";
 
-        var cover =
-          '<span class="post-cover ' + coverClass(p.slug) + (bannerFile ? " has-img" : "") + '" aria-hidden="true">' +
-          (bannerFile
-            ? '<img class="cov-img" src="' + escapeHtml(localDir + "/" + p.slug + "/assets/" + bannerFile) + '" alt="" loading="lazy" decoding="async">'
-            : "") +
-          '<span class="cov-no">\u2116 ' + pad2(idx + 1) + "</span>" +
-          '<span class="cov-pine">\uD83C\uDF51</span>' +
-          "</span>";
+          var cover =
+            '<span class="post-cover ' + coverClass(p.slug) + (bannerFile ? " has-img" : "") + '" aria-hidden="true">' +
+            (bannerFile
+              ? '<img class="cov-img" src="' + escapeHtml(localDir + "/" + p.slug + "/assets/" + bannerFile) + '" alt="" loading="lazy" decoding="async">'
+              : "") +
+            '<span class="cov-no">\u2116 ' + pad2(idx + 1) + "</span>" +
+            '<span class="cov-pine">\uD83C\uDF51</span>' +
+            "</span>";
 
-        var head =
-          '<span class="post-card-head">' +
-          (idx === 0 ? '<span class="pill pill-brand">\u00DAltima entrada</span>' : "") +
-          (date ? '<span class="pill">' + escapeHtml(date) + "</span>" : "") +
-          '<span class="pill">' + mins + " min</span>" +
-          "</span>";
+          var head =
+            '<span class="post-card-head">' +
+            (idx === 0 ? '<span class="pill pill-brand">\u00DAltima entrada</span>' : "") +
+            (date ? '<span class="pill">' + escapeHtml(date) + "</span>" : "") +
+            '<span class="pill">' + mins + " min</span>" +
+            "</span>";
 
-        a.innerHTML =
-          cover +
-          '<div class="post-card-body">' +
-          head +
-          "<h3>" + escapeHtml(title) + "</h3>" +
-          (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
-          '<div class="post-card-meta">' +
-          (idx === 0 ? "<span>Por Pineapple</span>" : "<span></span>") +
-          '<span class="post-card-more">Leer la entrada \u2192</span>' +
-          "</div>" +
-          "</div>";
+          a.innerHTML =
+            cover +
+            '<div class="post-card-body">' +
+            head +
+            "<h3>" + escapeHtml(title) + "</h3>" +
+            (excerpt ? "<p>" + escapeHtml(excerpt) + "</p>" : "") +
+            '<div class="post-card-meta">' +
+            (idx === 0 ? "<span>Por Pineapple</span>" : "<span></span>") +
+            '<span class="post-card-more">Leer la entrada \u2192</span>' +
+            "</div>" +
+            "</div>";
 
-        listEl.appendChild(a);
-      });
-
-      /* banner que falle al cargar → portada de degradado */
-      Array.prototype.forEach.call(listEl.querySelectorAll(".cov-img"), function (img) {
-        img.addEventListener("error", function () {
-          var cov = img.closest(".post-cover");
-          img.remove();
-          if (cov) cov.classList.remove("has-img");
+          listEl.appendChild(a);
         });
+
+        /* banner que falle al cargar → portada de degradado */
+        Array.prototype.forEach.call(listEl.querySelectorAll(".cov-img"), function (img) {
+          img.addEventListener("error", function () {
+            var cov = img.closest(".post-cover");
+            img.remove();
+            if (cov) cov.classList.remove("has-img");
+          });
+        });
+      }).catch(function (error) {
+        if (token !== renderToken) return;
+        if (keepCurrent && listEl.querySelector(".post-card")) return;
+        throw error;
       });
+    }
+
+    function showRevalidatedList(res) {
+      if (!initialListReady) {
+        pendingRevalidation = res;
+        return;
+      }
+      renderPostList(res.posts, res.optimistic, true).catch(function () {});
+    }
+
+    function applyPendingRevalidation() {
+      initialListReady = true;
+      if (!pendingRevalidation) return;
+      var res = pendingRevalidation;
+      pendingRevalidation = null;
+      showRevalidatedList(res);
+    }
+
+    fetchPosts(localDir, { onRevalidated: showRevalidatedList }).then(function (res) {
+      return renderPostList(res.posts, res.optimistic, false);
+    }).then(function () {
+      applyPendingRevalidation();
     }).catch(function () {
       if (countEl) countEl.textContent = "0 entradas";
       listEl.innerHTML =
         '<div class="notice" style="grid-column:1/-1;"><h3>Todavía no hay nada por aquí</h3>' +
         "<p>Cuando publiquemos la primera entrada, aparecerá aquí automáticamente.</p></div>";
+      applyPendingRevalidation();
     });
   }
 
@@ -513,7 +599,7 @@
     if (!VALID.test(slug)) {
       renderError("No hay ninguna entrada con esta dirección.");
     } else {
-      fetchPosts(localDir2).then(function (res) {
+      fetchPosts(localDir2, { requiredSlug: slug }).then(function (res) {
         var post = null, idx = -1;
         for (var i = 0; i < res.posts.length; i++) {
           if (res.posts[i].slug === slug) { post = res.posts[i]; idx = i; break; }
