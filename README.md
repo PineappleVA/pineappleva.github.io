@@ -56,7 +56,10 @@ Pipeline técnico (`assets/js/blog.js`):
   hora para no chocar con el límite de la API.
 - **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el
   manifiesto `blog/posts/posts.json` (acepta el formato nuevo y el antiguo de
-  nombres con fecha).
+  nombres con fecha). Fuera del sitio real (local con `serve.py` o una vista
+  previa) el listado se lee **siempre** del manifiesto: el árbol de `main` no
+  coincide con lo que sirve el servidor. Por eso `posts.json` se mantiene al
+  día con cada entrada nueva (slug, `.md` y banner).
 - **Descarga**: el `.md` se pide primero al propio sitio (GitHub Pages sirve los
   archivos tal cual) y, si falla, a `raw.githubusercontent.com` (rama `main`).
 - **Orden**: descendente por la fecha del nombre del `.md`.
