@@ -14,13 +14,16 @@
 
    CÓMO FUNCIONA POR DENTRO
    ------------------------
-   1. Listado: UNA llamada a la API de GitHub (git/trees con
-      recursive=1) devuelve el árbol completo del repo; de ahí salen
-      las carpetas de blog/posts/, el .md de cada una (por su fecha)
-      y si tiene assets/banner.*. El resultado se cachea en
+   1. Listado: en pineappleva.github.io, UNA llamada a la API de GitHub
+      (git/trees con recursive=1) devuelve el árbol completo del repo;
+      de ahí salen las carpetas de blog/posts/, el .md de cada una (por
+      su fecha) y si tiene assets/banner.*. El resultado se cachea en
       localStorage media hora para no chocar con el límite de la API.
       Si la API falla (límite, sin conexión…), se lee el manifiesto
       blog/posts/posts.json (acepta el formato nuevo y el antiguo).
+      Fuera del sitio real (local, vistas previa) el listado se lee
+      siempre del manifiesto: el árbol de main no coincide con lo que
+      sirve el servidor.
    2. Descarga del .md: primero del propio sitio (GitHub Pages sirve
       los archivos tal cual) y, si falla, de raw.githubusercontent.
    3. Orden: descendente por la fecha del nombre del .md.
@@ -359,7 +362,17 @@
     });
   }
 
+  /* En el sitio real el listado sale del árbol de GitHub (rama main):
+     una sola llamada detecta carpetas nuevas y sus banners. En local o
+     en una vista previa (cualquier otro host) ese árbol no coincide con
+     lo que sirve el servidor, así que el listado se lee del manifiesto
+     que viaja con la propia rama (posts.json). */
+  var IS_PROD_SITE = location.hostname === "pineappleva.github.io";
+
   function fetchPosts(localDir) {
+    if (!IS_PROD_SITE) {
+      return viaManifest(localDir).then(function (posts) { return { posts: posts, optimistic: true }; });
+    }
     var cached = readTreeCache();
     if (cached) return Promise.resolve({ posts: cached, optimistic: false });
     return viaTrees()

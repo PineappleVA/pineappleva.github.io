@@ -9,8 +9,8 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 
 | Página | Descripción |
 | --- | --- |
-| `index.html` | Portada: typing SVG, colegios, lo publicado, cifras |
-| `proyectos.html` | Fichas: School Utilities, Y, Better Discovery y Games |
+| `index.html` | Portada: hero, colegios, lo publicado, cifras |
+| `proyectos.html` | Fichas: Study+ (antes School Utilities), Y, Better Discovery y Games |
 | `juegos.html` | Escaparate del catálogo: cada juego enlaza a su página de Pineapple Games |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
 | `entrada.html` (se ve en `/blog/<slug>`) | Página individual de cada entrada del blog |
@@ -56,7 +56,10 @@ Pipeline técnico (`assets/js/blog.js`):
   hora para no chocar con el límite de la API.
 - **Fallback**: si la API falla (límite de peticiones, sin conexión), se lee el
   manifiesto `blog/posts/posts.json` (acepta el formato nuevo y el antiguo de
-  nombres con fecha).
+  nombres con fecha). Fuera del sitio real (local con `serve.py` o una vista
+  previa) el listado se lee **siempre** del manifiesto: el árbol de `main` no
+  coincide con lo que sirve el servidor. Por eso `posts.json` se mantiene al
+  día con cada entrada nueva (slug, `.md` y banner).
 - **Descarga**: el `.md` se pide primero al propio sitio (GitHub Pages sirve los
   archivos tal cual) y, si falla, a `raw.githubusercontent.com` (rama `main`).
 - **Orden**: descendente por la fecha del nombre del `.md`.
@@ -120,8 +123,9 @@ Pipeline técnico (`assets/js/blog.js`):
 - Todo el color vive en **variables CSS**: `:root` define el tema oscuro y
   `html[data-theme="light"]` lo sobreescribe (papel crema con acentos ámbar).
 - Detalles de adaptación del tema claro:
-  - El logo de la piña es blanco, así que en claro se invierte con `filter: invert(1)`.
-  - Los *tiles* de logos (`school-utilities.png`, `y.png`) **siguen siendo negros** en claro:
+  - El logo de la piña es blanco, así que en claro se invierte con
+    `filter: invert(1)` (manteniendo el resplandor del hero).
+  - Los *tiles* de logos (`study-plus-light.png`, `y.png`) **siguen siendo negros** en claro:
     los logos son blancos y usan `mix-blend-mode: screen`.
   - Las insignias de estado tienen colores específicos por tema (legibilidad).
   - El botón alterna sol/luna con CSS (`html[data-theme]`) y guarda en `localStorage`.
@@ -139,9 +143,14 @@ los componentes originales — en empates de especificidad gana por ir después:
   sombras suaves que solo aparecen al pasar el ratón.
 - **Un solo acento**: el ámbar de la marca (botón primario, activo del menú,
   foco de los formularios, hover de las tarjetas).
+- **Botones**: una sola forma para todos (`--radius-sm`, ámbar sólido, sin
+  degradados ni brillos). Las etiquetas van **cortas** —«Jugar ↗», «Visitar ↗»—
+  y el destino completo se pone en `aria-label`, para que el botón nunca
+  compita en tamaño con el texto de la tarjeta.
 - **Tema claro** blanco cálido (`#fafaf7`); el oscuro es el de la marca.
-- Los emoji de interfaz se retiraron (la piña 🍍 queda solo como marca) y los
-  tiles de juegos son letras sobre colores planos.
+- Los emoji de interfaz se retiraron (la piña 🍍 queda como marca: ticker,
+  portadas del blog y cierre de artículo) y los tiles de juegos son letras
+  sobre colores planos.
 
 ## 🌊 Olas (cómo funcionan por dentro)
 
@@ -167,40 +176,49 @@ Los servicios de imágenes del perfil (typing SVG, shields.io, github-readme-sta
 fallan a menudo (rate limits o caídas), así que se sustituyeron por equivalentes
 locales que **siempre se renderizan**:
 
-- **Titular del hero**: pegatina a rotulador (`Caveat`) + nombre póster en
-  `Archivo Black` con subrayado ondulado SVG, sin efectos de máquina de escribir.
+- **Titular del hero**: «Hola, somos» en Space Grotesk + el nombre en póster
+  (`Archivo Black`), sin efectos de máquina de escribir ni subrayados SVG.
 - **Insignias** (`.x-badge`): dos segmentos HTML/CSS con los colores de cada
   plataforma, mismo look `for-the-badge`.
 - **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
   barra de lenguajes, adaptadas a ambos temas.
 
-## 🎮 Juegos embebidos
+## 🎮 Juegos: escaparate, no embebido
 
-`juegos.html` carga cada juego en un `iframe` solo cuando pulsas «Jugar aquí»
-(`data-game="URL"` en el botón; `assets/js/main.js` lo conecta). Botón «Expulsar juego»
-para descargar el iframe. Los juegos viven en su casa, Pineapple Games; aquí se embeben.
+`juegos.html` es un escaparate: cada juego enlaza a su propia página de
+**Pineapple Games** (que es donde vive de verdad), con el *deep-link*
+`/juegos?g=<id>` como atajo. No hay `iframes`: nada de juegos cargando dentro
+de esta web, así la portada sigue siendo ligera.
 
 ## 👥 Equipo
 
-`equipo.html`, con la gente de la web de la organización: **Jaime** (programación y YouTube),
-**Nerea**, **Adrian** y **David**, más dos huecos libres y el botón para **unirse al equipo**
+`equipo.html`, con la gente de la web de la organización: **Jaime** (programación y
+YouTube) y **David**, más cuatro huecos libres y el botón para **unirse al equipo**
 (formulario de solicitud). Todo lo enlazado es público.
 
 ## Notas de contenido
 
-- **School Utilities** se presenta como disponible **solo en Safa-Grial**: todavía no se ha
-  centrado el producto en otros colegios (así se indica en portada, ficha, FAQ y cifras).
+- **Study+** (antes School Utilities) se presenta como disponible **solo en Safa-Grial**:
+  todavía no se ha centrado el producto en otros colegios (así se indica en portada,
+  ficha, FAQ y cifras).
+- **Rebranding (2026-10-04)**: School Utilities pasa a llamarse **Study+**. Logos en
+  `assets/img/`: `study-plus.png` (S negra + cruz azul, para fondos claros) y
+  `study-plus-light.png` (S blanca, para los *tiles* oscuros). El cambio se cuenta en
+  la entrada `blog/posts/de-school-utilities-a-study-plus/`; donde ayuda al contexto,
+  el texto añade «antes School Utilities».
 - La web anterior de Google Sites **no se menciona**: esto es una migración directa.
 
 ## Resto de características
 
-- ✨ Animaciones: orbes, barra de progreso, contadores, tilt 3D, cinta de palabras
-  con fundido en los bordes, brillo en botones, aparición al hacer scroll con
-  easing común (`--ease`) y aperturas con fundido (desplegable, menú móvil, pager,
-  FAQ) — todo respeta `prefers-reduced-motion`.
+- ✨ Animaciones: barra de progreso, contadores, logo del hero que flota, cinta
+  de palabras con fundido en los bordes, olas del pie, *skeletons* del blog,
+  aparición al hacer scroll con easing común (`--ease`) y aperturas con fundido
+  (desplegable, menú móvil, pager, FAQ) — todo respeta
+  `prefers-reduced-motion`. Nada de `tilt` 3D ni de brillos deslizantes: los
+  efectos son de estado (hover/active/foco), no de espectáculo.
 - 📐 Layout editorial: contenedor de 1120px, secciones de 5rem de aire, héroes y
-  títulos alineados a la izquierda con filete ámbar y regla inferior; el centro
-  se reserva para lo que de verdad es central (404, algunos formularios).
+  títulos alineados a la izquierda; el centro se reserva para lo que de verdad
+  es central (404, algunos formularios).
 - 🇪🇸 Contenido en español.
 - ♿ HTML semántico, navegación por teclado, foco visible, desplegable accesible
   (`aria-expanded`, cierre con Escape/clic fuera).
