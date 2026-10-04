@@ -2173,6 +2173,7 @@ html[data-theme="dark"] .badge.ok { color: #35c9b6; }
 .hero-actions--flush { margin-top: 0; }
 .lead--tight       { margin-top: .6rem; }
 .footer-bottom--plain { border-top: 0; }
+.w-full            { width: 100%; }   /* barra de lenguajes del perfil */
 
 /* Titulares equilibrados: evita líneas huérfanas de una palabra. */
 h1, h2, h3, .section-title, .stat-num { text-wrap: balance; }
