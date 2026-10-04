@@ -10,7 +10,7 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 | Página | Descripción |
 | --- | --- |
 | `index.html` | Portada: hero, colegios, lo publicado, cifras |
-| `proyectos.html` | Fichas: School Utilities, Y, Better Discovery y Games |
+| `proyectos.html` | Fichas: Study+ (antes School Utilities), Y, Better Discovery y Games |
 | `juegos.html` | Escaparate del catálogo: cada juego enlaza a su página de Pineapple Games |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
 | `entrada.html` (se ve en `/blog/<slug>`) | Página individual de cada entrada del blog |
@@ -122,7 +122,7 @@ Pipeline técnico (`assets/js/blog.js`):
 - Detalles de adaptación del tema claro:
   - El logo de la piña es blanco, así que en claro se invierte con
     `filter: invert(1)` (manteniendo el resplandor del hero).
-  - Los *tiles* de logos (`school-utilities.png`, `y.png`) **siguen siendo negros** en claro:
+  - Los *tiles* de logos (`study-plus-light.png`, `y.png`) **siguen siendo negros** en claro:
     los logos son blancos y usan `mix-blend-mode: screen`.
   - Las insignias de estado tienen colores específicos por tema (legibilidad).
   - El botón alterna sol/luna con CSS (`html[data-theme]`) y guarda en `localStorage`.
@@ -195,8 +195,14 @@ YouTube) y **David**, más cuatro huecos libres y el botón para **unirse al equ
 
 ## Notas de contenido
 
-- **School Utilities** se presenta como disponible **solo en Safa-Grial**: todavía no se ha
-  centrado el producto en otros colegios (así se indica en portada, ficha, FAQ y cifras).
+- **Study+** (antes School Utilities) se presenta como disponible **solo en Safa-Grial**:
+  todavía no se ha centrado el producto en otros colegios (así se indica en portada,
+  ficha, FAQ y cifras).
+- **Rebranding (2026-10-04)**: School Utilities pasa a llamarse **Study+**. Logos en
+  `assets/img/`: `study-plus.png` (S negra + cruz azul, para fondos claros) y
+  `study-plus-light.png` (S blanca, para los *tiles* oscuros). El cambio se cuenta en
+  la entrada `blog/posts/de-school-utilities-a-study-plus/`; donde ayuda al contexto,
+  el texto añade «antes School Utilities».
 - La web anterior de Google Sites **no se menciona**: esto es una migración directa.
 
 ## Resto de características

@@ -12,9 +12,9 @@ guarda únicamente en el navegador del jugador.
 
 ## Productos
 
-- **School Utilities** — utilidades para el día a día en clase (temporizadores,
-  contadores, generadores). De momento disponible solo en el colegio
-  Safa-Grial de Valladolid.
+- **Study+** (antes School Utilities) — espacio de organización para el día a día
+  en clase (temporizadores, contadores, generadores). De momento disponible
+  solo en el colegio Safa-Grial de Valladolid.
 - **Y** — red social del equipo, online.
 - **Better Discovery** — proyecto en desarrollo.
 - **Pineapple Games** — el hub de juegos, con seis títulos: Dopamina, FNAS
