@@ -2182,3 +2182,197 @@ p, .lead, .section-sub, .card p { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) {
   .btn, .card, .x-badge, .pager-card, .post-card, .to-top { transition: none; }
 }
+
+/* ============================================================
+   PULIDO · efectos, modo claro y personalidad de marca
+   ------------------------------------------------------------
+   Se apila al final: gana en empates de especificidad contra
+   las capas anteriores. Todo vive en variables, por lo que el
+   tema claro/oscuro sigue funcionando tal cual.
+   ============================================================ */
+
+:root {
+  --ring: rgba(245, 166, 35, .45);
+  --glow-strong: rgba(245, 166, 35, .55);
+}
+
+html[data-theme="light"] {
+  --bg: #fafaf8;
+  --bg-soft: #f3f2ec;
+  --bg-deep: #e7e5dc;
+  --card: #ffffff;
+  --card-hover: #f7f5ee;
+  --border: rgba(28, 24, 18, .14);
+  --text: #242014;
+  --text-dim: #5c5544;
+  --header-bg: rgba(250, 250, 248, .92);
+  --shadow-md: 0 12px 30px rgba(20, 18, 12, .08);
+  --shadow-lg: 0 20px 50px rgba(20, 18, 12, .10);
+  --ring: rgba(245, 166, 35, .35);
+}
+
+/* ---------- Utilidades ---------- */
+.link {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  transition: color .15s ease;
+}
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 0; height: 2px;
+  background: var(--brand);
+  border-radius: 2px 2px 0 0;
+  transition: width .28s var(--ease);
+}
+.link:hover { color: var(--brand-strong); }
+.link:hover::after { width: 100%; }
+html[data-theme="light"] .link::after { background: var(--brand-strong); }
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand), var(--brand-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ---------- Cabecera: cristal y sombra de marca al hacer scroll ---------- */
+.site-header.scrolled {
+  background: rgba(250, 250, 248, .96);
+  box-shadow: var(--shadow-md);
+}
+html[data-theme="dark"] .site-header.scrolled {
+  background: rgba(19, 16, 7, .96);
+  box-shadow: var(--shadow-md);
+}
+
+.main-nav a[aria-current="page"] {
+  position: relative;
+}
+.main-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 20%; bottom: 4px;
+  width: 60%; height: 2px;
+  background: var(--brand-strong);
+  border-radius: 2px;
+  transition: all .28s var(--ease);
+}
+.main-nav a[aria-current="page"]:hover::after { left: 8%; width: 84%; }
+
+/* ---------- Hero: brillo ambiental, logo flotante, titular ---------- */
+.hero::before {
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: .55; transform: translateX(-50%) scale(1); }
+  50% { opacity: .95; transform: translateX(-50%) scale(1.12); }
+}
+
+.hero-logo {
+  filter: drop-shadow(0 8px 24px var(--glow));
+  animation: logoIn .9s cubic-bezier(.2, .7, .3, 1) both,
+            float 7s ease-in-out 1.4s infinite;
+}
+
+.h1-display {
+  background: linear-gradient(135deg, var(--text), var(--text-dim));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-theme="light"] .h1-display {
+  background: linear-gradient(135deg, var(--brand-strong), #8a5a00);
+}
+
+/* ---------- Tarjetas: borde de marca y brillo al pasar ---------- */
+.card:hover {
+  border-color: var(--ring);
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--ring);
+}
+.card .icon svg { transition: transform .28s var(--ease), color .2s ease; }
+.card:hover .icon svg { color: var(--brand-strong); transform: scale(1.1) rotate(-2deg); }
+
+/* ---------- Botones: brillo interior y presión ---------- */
+.btn {
+  overflow: hidden;
+}
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%);
+  transform: translateX(-100%);
+  transition: transform .35s var(--ease);
+  pointer-events: none;
+}
+.btn.primary:hover::before { transform: translateX(100%); }
+.btn:active { transform: translateY(1px) scale(.985); box-shadow: none; }
+
+/* ---------- Ticker ---------- */
+.ticker span { opacity: .9; }
+
+/* ---------- Píldoras y chips ---------- */
+.pill, .post-card-head .pill, .post-hero-meta .pill, .md-post .post-meta .pill {
+  transition: border-color .2s ease, background-color .2s ease, color .2s ease;
+}
+.pill:hover, .post-card-head .pill:hover {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+  background: rgba(245, 166, 35, .08);
+}
+
+/* ---------- Estadísticas: número con degradado de marca ---------- */
+.stat-num {
+  background: linear-gradient(135deg, var(--brand), var(--brand-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .25));
+}
+
+/* ---------- Pie de página ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  opacity: .5;
+}
+.footer-col a {
+  transition: padding-left .18s var(--ease), color .15s ease;
+}
+.footer-col a:hover { padding-left: 4px; }
+.footer-bottom a { color: var(--text-dim); }
+
+/* ---------- Volver arriba ---------- */
+.to-top { color: var(--brand-strong); }
+.to-top.show { box-shadow: var(--shadow-md), 0 0 18px var(--glow-strong); }
+
+/* ---------- Aparición algo más viva ---------- */
+.js .reveal {
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+.js .reveal.visible {
+  transition: opacity .5s var(--ease), transform .5s var(--ease);
+}
+
+/* ---------- Reducir movimiento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before, .hero-logo, .float, .btn::before { animation: none; transition: none; }
+  .site-footer::before { opacity: 0; }
+}
