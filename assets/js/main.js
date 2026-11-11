@@ -1,8 +1,8 @@
 /* ============================================================
    Pineapple — Portafolio · Scripts comunes
    Sin dependencias: tema claro/oscuro, menú móvil, desplegable
-   de Información, barra de progreso, contadores y
-   reproductor de juegos. (El blog tiene su propio script: blog.js)
+   de Información, barra de progreso y contadores.
+   (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
   'use strict';
@@ -160,23 +160,6 @@
       counters.forEach(animateCounter);
     }
   }
-
-  /* ---------- Juegos: /juegos?g=<id> lleva a su página de Pineapple Games.
-     Lo usan los enlaces del blog; el mapa vive aquí para poder cambiarlo. ---------- */
-  (function () {
-    var g = new URLSearchParams(location.search).get('g');
-    if (!g || !document.getElementById('catalogo')) return;
-    var map = {
-      'dopamina': 'dopamina',
-      'fnas': 'fine-at-skibidi',
-      'iris': 'iris-games',
-      'imtlazarus': 'imtlazarus-games',
-      'simulagoal': 'simulagoal',
-      'trade-up': 'trade-up'
-    };
-    var dir = map[String(g).toLowerCase().replace(/[^a-z0-9\-]/g, '')];
-    if (dir) location.replace('https://pineappleva.github.io/Games/games/' + dir + '/');
-  })();
 
   /* ---------- Formulario de contacto → mailto ---------- */
   var form = document.getElementById('contactForm');

@@ -1,7 +1,7 @@
 /* ============================================================
    Pineapple — Portafolio oficial
    Estética de la marca: fondo oscuro cálido, ámbar #f5a623,
-   tarjetas redondeadas. Mismo espíritu que Pineapple Games.
+   tarjetas redondeadas.
 
    Temas: dark (marca) y light (blanco moderno). El tema se aplica
    antes de pintar con un script inline en el <head>; todo el color
@@ -39,28 +39,41 @@
 }
 
 html[data-theme="light"] {
-  --bg: #ffffff;
-  --bg-soft: #f7f5ef;
-  --bg-deep: #efeadd;
+  /* Superficies: tres niveles que se distinguen de verdad
+     (lienzo cálido < tarjeta blanca < zona hundida) */
+  --bg: #f6f4ee;
+  --bg-soft: #efebe1;
+  --bg-deep: #e3dfd1;
   --card: #ffffff;
-  --card-hover: #fdf7e7;
-  --border: #e7e2d4;
-  --text: #211a0e;
-  --text-dim: #6f6653;
+  --card-hover: #fbf9f3;
+  --border: rgba(38, 31, 18, .16);
+  --border-strong: rgba(38, 31, 18, .30);
+
+  /* Texto: #2a2417 sobre blanco = 14.5:1; --text-dim = 7.4:1 */
+  --text: #2a2417;
+  --text-dim: #5b5343;
+
+  --header-bg: rgba(246, 244, 238, .88);
+
+  /* Acento: el ámbar puro solo se usa como RELLENO (con --on-brand
+     encima). Para texto y trazos, --brand-strong (#8a5a00 = 5.6:1). */
   --brand: #f5a623;
   --brand-soft: #ffd166;
-  --brand-strong: #a56d00;
-  --on-brand: #241a02;
-  --header-bg: rgba(255, 255, 255, .88);
-  --shadow-sm: 0 1px 2px rgba(33, 26, 14, .05), 0 4px 14px rgba(33, 26, 14, .06);
-  --shadow-md: 0 12px 30px rgba(33, 26, 14, .12);
-  --shadow-lg: 0 20px 50px rgba(33, 26, 14, .14);
-  --glow: rgba(245, 166, 35, .26);
+  --brand-strong: #8a5a00;
+  --on-brand: #2a1d00;
+  --brand-hover: #ef9a10;
+  --brand-active: #d98a06;
+
+  --ring: rgba(138, 90, 0, .38);
+  --glow: rgba(245, 166, 35, .18);
+  --glow-strong: rgba(245, 166, 35, .30);
   --color-scheme: light;
-  --brand-hover: #e8940a;
-  --brand-active: #cf8305;
-  --shadow-lift: 0 14px 34px rgba(33, 26, 14, .16);
-  --shadow-pop: 0 18px 46px rgba(33, 26, 14, .18);
+
+  --shadow-sm: 0 1px 1px rgba(52, 41, 20, .05), 0 3px 10px rgba(52, 41, 20, .07);
+  --shadow-md: 0 2px 4px rgba(52, 41, 20, .05), 0 12px 26px rgba(52, 41, 20, .09);
+  --shadow-lg: 0 4px 8px rgba(52, 41, 20, .06), 0 20px 46px rgba(52, 41, 20, .12);
+  --shadow-lift: 0 10px 24px rgba(52, 41, 20, .14), 0 2px 4px rgba(52, 41, 20, .06);
+  --shadow-pop: 0 14px 38px rgba(52, 41, 20, .16);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -190,11 +203,11 @@ img { max-width: 100%; }
 .brand:hover img { transform: scale(1.06); }
 .brand small { display: block; font-weight: 400; font-size: .72rem; color: var(--text-dim); }
 
-/* El logo es blanco: en tema claro se invierte para que se vea.
-   Se reescribe el filtro completo para no perder el resplandor. */
+/* El logo es un trazo gris: en oscuro brilla solo, en claro hay que
+   oscurecerlo (invert(1) lo dejaba casi blanco sobre blanco). */
 html[data-theme="light"] .brand img,
 html[data-theme="light"] .hero-logo {
-  filter: invert(1) drop-shadow(0 6px 22px var(--glow));
+  filter: brightness(.38) contrast(1.35) drop-shadow(0 6px 18px rgba(138, 90, 0, .22));
 }
 
 .nav-toggle {
@@ -224,6 +237,12 @@ html[data-theme="light"] .hero-logo {
   transition: border-color .15s ease, transform .15s ease, background-color .25s ease;
 }
 .theme-toggle:hover { border-color: var(--brand); background: var(--card-hover); }
+html[data-theme="light"] .theme-toggle,
+html[data-theme="light"] .nav-toggle {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+html[data-theme="light"] .theme-toggle { color: var(--brand-strong); }
 .theme-toggle .ico-moon { display: none; }
 .theme-toggle .ico-sun { display: block; }
 html[data-theme="light"] .theme-toggle .ico-moon { display: block; }
@@ -255,6 +274,13 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   color: var(--brand-strong);
   font-weight: 600;
   background: rgba(245, 166, 35, .12);
+}
+html[data-theme="light"] .main-nav a[aria-current="page"],
+html[data-theme="light"] .dropdown[data-open="true"] .drop-btn,
+html[data-theme="light"] .dropdown-menu a[aria-current="page"] {
+  color: #6f4700;
+  background: rgba(245, 166, 35, .26);
+  box-shadow: inset 0 0 0 1px rgba(138, 90, 0, .22);
 }
 
 /* Desplegable Información */
@@ -342,23 +368,53 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   cursor: pointer;
   font-family: inherit;
   transition: transform .15s var(--ease), box-shadow .15s ease,
-              border-color .15s ease, background-color .15s ease, color .15s ease;
+              border-color .15s ease, background .15s ease, color .15s ease;
 }
 .btn.primary {
-  background: var(--brand);
+  --btn-sheen: linear-gradient(180deg,
+      rgba(255, 255, 255, .38) 0%,
+      rgba(255, 255, 255, .10) 42%,
+      rgba(0, 0, 0, 0) 58%,
+      rgba(0, 0, 0, .14) 100%);
+  background: var(--btn-sheen), var(--brand);
   color: var(--on-brand);
-  box-shadow: 0 2px 10px rgba(245, 166, 35, .22);
+  box-shadow: 0 2px 10px rgba(245, 166, 35, .22),
+              inset 0 -2px 0 rgba(0, 0, 0, .18),
+              inset 0 1px 0 rgba(255, 255, 255, .30);
 }
 .btn.primary:hover {
-  background: var(--brand-hover);
+  background: var(--btn-sheen), var(--brand-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(245, 166, 35, .32);
+  box-shadow: 0 6px 18px rgba(245, 166, 35, .32),
+              inset 0 -2px 0 rgba(0, 0, 0, .18),
+              inset 0 1px 0 rgba(255, 255, 255, .38);
 }
-.btn.primary:active { background: var(--brand-active); }
+.btn.primary:active { background: var(--btn-sheen), var(--brand-active); }
+
+/* Deshabilitado (texto informativo, no clicable) */
+.btn[aria-disabled="true"] { cursor: default; opacity: .72; }
+.btn.primary[aria-disabled="true"]:hover,
+.btn.primary[aria-disabled="true"]:active {
+  background: var(--btn-sheen), var(--brand);
+  transform: none;
+  box-shadow: 0 2px 10px rgba(245, 166, 35, .22),
+              inset 0 -2px 0 rgba(0, 0, 0, .18),
+              inset 0 1px 0 rgba(255, 255, 255, .30);
+}
 .btn.ghost {
   border-color: var(--border);
   color: var(--text);
-  background: transparent;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .05));
+}
+html[data-theme="light"] .btn.ghost {
+  background: #ffffff;
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+html[data-theme="light"] .btn.ghost:hover {
+  border-color: var(--brand-strong);
+  background: var(--card-hover);
+  box-shadow: var(--shadow-md);
 }
 .btn.ghost:hover { border-color: var(--text-dim); background: var(--card-hover); transform: translateY(-1px); }
 .btn.ghost:active { background: var(--bg-soft); }
@@ -385,7 +441,7 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   pointer-events: none;
 }
 
-.hero .wrap { position: relative; padding-bottom: 4.2rem; }
+.hero .wrap { position: relative; padding-bottom: 2.8rem; }
 
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(26px); }
@@ -780,6 +836,9 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
   flex-wrap: wrap;
   margin: .5rem 0 .2rem;
 }
+/* En las tarjetas alternas la imagen va a la derecha: hay que invertir
+   también las columnas, si no el texto se queda en los 220 px del logo. */
+.feature.flip { grid-template-columns: 1fr 220px; }
 .feature.flip .feature-media { order: 2; }
 
 /* ============================================================
@@ -833,32 +892,8 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 }
 
 /* ============================================================
-   Puente a Pineapple Games (banda CTA de /juegos)
-   ============================================================ */
-.games-goto {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.6rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--brand);
-  border-radius: var(--radius);
-  padding: 1.6rem 1.8rem;
-  transition: border-color .2s ease, box-shadow .2s ease;
-}
-.games-goto:hover {
-  border-color: var(--brand);
-  box-shadow: var(--shadow-md);
-}
-.games-goto h2 { margin: 0 0 .35rem; font-size: 1.3rem; letter-spacing: -.01em; }
-.games-goto p { margin: 0; color: var(--text-dim); font-size: .95rem; max-width: 52ch; }
-.games-goto .btn { flex: 0 0 auto; white-space: nowrap; }
-
-
-/* ============================================================
    Blog — portada editorial, tarjetas y página de entrada
-   (pipeline: blog/posts/*.md)
+   (pipeline: blog/posts/ + manifiesto posts.json)
    ============================================================ */
 
 /* ----- Portada del índice: hero limpio ----- */
@@ -1255,7 +1290,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
    ============================================================ */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 1.1rem;
 }
 .stat {
@@ -1591,6 +1626,8 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 .js .reveal.d6 { transition-delay: .36s; }
 
 .error-hero { text-align: center; padding: 5rem 0 6rem; }
+.error-hero .hero-actions { justify-content: center; }
+.error-hero .lead { margin: 0 auto; }
 .error-hero .big { font-size: clamp(4rem, 14vw, 7rem); font-weight: 800; line-height: 1; }
 .error-hero .big span {
   background: linear-gradient(92deg, var(--brand), var(--brand-soft));
@@ -1798,18 +1835,6 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
 :root {
   --f-body: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-display: "Archivo Black", "Arial Black", Impact, var(--f-body);
-}
-html[data-theme="light"] {
-  /* tema claro: blanco cálido y limpio */
-  --bg: #fafaf7;
-  --bg-soft: #f4f3ee;
-  --bg-deep: #edece5;
-  --card: #ffffff;
-  --card-hover: #fbfaf5;
-  --border: rgba(28, 24, 18, .13);
-  --text: #1f1b12;
-  --text-dim: #6f695c;
-  --header-bg: rgba(250, 250, 247, .9);
 }
 
 body { font-family: var(--f-body); }
@@ -2195,20 +2220,9 @@ p, .lead, .section-sub, .card p { text-wrap: pretty; }
   --ring: rgba(245, 166, 35, .45);
   --glow-strong: rgba(245, 166, 35, .55);
 }
-
 html[data-theme="light"] {
-  --bg: #fafaf8;
-  --bg-soft: #f3f2ec;
-  --bg-deep: #e7e5dc;
-  --card: #ffffff;
-  --card-hover: #f7f5ee;
-  --border: rgba(28, 24, 18, .14);
-  --text: #242014;
-  --text-dim: #5c5544;
-  --header-bg: rgba(250, 250, 248, .92);
-  --shadow-md: 0 12px 30px rgba(20, 18, 12, .08);
-  --shadow-lg: 0 20px 50px rgba(20, 18, 12, .10);
-  --ring: rgba(245, 166, 35, .35);
+  --ring: rgba(138, 90, 0, .38);
+  --glow-strong: rgba(245, 166, 35, .30);
 }
 
 /* ---------- Utilidades ---------- */
@@ -2304,20 +2318,117 @@ html[data-theme="light"] .h1-display {
 .card:hover .icon svg { color: var(--brand-strong); transform: scale(1.1) rotate(-2deg); }
 
 /* ---------- Botones: brillo interior y presión ---------- */
-.btn {
+/* ---------- Brillo que recorre TODOS los botones ----------
+   ::after = barrido diagonal (debajo del texto, así nunca lo tapa);
+   ::before = brillo fijo en el borde superior, como el de .btn.primary.
+   Los elementos con z-index propio (nav) se quedan en 0 para que el
+   ::after se pinte por encima del fondo pero por debajo del texto. */
+.btn,
+.main-nav a,
+.drop-btn,
+.theme-toggle,
+.nav-toggle {
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn::before {
+/* .to-top ya es position: fixed con su propio z-index: solo se le añade
+   el recorte para que el barrido no se salga de la pastilla. */
+.to-top { overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent; }
+.btn::after,
+.main-nav a:not([aria-current="page"])::after,
+.drop-btn::after,
+.theme-toggle::after,
+.nav-toggle::after,
+.to-top::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%);
-  transform: translateX(-100%);
-  transition: transform .35s var(--ease);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 70%;
+  z-index: -1;
   pointer-events: none;
+  background: linear-gradient(105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, .30) 38%,
+      rgba(255, 255, 255, .62) 50%,
+      rgba(255, 255, 255, .30) 62%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-160%) skewX(-14deg);
+  opacity: 0;
+  transition: transform .62s var(--ease), opacity .2s linear;
 }
-.btn.primary:hover::before { transform: translateX(100%); }
+.btn:hover::after,
+.main-nav a:not([aria-current="page"]):hover::after,
+.drop-btn:hover::after,
+.theme-toggle:hover::after,
+.nav-toggle:hover::after,
+.to-top:hover::after {
+  transform: translateX(215%) skewX(-14deg);
+  opacity: 1;
+}
+
+/* Brillo fijo del borde superior: el «efecto del botón» en versión suave */
+.btn.ghost::before,
+.main-nav a::before,
+.drop-btn::before,
+.theme-toggle::before,
+.nav-toggle::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 46%;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.btn.ghost:hover::before,
+.main-nav a:hover::before,
+.drop-btn:hover::before,
+.theme-toggle:hover::before,
+.nav-toggle:hover::before { opacity: 1; }
+
+/* Píldoras del menú: mismo remate que .btn.primary (relleno ámbar) */
+.main-nav a:hover,
+.drop-btn:hover {
+  background: var(--card-hover);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 2px 10px rgba(0, 0, 0, .10);
+}
+.main-nav a,
+.drop-btn {
+  transition: background .18s ease, color .18s ease, transform .15s var(--ease),
+              box-shadow .18s ease, border-color .18s ease;
+}
+
+/* .btn.primary lleva además su degradado sólido; el barrido va encima del color
+   pero debajo del texto gracias a isolation + z-index: -1. */
+.btn.primary::after {
+  background: linear-gradient(105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, .45) 40%,
+      rgba(255, 255, 255, .85) 50%,
+      rgba(255, 255, 255, .45) 60%,
+      rgba(255, 255, 255, 0) 100%);
+}
 .btn:active { transform: translateY(1px) scale(.985); box-shadow: none; }
+.btn:active::after,
+.main-nav a:not([aria-current="page"]):active::after,
+.drop-btn:active::after,
+.theme-toggle:active::after,
+.nav-toggle:active::after,
+.to-top:active::after { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .btn::after, .main-nav a::after, .drop-btn::after,
+  .theme-toggle::after, .nav-toggle::after, .to-top::after { display: none; }
+}
 
 /* ---------- Ticker ---------- */
 .ticker span { opacity: .9; }
@@ -2375,4 +2486,191 @@ html[data-theme="light"] .h1-display {
 @media (prefers-reduced-motion: reduce) {
   .hero::before, .hero-logo, .float, .btn::before { animation: none; transition: none; }
   .site-footer::before { opacity: 0; }
+}
+
+
+/* ============================================================
+   TEMA CLARO · capa de acabado
+   ------------------------------------------------------------
+   Reglas para lo que en oscuro se resuelve con luz (degradados,
+   destellos, sombras) y en claro necesita tinta. Todo lo que
+   depende de color va aquí, no repartido por el archivo.
+   ============================================================ */
+
+/* --- Texto con degradado: en claro va del ámbar tostado al carbón --- */
+html[data-theme="light"] .h1-display {
+  background: linear-gradient(135deg, #7a4e00 0%, #b8791a 55%, #8a5a00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-theme="light"] .text-gradient {
+  background: linear-gradient(135deg, var(--brand-strong), #b8791a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-theme="light"] .stat-num {
+  background: linear-gradient(135deg, #7a4e00, #b8791a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: none;
+}
+html[data-theme="light"] .error-hero .big span {
+  background: linear-gradient(92deg, var(--brand-strong), #b8791a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- Acentos que en oscuro son luz y en claro deben ser tinta --- */
+html[data-theme="light"] .hero-count,
+html[data-theme="light"] .md-post.single > p:first-of-type::first-letter,
+html[data-theme="light"] .ticker span b { color: var(--brand-strong); }
+
+/* --- Tarjetas: sombra suave + borde definido (antes flotaban sin peso) --- */
+html[data-theme="light"] .card,
+html[data-theme="light"] .post-card,
+html[data-theme="light"] .notice,
+html[data-theme="light"] .feature,
+html[data-theme="light"] .pager-card,
+html[data-theme="light"] .gh-card {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border);
+}
+html[data-theme="light"] .card:hover,
+html[data-theme="light"] .post-card:hover,
+html[data-theme="light"] .pager-card:hover,
+html[data-theme="light"] .gh-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(138, 90, 0, .42);
+}
+
+/* --- Resaltador del titular: subrayado visible sobre lienzo claro --- */
+html[data-theme="light"] .hl { box-shadow: inset 0 -.30em 0 rgba(245, 166, 35, .55); }
+
+/* --- Héroe: el halo ámbar de fondo, más tenue en claro --- */
+html[data-theme="light"] .hero::before {
+  background: radial-gradient(circle, rgba(245, 166, 35, .22), transparent 62%);
+}
+
+/* --- Cabecera: cristal blanco con borde inferior visible --- */
+html[data-theme="light"] .site-header { backdrop-filter: blur(12px) saturate(1.2); }
+html[data-theme="light"] .site-header.scrolled {
+  background: rgba(246, 244, 238, .96);
+  box-shadow: 0 1px 0 rgba(38, 31, 18, .06), 0 6px 20px rgba(52, 41, 20, .08);
+}
+
+/* --- Cinta: fondo hundido, texto legible --- */
+html[data-theme="light"] .ticker {
+  background: var(--bg-deep);
+  border-color: rgba(38, 31, 18, .12);
+}
+html[data-theme="light"] .ticker span { color: #4a4436; opacity: 1; }
+
+/* --- Secciones alternas: separación limpia, sin doble borde --- */
+html[data-theme="light"] .section.alt {
+  background: #eee9dd;
+  border-top: 1px solid rgba(38, 31, 18, .11);
+  border-bottom: 1px solid rgba(38, 31, 18, .11);
+}
+/* Las tarjetas blancas sobre la banda crema necesitan algo más de cuerpo */
+html[data-theme="light"] .section.alt .card,
+html[data-theme="light"] .section.alt .feature {
+  box-shadow: 0 1px 2px rgba(52, 41, 20, .06), 0 8px 20px rgba(52, 41, 20, .07);
+}
+
+/* --- Formularios: campo blanco, foco ámbar con halo claro --- */
+html[data-theme="light"] .contact-form input,
+html[data-theme="light"] .contact-form select,
+html[data-theme="light"] .contact-form textarea {
+  background: #ffffff;
+  border-color: var(--border-strong);
+  box-shadow: inset 0 1px 2px rgba(52, 41, 20, .06);
+}
+html[data-theme="light"] .contact-form input:focus,
+html[data-theme="light"] .contact-form select:focus,
+html[data-theme="light"] .contact-form textarea:focus {
+  border-color: var(--brand-strong);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, .22);
+}
+
+/* --- Markdown: bloques y código sobre papel, no sobre «negro» --- */
+html[data-theme="light"] .md-post pre { background: #f3efe5; border-color: var(--border); }
+html[data-theme="light"] .md-post pre code { background: none; border: 0; color: #3a3327; }
+html[data-theme="light"] .md-post :not(pre) > code {
+  background: #f3efe5; border: 1px solid var(--border); color: #6f4700;
+}
+html[data-theme="light"] .md-post.single blockquote {
+  background: #f6f1e4;
+  border-left-color: var(--brand-strong);
+  color: #4a4335;
+}
+html[data-theme="light"] .md-post.single hr { border-color: var(--border); }
+
+/* --- Insignias de estado: las de modo oscuro iban sobre negro --- */
+html[data-theme="light"] .badge.ok      { color: #1c6b3f; background: rgba(46, 160, 96, .12); border-color: rgba(28, 107, 63, .38); }
+html[data-theme="light"] .badge.pending { color: #8a5200; background: rgba(232, 147, 12, .14); border-color: rgba(138, 82, 0, .34); }
+html[data-theme="light"] .badge.beta    { color: #7a5a00; background: rgba(248, 211, 72, .20); border-color: rgba(138, 90, 0, .30); }
+html[data-theme="light"] .badge.closed  { color: #93331f; background: rgba(224, 92, 74, .12); border-color: rgba(147, 51, 31, .32); }
+
+/* --- «Banner CTA»: tarjeta ámbar suave con borde claro --- */
+html[data-theme="light"] .banner-cta {
+  background: linear-gradient(120deg, rgba(245, 166, 35, .18), rgba(255, 209, 102, .12));
+  border-color: rgba(138, 90, 0, .30);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Pie: fondo hundido, enlaces con contraste --- */
+html[data-theme="light"] .site-footer {
+  background: #eae6da;
+  border-top-color: rgba(38, 31, 18, .12);
+}
+html[data-theme="light"] .site-footer::before { opacity: .35; }
+html[data-theme="light"] .footer-col h3 { color: #6f4700; }
+html[data-theme="light"] .footer-col a:hover { color: var(--brand-strong); }
+
+/* --- Esqueletos de carga del blog --- */
+html[data-theme="light"] .skel-card,
+html[data-theme="light"] .skel-line {
+  background: linear-gradient(100deg, #efeade 32%, #f8f5ec 50%, #efeade 68%);
+  background-size: 220% 100%;
+}
+
+/* --- Botones: brillo más contenido sobre fondos claros --- */
+html[data-theme="light"] .btn::after,
+html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
+html[data-theme="light"] .drop-btn::after,
+html[data-theme="light"] .theme-toggle::after,
+html[data-theme="light"] .nav-toggle::after,
+html[data-theme="light"] .to-top::after {
+  background: linear-gradient(105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, .55) 40%,
+      rgba(255, 255, 255, .95) 50%,
+      rgba(255, 255, 255, .55) 60%,
+      rgba(255, 255, 255, 0) 100%);
+}
+html[data-theme="light"] .btn.ghost::after,
+html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
+html[data-theme="light"] .drop-btn::after,
+html[data-theme="light"] .theme-toggle::after,
+html[data-theme="light"] .nav-toggle::after,
+html[data-theme="light"] .to-top::after {
+  background: linear-gradient(105deg,
+      rgba(245, 166, 35, 0) 0%,
+      rgba(245, 166, 35, .34) 38%,
+      rgba(255, 196, 87, .62) 50%,
+      rgba(245, 166, 35, .34) 62%,
+      rgba(245, 166, 35, 0) 100%);
+}
+/* En las píldoras del menú el barrido es más ancho y algo más lento:
+   son elementos pequeños y el destello debe notarse. */
+html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
+html[data-theme="light"] .drop-btn::after { width: 90%; }
+html[data-theme="light"] .main-nav a:hover,
+html[data-theme="light"] .drop-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(52, 41, 20, .10), inset 0 0 0 1px var(--border);
 }

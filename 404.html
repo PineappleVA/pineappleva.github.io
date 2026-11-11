@@ -35,7 +35,40 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#131007');
     })();
   </script>
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <!-- Rutas limpias: se resuelven ANTES de pintar.
+       GitHub Pages sirve 404.html para /proyectos o /blog/<slug>, así que
+       durante un instante se veía «404» antes de que el router de abajo
+       cambiara el documento. Aquí: 1) se marca <html data-routing> y el
+       cuerpo queda oculto; 2) se lanza la descarga de la página real, que
+       el router reutiliza. Si algo falla, se retira la marca y se ve el 404. -->
+  <style>
+    html[data-routing] { background: #131007; }
+    html[data-routing][data-theme="light"] { background: #f6f4ee; }
+    html[data-routing] body { visibility: hidden !important; }
+  </style>
+  <script>
+    (function () {
+      var path = location.pathname.replace(/\/+$/, "") || "/";
+      if (path === "/juegos") { location.replace("/"); return; }
+      var mPost = path.match(/^\/blog\/([A-Za-z0-9\-]+)$/);
+      var mPage = path.match(/^\/(proyectos|blog|comunidad|equipo|contacto)$/);
+      if (!mPost && !mPage) return;
+      var root = document.documentElement;
+      root.setAttribute("data-routing", "");
+      var src = mPost ? "/entrada.html" : "/" + mPage[1] + ".html";
+      try {
+        window.__paRoute = {
+          src: src,
+          html: fetch(src, { headers: { Accept: "text/html" } })
+        };
+      } catch (e) {
+        root.removeAttribute("data-routing");
+      }
+      /* Red de seguridad: si en 6 s no ha llegado nada, se muestra el 404. */
+      setTimeout(function () { root.removeAttribute("data-routing"); }, 6000);
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=20261110b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,7 +105,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
         <div class="hero-actions">
           <a class="btn primary" href="/">Volver al inicio</a>
-          <a class="btn ghost" href="/juegos">Mejor me echo una partida</a>
         </div>
       </div>
     </section>
@@ -85,7 +117,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </footer>
 
-  <script src="/assets/js/main.js" defer></script>
+  <script src="/assets/js/main.js?v=20261110b" defer></script>
   <script>
   /* ============================================================
      Enrutador de URLs limpias (GitHub Pages)
@@ -96,7 +128,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      sustituye el documento y guarda la URL limpia con replaceState.
 
      - /blog/<slug>        → /entrada.html (lee el slug del pathname)
-     - /proyectos|juegos|blog|comunidad|equipo|contacto → /<página>.html
+     - /proyectos|blog|comunidad|equipo|contacto → /<página>.html
      Cualquier otra ruta se queda en este 404 de verdad.
      ============================================================ */
   (function () {
@@ -104,17 +136,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var path = location.pathname.replace(/\/+$/, "") || "/";
     var target = null;
 
+    /* (/juegos ya se redirige arriba, antes de pintar) */
+
     var mPost = path.match(/^\/blog\/([A-Za-z0-9\-]+)$/);
-    var mPage = path.match(/^\/(proyectos|juegos|blog|comunidad|equipo|contacto)$/);
+    var mPage = path.match(/^\/(proyectos|blog|comunidad|equipo|contacto)$/);
 
     if (mPost) {
       target = { src: "/entrada.html", url: path + location.search + location.hash };
     } else if (mPage) {
       target = { src: "/" + mPage[1] + ".html", url: path + location.search + location.hash };
     }
-    if (!target) return; /* 404 legítimo: no hay nada que remapear */
+    if (!target) { document.documentElement.removeAttribute("data-routing"); return; } /* 404 legítimo */
 
-    fetch(target.src, { headers: { Accept: "text/html" } })
+    var early = window.__paRoute && window.__paRoute.src === target.src
+      ? window.__paRoute.html
+      : fetch(target.src, { headers: { Accept: "text/html" } });
+
+    early
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
       .then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html");
@@ -146,9 +184,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
           old.parentNode.replaceChild(s, old);
         }
+        document.documentElement.removeAttribute("data-routing");
       })
       .catch(function () {
         /* sin fetch disponible o error: deja el 404 tal cual */
+        document.documentElement.removeAttribute("data-routing");
       });
   })();
   </script>

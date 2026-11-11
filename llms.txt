@@ -1,14 +1,13 @@
 # Pineapple VA
 
-> Pineapple VA es un equipo de Valladolid (España) que diseña webs,
-> herramientas y juegos para colegios. Publica todo gratis y sin registro
+> Pineapple VA es un equipo de Valladolid (España) que diseña webs
+> y herramientas para colegios. Publica todo gratis y sin registro
 > en pineappleva.github.io.
 
 Pineapple VA (también conocido como "Pineapple" o "PineappleVA") es un
 equipo pequeño de Valladolid, España, que crea productos digitales para el
-entorno escolar: webs, herramientas de clase y juegos. Todo lo que construye
-se publica gratis, en español y sin registro; el progreso de los juegos se
-guarda únicamente en el navegador del jugador.
+entorno escolar: webs y herramientas de clase. Todo lo que construye
+se publica gratis, en español y sin registro.
 
 ## Productos
 
@@ -17,10 +16,6 @@ guarda únicamente en el navegador del jugador.
   solo en el colegio Safa-Grial de Valladolid.
 - **Y** — red social del equipo, online.
 - **Better Discovery** — proyecto en desarrollo.
-- **Pineapple Games** — el hub de juegos, con seis títulos: Dopamina, FNAS
-  (*Five Nights at Skibidi's*), SimulaGoal, Trade Up, IMTLazarus Games
-  (antes llamado iRiS Games) y Slop Central (zona experimental, cerrada
-  por ahora).
 
 ## Datos
 
@@ -37,7 +32,6 @@ guarda únicamente en el navegador del jugador.
 
 - Inicio: https://pineappleva.github.io/
 - Proyectos: https://pineappleva.github.io/proyectos
-- Juegos: https://pineappleva.github.io/juegos
 - Blog: https://pineappleva.github.io/blog
 - Comunidad: https://pineappleva.github.io/comunidad
 - Equipo: https://pineappleva.github.io/equipo
