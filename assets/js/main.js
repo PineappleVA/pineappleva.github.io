@@ -1,8 +1,8 @@
 /* ============================================================
    Pineapple — Portafolio · Scripts comunes
    Sin dependencias: tema claro/oscuro, menú móvil, desplegable
-   de Información, barra de progreso, contadores y
-   reproductor de juegos. (El blog tiene su propio script: blog.js)
+   de Información, barra de progreso y contadores.
+   (El blog tiene su propio script: blog.js)
    ============================================================ */
 (function () {
   'use strict';
@@ -38,33 +38,66 @@
     if (h === here) a.setAttribute('aria-current', 'page');
   });
 
-  /* ---------- Desplegable de Información ---------- */
+  /* ---------- Desplegable de Información ----------
+     Se abre al pasar el ratón (o al enfocar con el teclado) y se cierra
+     con un pequeño retardo, para que no se cierre al bajar el cursor.
+     En táctil y en móvil manda el clic de toda la vida. */
+  /* Ojo: (hover: hover) da «false» en navegadores headless y en algún
+     dispositivo híbrido, así que no se usa para decidir: los eventos
+     mouseenter/mouseleave solo llegan cuando hay ratón de verdad. */
+  var canHover = true;
   document.querySelectorAll('.dropdown').forEach(function (dd) {
     var btn = dd.querySelector('.drop-btn');
     var menu = dd.querySelector('.dropdown-menu');
     if (!btn || !menu) return;
+    var closeTimer = null;
+
+    function cancelClose() {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    }
 
     function setOpen(open) {
+      cancelClose();
       if (open) {
+        if (!menu.hasAttribute('hidden')) return;
         menu.removeAttribute('hidden');
         btn.setAttribute('aria-expanded', 'true');
         dd.setAttribute('data-open', 'true');
       } else {
+        if (menu.hasAttribute('hidden')) return;
         menu.setAttribute('hidden', '');
         btn.setAttribute('aria-expanded', 'false');
         dd.setAttribute('data-open', 'false');
       }
     }
 
+    function scheduleClose() {
+      cancelClose();
+      closeTimer = setTimeout(function () { setOpen(false); }, 180);
+    }
+
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
       setOpen(menu.hasAttribute('hidden'));
     });
+
+    if (canHover) {
+      dd.addEventListener('mouseenter', function () { setOpen(true); });
+      dd.addEventListener('mouseleave', scheduleClose);
+      /* Si el foco sale del desplegable (tab), se cierra */
+      dd.addEventListener('focusout', function (e) {
+        if (!dd.contains(e.relatedTarget)) scheduleClose();
+      });
+    }
+
     document.addEventListener('click', function (e) {
       if (!dd.contains(e.target)) setOpen(false);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && !menu.hasAttribute('hidden')) {
+        setOpen(false);
+        btn.focus();
+      }
     });
   });
 
@@ -160,23 +193,6 @@
       counters.forEach(animateCounter);
     }
   }
-
-  /* ---------- Juegos: /juegos?g=<id> lleva a su página de Pineapple Games.
-     Lo usan los enlaces del blog; el mapa vive aquí para poder cambiarlo. ---------- */
-  (function () {
-    var g = new URLSearchParams(location.search).get('g');
-    if (!g || !document.getElementById('catalogo')) return;
-    var map = {
-      'dopamina': 'dopamina',
-      'fnas': 'fine-at-skibidi',
-      'iris': 'iris-games',
-      'imtlazarus': 'imtlazarus-games',
-      'simulagoal': 'simulagoal',
-      'trade-up': 'trade-up'
-    };
-    var dir = map[String(g).toLowerCase().replace(/[^a-z0-9\-]/g, '')];
-    if (dir) location.replace('https://pineappleva.github.io/Games/games/' + dir + '/');
-  })();
 
   /* ---------- Formulario de contacto → mailto ---------- */
   var form = document.getElementById('contactForm');

@@ -10,8 +10,7 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 | Página | Descripción |
 | --- | --- |
 | `index.html` | Portada: hero, colegios, lo publicado, cifras |
-| `proyectos.html` | Fichas: Study+ (antes School Utilities), Y, Better Discovery y Games |
-| `juegos.html` | Escaparate del catálogo: cada juego enlaza a su página de Pineapple Games |
+| `proyectos.html` | Fichas: Study+ (antes School Utilities), Y y Better Discovery |
 | `blog.html` | Índice del blog (tarjetas-resumen) |
 | `entrada.html` (se ve en `/blog/<slug>`) | Página individual de cada entrada del blog |
 | `comunidad.html` | Historia, valores, cómo trabajamos y stats de GitHub |
@@ -19,12 +18,11 @@ Web estática multipágina (HTML + CSS + JS, sin frameworks) publicada en
 | `contacto.html` | Canales, formulario y FAQ |
 | `404.html` | Página de error **+ enrutador de URLs limpias** |
 
-Navegación: **Inicio · Blog · Información ▾** (Proyectos, Juegos, Comunidad, Equipo, Contacto).
+Navegación: **Inicio · Blog · Información ▾** (Proyectos, Comunidad, Equipo, Contacto).
 
 ## 📝 Blog (cómo funciona por dentro)
 
-El mismo sistema que los anuncios de [Pineapple Games](https://pineappleva.github.io/Games/anuncios/):
-**sube una carpeta y aparece solo**, ahora con assets propios por entrada.
+**Sube una carpeta y aparece solo**, con assets propios por entrada.
 
 1. Crea una carpeta en `blog/posts/` con el título de la entrada:
    `blog/posts/mi-entrada/`
@@ -84,7 +82,7 @@ Pipeline técnico (`assets/js/blog.js`):
   degradado propio) y número de edición; la más reciente va destacada a todo lo
   ancho. Fecha, tiempo de lectura (~180 palabras/min) y extracto.
 - **URLs limpias** (todo el sitio sin `.html`): los enlaces internos apuntan a
-  `/proyectos`, `/juegos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`,
+  `/proyectos`, `/blog`, `/blog/<slug>`, `/comunidad`, `/equipo`,
   `/contacto`… En GitHub Pages esas rutas no existen → Pages sirve `404.html`,
   cuyo enrutador hace *fetch-swap*: trae la página real con `fetch`, sustituye
   el documento y deja la URL limpia con `replaceState` (sin recargas ni saltos
@@ -114,10 +112,6 @@ Pipeline técnico (`assets/js/blog.js`):
   `llms.txt` en la raíz con el resumen de quién somos y qué hacemos; y
   `robots.txt` que da la bienvenida explícita a los crawlers de IA (GPTBot,
   ClaudeBot, PerplexityBot…). Títulos y `og:site_name` usan «Pineapple VA».
-- **Juegos → Pineapple Games**: `juegos.html` es el escaparate; cada tarjeta enlaza
-  a su página del hub (y el deep-link `/juegos?g=<id>` redirige allí directamente
-  mediante el mapa de `assets/js/main.js`).
-
 ## 🌗 Tema claro y oscuro (cómo funciona por dentro)
 
 - El tema se decide **antes de pintar** con un script inline en el `<head>` de cada página:
@@ -153,7 +147,7 @@ los componentes originales — en empates de especificidad gana por ir después:
   compita en tamaño con el texto de la tarjeta.
 - **Tema claro** blanco cálido (`#fafaf7`); el oscuro es el de la marca.
 - Los emoji de interfaz se retiraron (la piña 🍍 queda como marca: ticker,
-  portadas del blog y cierre de artículo) y los tiles de juegos son letras
+  portadas del blog y cierre de artículo) y los tiles de producto son letras
   sobre colores planos.
 
 ## 🌊 Olas (cómo funcionan por dentro)
@@ -186,13 +180,6 @@ locales que **siempre se renderizan**:
   plataforma, mismo look `for-the-badge`.
 - **Estadísticas de GitHub** (`.gh-card`): tarjetas HTML/CSS con filas de datos y
   barra de lenguajes, adaptadas a ambos temas.
-
-## 🎮 Juegos: escaparate, no embebido
-
-`juegos.html` es un escaparate: cada juego enlaza a su propia página de
-**Pineapple Games** (que es donde vive de verdad), con el *deep-link*
-`/juegos?g=<id>` como atajo. No hay `iframes`: nada de juegos cargando dentro
-de esta web, así la portada sigue siendo ligera.
 
 ## 👥 Equipo
 
@@ -232,7 +219,7 @@ YouTube) y **David**, más cuatro huecos libres y el botón para **unirse al equ
 ## Estructura
 
 ```
-index.html · proyectos.html · juegos.html · comunidad.html · equipo.html · contacto.html · 404.html
+index.html · proyectos.html · comunidad.html · equipo.html · contacto.html · 404.html
 blog.html              ← índice del blog
 entrada.html           ← plantilla de entrada (se sirve en /blog/<slug>)
 blog/posts/*.md        ← entradas (AAAA-MM-DD-titulo.md)
