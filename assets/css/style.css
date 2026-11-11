@@ -39,41 +39,42 @@
 }
 
 html[data-theme="light"] {
-  /* Superficies: tres niveles que se distinguen de verdad
-     (lienzo cálido < tarjeta blanca < zona hundida) */
-  --bg: #f6f4ee;
-  --bg-soft: #efebe1;
-  --bg-deep: #e3dfd1;
+  /* Superficies: lienzo casi blanco (no amarillento), tarjetas blancas
+     puras y una banda hundida muy sutil. El «papel» cálido se nota solo
+     en el halo del héroe y en los acentos, no en todo el fondo. */
+  --bg: #fbfbfa;
+  --bg-soft: #f4f4f1;
+  --bg-deep: #ecebe6;
   --card: #ffffff;
-  --card-hover: #fbf9f3;
-  --border: rgba(38, 31, 18, .16);
-  --border-strong: rgba(38, 31, 18, .30);
+  --card-hover: #f6f6f2;
+  --border: rgba(24, 24, 20, .12);
+  --border-strong: rgba(24, 24, 20, .26);
 
-  /* Texto: #2a2417 sobre blanco = 14.5:1; --text-dim = 7.4:1 */
-  --text: #2a2417;
-  --text-dim: #5b5343;
+  /* Texto: #1a1a17 sobre blanco = 16.8:1; --text-dim = 7.6:1 */
+  --text: #1a1a17;
+  --text-dim: #565650;
 
-  --header-bg: rgba(246, 244, 238, .88);
+  --header-bg: rgba(251, 251, 250, .82);
 
-  /* Acento: el ámbar puro solo se usa como RELLENO (con --on-brand
-     encima). Para texto y trazos, --brand-strong (#8a5a00 = 5.6:1). */
+  /* Acento: ámbar de marca como RELLENO; para texto y trazos, un
+     ámbar tostado (#8a5a00, 5.9:1 sobre blanco). */
   --brand: #f5a623;
-  --brand-soft: #ffd166;
+  --brand-soft: #ffc95c;
   --brand-strong: #8a5a00;
-  --on-brand: #2a1d00;
+  --on-brand: #241a00;
   --brand-hover: #ef9a10;
   --brand-active: #d98a06;
 
-  --ring: rgba(138, 90, 0, .38);
-  --glow: rgba(245, 166, 35, .18);
-  --glow-strong: rgba(245, 166, 35, .30);
+  --ring: rgba(245, 166, 35, .45);
+  --glow: rgba(245, 166, 35, .16);
+  --glow-strong: rgba(245, 166, 35, .28);
   --color-scheme: light;
 
-  --shadow-sm: 0 1px 1px rgba(52, 41, 20, .05), 0 3px 10px rgba(52, 41, 20, .07);
-  --shadow-md: 0 2px 4px rgba(52, 41, 20, .05), 0 12px 26px rgba(52, 41, 20, .09);
-  --shadow-lg: 0 4px 8px rgba(52, 41, 20, .06), 0 20px 46px rgba(52, 41, 20, .12);
-  --shadow-lift: 0 10px 24px rgba(52, 41, 20, .14), 0 2px 4px rgba(52, 41, 20, .06);
-  --shadow-pop: 0 14px 38px rgba(52, 41, 20, .16);
+  --shadow-sm: 0 1px 2px rgba(24, 24, 20, .04), 0 2px 6px rgba(24, 24, 20, .05);
+  --shadow-md: 0 2px 4px rgba(24, 24, 20, .04), 0 10px 24px rgba(24, 24, 20, .07);
+  --shadow-lg: 0 4px 8px rgba(24, 24, 20, .05), 0 18px 42px rgba(24, 24, 20, .09);
+  --shadow-lift: 0 8px 22px rgba(24, 24, 20, .12), 0 2px 4px rgba(24, 24, 20, .05);
+  --shadow-pop: 0 12px 34px rgba(24, 24, 20, .13);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -269,11 +270,11 @@ html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
   border-radius: 999px;
   transition: background .15s, color .15s;
 }
-.main-nav a:hover { background: var(--card-hover); color: var(--text); }
+.main-nav a:hover { background-color: var(--card-hover); color: var(--text); }
 .main-nav a[aria-current="page"] {
   color: var(--brand-strong);
   font-weight: 600;
-  background: rgba(245, 166, 35, .12);
+  background-color: rgba(245, 166, 35, .12);
 }
 html[data-theme="light"] .main-nav a[aria-current="page"],
 html[data-theme="light"] .dropdown[data-open="true"] .drop-btn,
@@ -302,14 +303,49 @@ html[data-theme="light"] .dropdown-menu a[aria-current="page"] {
   cursor: pointer;
   transition: background .15s, color .15s;
 }
-.drop-btn:hover { background: var(--card-hover); color: var(--text); }
+.drop-btn:hover { background-color: var(--card-hover); color: var(--text); }
 .dropdown[data-open="true"] .drop-btn {
-  background: rgba(245, 166, 35, .12);
+  background-color: rgba(245, 166, 35, .12);
   color: var(--brand-strong);
   font-weight: 600;
 }
 
 .dropdown-menu[hidden] { display: none !important; }
+
+/* Menú desplegado: la caja se abre en alto y los enlaces entran en cascada.
+   Lo dispara main.js (data-open) al pasar el ratón o al pulsar; así funciona
+   igual en escritorio, en táctil y con teclado. */
+.dropdown[data-open="true"] > .dropdown-menu {
+  display: block;
+  animation: menuExpand .26s cubic-bezier(.22, .61, .36, 1) both;
+}
+@keyframes menuExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(.72);
+    clip-path: inset(0 0 100% 0 round 14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0 round 14px);
+  }
+}
+@keyframes menuItemIn {
+  from { opacity: 0; transform: translateY(-7px); }
+  to   { opacity: 1; transform: none; }
+}
+.dropdown[data-open="true"] > .dropdown-menu > li {
+  animation: menuItemIn .24s var(--ease) both;
+}
+.dropdown[data-open="true"] > .dropdown-menu > li:nth-child(1) { animation-delay: .04s; }
+.dropdown[data-open="true"] > .dropdown-menu > li:nth-child(2) { animation-delay: .09s; }
+.dropdown[data-open="true"] > .dropdown-menu > li:nth-child(3) { animation-delay: .14s; }
+.dropdown[data-open="true"] > .dropdown-menu > li:nth-child(4) { animation-delay: .19s; }
+@media (prefers-reduced-motion: reduce) {
+  .dropdown[data-open="true"] > .dropdown-menu,
+  .dropdown[data-open="true"] > .dropdown-menu > li { animation: none; }
+}
 .dropdown-menu {
   position: absolute;
   left: 0;
@@ -322,11 +358,6 @@ html[data-theme="light"] .dropdown-menu a[aria-current="page"] {
   padding: .4rem;
   box-shadow: var(--shadow-md);
   z-index: 60;
-  animation: menuIn .18s ease both;
-}
-@keyframes menuIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: none; }
 }
 .dropdown-menu a {
   display: flex;
@@ -1678,6 +1709,7 @@ html[data-theme="dark"] .badge.closed  { color: #f0947f; }
     margin: .15rem 0 .35rem;
   }
 
+
   .theme-toggle { order: 2; margin-left: auto; }
   .nav-toggle { order: 3; margin-left: 0; }
 
@@ -2318,11 +2350,15 @@ html[data-theme="light"] .h1-display {
 .card:hover .icon svg { color: var(--brand-strong); transform: scale(1.1) rotate(-2deg); }
 
 /* ---------- Botones: brillo interior y presión ---------- */
-/* ---------- Brillo que recorre TODOS los botones ----------
-   ::after = barrido diagonal (debajo del texto, así nunca lo tapa);
-   ::before = brillo fijo en el borde superior, como el de .btn.primary.
-   Los elementos con z-index propio (nav) se quedan en 0 para que el
-   ::after se pinte por encima del fondo pero por debajo del texto. */
+/* ---------- Brillo de botones ----------
+   Dos intensidades del mismo efecto:
+   1) CABECERA (nav, Información, tema, menú): brillo SIEMPRE, deslizándose
+      en bucle lento. Son pocos elementos y dan vida a la barra.
+   2) RESTO de botones: el barrido de antes — una pasada rápida al pasar
+      el ratón, sin destellos ni cambios de color.
+   El brillo va en ::after con z-index -1 + isolation, así nunca tapa el
+   texto ni el subrayado del enlace activo. */
+
 .btn,
 .main-nav a,
 .drop-btn,
@@ -2334,100 +2370,118 @@ html[data-theme="light"] .h1-display {
   z-index: 0;
   -webkit-tap-highlight-color: transparent;
 }
-/* .to-top ya es position: fixed con su propio z-index: solo se le añade
-   el recorte para que el barrido no se salga de la pastilla. */
 .to-top { overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent; }
-.btn::after,
-.main-nav a:not([aria-current="page"])::after,
-.drop-btn::after,
-.theme-toggle::after,
-.nav-toggle::after,
-.to-top::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 70%;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(105deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .30) 38%,
-      rgba(255, 255, 255, .62) 50%,
-      rgba(255, 255, 255, .30) 62%,
-      rgba(255, 255, 255, 0) 100%);
-  transform: translateX(-160%) skewX(-14deg);
-  opacity: 0;
-  transition: transform .62s var(--ease), opacity .2s linear;
+
+/* --- 1) Cabecera: barrido permanente ---
+   Va en el background-image del propio elemento, no en un pseudo-elemento:
+   así el border-radius lo recorta de forma nativa y la banda nunca se
+   escapa de la píldora. La animación mueve background-position. */
+.main-nav a,
+.drop-btn,
+.theme-toggle,
+.nav-toggle {
+  background-image: linear-gradient(100deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, .06) 46%,
+      rgba(255, 255, 255, .20) 50%,
+      rgba(255, 255, 255, .06) 54%,
+      rgba(255, 255, 255, 0) 60%);
+  background-size: 240% 100%;
+  background-repeat: no-repeat;
+  background-position: 150% 0;
+  /* El backdrop-filter de la cabecera crea un contexto de composición y
+     deja que el fondo animado se pinte fuera de su caja. Una mask-image
+     fuerza al elemento a tener su propia capa recortada: la banda no
+     puede salirse de la píldora ni solaparse con el menú. */
+  -webkit-mask-image: -webkit-radial-gradient(#fff, #000);
+  mask-image: radial-gradient(#fff, #000);
+  animation: sheenSweep 6s cubic-bezier(.45, 0, .55, 1) infinite;
 }
-.btn:hover::after,
-.main-nav a:not([aria-current="page"]):hover::after,
-.drop-btn:hover::after,
-.theme-toggle:hover::after,
-.nav-toggle:hover::after,
-.to-top:hover::after {
-  transform: translateX(215%) skewX(-14deg);
-  opacity: 1;
+.drop-btn,
+.theme-toggle,
+.nav-toggle { animation-delay: 1.1s; }
+.main-nav li:nth-child(1) a { animation-delay: 0s; }
+.main-nav li:nth-child(2) a { animation-delay: .4s; }
+
+/* Con el menú desplegado (o en móvil abierto) el brillo se apaga y la
+   cabecera pierde el desenfoque: así no se cuela ninguna capa sobre el
+   panel y la atención va donde tiene que ir. */
+.main-nav.open a,
+.main-nav.open .drop-btn,
+.dropdown[data-open="true"] .drop-btn {
+  animation: none;
+  background-image: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.site-header:has(.main-nav.open),
+.site-header:has(.dropdown[data-open="true"]) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: var(--bg);
 }
 
-/* Brillo fijo del borde superior: el «efecto del botón» en versión suave */
-.btn.ghost::before,
-.main-nav a::before,
-.drop-btn::before,
-.theme-toggle::before,
-.nav-toggle::before {
+/* En el enlace activo el relleno ámbar manda: brillo algo más marcado */
+.main-nav a[aria-current="page"] {
+  background-image: linear-gradient(100deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, .09) 46%,
+      rgba(255, 255, 255, .28) 50%,
+      rgba(255, 255, 255, .09) 54%,
+      rgba(255, 255, 255, 0) 60%),
+    linear-gradient(rgba(245, 166, 35, .12), rgba(245, 166, 35, .12));
+}
+
+@keyframes sheenSweep {
+  0%        { background-position: 150% 0; }
+  34%, 100% { background-position: -50% 0; }
+}
+
+/* --- 2) Resto de botones: pasada al pasar el ratón (efecto de antes) ---
+   Usa ::before para no pelear con el ::after del enlace activo. */
+.btn::before,
+.to-top::before {
   content: "";
   position: absolute;
-  left: 0; right: 0; top: 0;
-  height: 46%;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 100%);
-  opacity: 0;
-  transition: opacity .2s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%);
+  transform: translateX(-100%);
+  transition: transform .4s var(--ease);
 }
-.btn.ghost:hover::before,
-.main-nav a:hover::before,
-.drop-btn:hover::before,
-.theme-toggle:hover::before,
-.nav-toggle:hover::before { opacity: 1; }
+.btn:hover::before,
+.to-top:hover::before { transform: translateX(100%); }
 
-/* Píldoras del menú: mismo remate que .btn.primary (relleno ámbar) */
-.main-nav a:hover,
-.drop-btn:hover {
-  background: var(--card-hover);
-  color: var(--text);
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 2px 10px rgba(0, 0, 0, .10);
+/* Brillo fijo del borde superior del botón fantasma (bajo el contenido) */
+.btn.ghost {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, 0) 52%);
 }
+html[data-theme="light"] .btn.ghost {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(245, 166, 35, .05) 60%);
+}
+
+/* Píldoras del menú: el hover cambia el color del texto y añade un velo
+   por debajo del brillo (background-color no pisa el background-image). */
+.main-nav a:hover,
+.drop-btn:hover { background-color: var(--card-hover); color: var(--text); }
 .main-nav a,
 .drop-btn {
-  transition: background .18s ease, color .18s ease, transform .15s var(--ease),
-              box-shadow .18s ease, border-color .18s ease;
+  box-shadow: none;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
 }
 
-/* .btn.primary lleva además su degradado sólido; el barrido va encima del color
-   pero debajo del texto gracias a isolation + z-index: -1. */
-.btn.primary::after {
-  background: linear-gradient(105deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .45) 40%,
-      rgba(255, 255, 255, .85) 50%,
-      rgba(255, 255, 255, .45) 60%,
-      rgba(255, 255, 255, 0) 100%);
-}
 .btn:active { transform: translateY(1px) scale(.985); box-shadow: none; }
-.btn:active::after,
-.main-nav a:not([aria-current="page"]):active::after,
-.drop-btn:active::after,
-.theme-toggle:active::after,
-.nav-toggle:active::after,
-.to-top:active::after { opacity: 0; }
+
 @media (prefers-reduced-motion: reduce) {
-  .btn::after, .main-nav a::after, .drop-btn::after,
-  .theme-toggle::after, .nav-toggle::after, .to-top::after { display: none; }
+  .main-nav a, .drop-btn, .theme-toggle, .nav-toggle {
+    animation: none;
+    background-image: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .btn::before, .to-top::before { transition: none; }
 }
 
 /* ---------- Ticker ---------- */
@@ -2480,6 +2534,153 @@ html[data-theme="light"] .h1-display {
 }
 .js .reveal.visible {
   transition: opacity .5s var(--ease), transform .5s var(--ease);
+}
+
+/* ============================================================
+   PULIDO FINAL
+   Detalles pequeños que hacen que el conjunto se sienta cuidado:
+   foco visible y bonito, títulos con más presencia, ritmo vertical
+   consistente y micro-transiciones.
+   ============================================================ */
+
+/* --- Foco: anillo doble (ámbar + halo) en vez de un contorno duro --- */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+/* Foco: contorno limpio. En la cabecera no se añade halo ámbar (era
+   ruido: el contorno ya marca el foco con claridad). */
+.btn:focus-visible,
+.to-top:focus-visible {
+  outline: 2px solid var(--brand-strong);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--glow);
+}
+.main-nav a:focus-visible,
+.drop-btn:focus-visible,
+.theme-toggle:focus-visible,
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--brand-strong);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+html[data-theme="light"] .btn.primary:focus-visible {
+  outline-color: #6f4700;
+}
+/* La cabecera es sticky: al saltar a un ancla no debe quedar tapada */
+[id] { scroll-margin-top: 88px; }
+
+/* --- Títulos de sección: barra con degradado y algo más de aire --- */
+.section-title { letter-spacing: -.022em; line-height: 1.15; }
+.section-title::before {
+  transform-origin: 0 50%;
+  transition: transform .45s var(--ease);
+}
+.section:hover .section-title::before { transform: scaleX(1.35); }
+
+/* --- Enlaces de texto: subrayado que crece, sin saltos de línea --- */
+.footer-col a,
+.post-card-more {
+  transition: color .16s ease, padding-left .18s var(--ease);
+}
+
+/* --- Tarjetas: elevación suave y coherente en ambos temas --- */
+.card,
+.post-card {
+  transition: transform .22s var(--ease), box-shadow .22s var(--ease),
+              border-color .22s var(--ease), background-color .25s ease;
+}
+.card:hover { transform: translateY(-3px); }
+
+/* --- Botones: el foco y la presión no deben mover el layout --- */
+.btn { will-change: transform; }
+.btn.small { letter-spacing: .01em; }
+
+/* --- Imágenes: nunca se salen de su tarjeta y no dan saltos --- */
+.post-banner,
+.feature-media img { display: block; }
+
+/* --- Cinta: pausa al pasar el ratón y algo más de aire --- */
+.ticker-track { animation-duration: 38s; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+
+/* --- Pie: enlaces con un pelín más de aire entre líneas --- */
+.footer-col li { line-height: 1.55; }
+
+/* --- Volver arriba: aparece con un rebote mínimo, sin exagerar --- */
+.to-top {
+  transition: opacity .25s ease, transform .25s var(--ease),
+              border-color .15s ease, visibility .25s, background-color .25s ease;
+}
+.to-top.show { transform: translateY(0) scale(1); }
+
+/* --- Selección de texto --- */
+html[data-theme="light"] ::selection { background: rgba(245, 166, 35, .30); color: #1a1a17; }
+
+/* --- Barra de desplazamiento (WebKit): fina y del color de la marca --- */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--brand); background-clip: content-box; }
+
+/* --- Detalles de texto: comillas y guiones bien tipografiados --- */
+.lead, .section-sub, .md-post p { text-wrap: pretty; }
+.hero h1, .page-hero h1, .blog-hero h1, .post-hero h1, .section-title { text-wrap: balance; }
+
+/* --- Móvil: menú desplegable propio, sin brillo y más tocable --- */
+@media (max-width: 680px) {
+  /* El brillo permanente distrae en pantallas pequeñas y gasta batería */
+  .main-nav a,
+  .main-nav a[aria-current="page"],
+  .drop-btn,
+  .theme-toggle,
+  .nav-toggle {
+    animation: none;
+    background-image: none;
+    background-size: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* Más altura de toque (mínimo recomendado: 44 px) */
+  .main-nav a,
+  .drop-btn { min-height: 44px; }
+  .nav-toggle,
+  .theme-toggle { width: 40px; height: 40px; }
+
+  /* El submenú se marca con una línea guía en vez de caja flotante */
+  .dropdown-menu {
+    border: 0;
+    border-left: 2px solid var(--border);
+    border-radius: 0;
+    padding: .15rem 0 .15rem .5rem;
+    background: transparent;
+    margin: .2rem 0 .4rem .9rem;
+  }
+  .dropdown-menu a { min-height: 40px; }
+
+  /* Ritmo vertical algo más apretado: en móvil se agradece */
+  .section { padding: 2.9rem 0; }
+  .hero .wrap { padding-bottom: 2.2rem; }
+  .section-title { font-size: 1.45rem; }
+
+  /* La cabecera mantiene marca + botones en una sola línea */
+  .site-header .wrap { gap: .45rem; }
+  .brand small { display: none; }
+  .brand { font-size: 1rem; }
+
+  /* Botones a lo ancho cuando van solos, cómodos al pulgar */
+  .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+  /* Cinta algo más lenta y legible */
+  .ticker-track { animation-duration: 46s; padding: .6rem 0; }
+  .ticker span { font-size: .78rem; }
 }
 
 /* ---------- Reducir movimiento ---------- */
@@ -2558,27 +2759,27 @@ html[data-theme="light"] .hero::before {
 /* --- Cabecera: cristal blanco con borde inferior visible --- */
 html[data-theme="light"] .site-header { backdrop-filter: blur(12px) saturate(1.2); }
 html[data-theme="light"] .site-header.scrolled {
-  background: rgba(246, 244, 238, .96);
-  box-shadow: 0 1px 0 rgba(38, 31, 18, .06), 0 6px 20px rgba(52, 41, 20, .08);
+  background: rgba(251, 251, 250, .96);
+  box-shadow: 0 1px 0 rgba(24, 24, 20, .05), 0 6px 20px rgba(24, 24, 20, .06);
 }
 
 /* --- Cinta: fondo hundido, texto legible --- */
 html[data-theme="light"] .ticker {
   background: var(--bg-deep);
-  border-color: rgba(38, 31, 18, .12);
+  border-color: rgba(24, 24, 20, .09);
 }
-html[data-theme="light"] .ticker span { color: #4a4436; opacity: 1; }
+html[data-theme="light"] .ticker span { color: #4a4a44; opacity: 1; }
 
 /* --- Secciones alternas: separación limpia, sin doble borde --- */
 html[data-theme="light"] .section.alt {
-  background: #eee9dd;
-  border-top: 1px solid rgba(38, 31, 18, .11);
-  border-bottom: 1px solid rgba(38, 31, 18, .11);
+  background: #f4f4f1;
+  border-top: 1px solid rgba(24, 24, 20, .09);
+  border-bottom: 1px solid rgba(24, 24, 20, .09);
 }
 /* Las tarjetas blancas sobre la banda crema necesitan algo más de cuerpo */
 html[data-theme="light"] .section.alt .card,
 html[data-theme="light"] .section.alt .feature {
-  box-shadow: 0 1px 2px rgba(52, 41, 20, .06), 0 8px 20px rgba(52, 41, 20, .07);
+  box-shadow: 0 1px 2px rgba(24, 24, 20, .05), 0 6px 18px rgba(24, 24, 20, .06);
 }
 
 /* --- Formularios: campo blanco, foco ámbar con halo claro --- */
@@ -2600,10 +2801,10 @@ html[data-theme="light"] .contact-form textarea:focus {
 html[data-theme="light"] .md-post pre { background: #f3efe5; border-color: var(--border); }
 html[data-theme="light"] .md-post pre code { background: none; border: 0; color: #3a3327; }
 html[data-theme="light"] .md-post :not(pre) > code {
-  background: #f3efe5; border: 1px solid var(--border); color: #6f4700;
+  background: #f4f4f1; border: 1px solid var(--border); color: #6f4700;
 }
 html[data-theme="light"] .md-post.single blockquote {
-  background: #f6f1e4;
+  background: #f7f7f4;
   border-left-color: var(--brand-strong);
   color: #4a4335;
 }
@@ -2624,8 +2825,8 @@ html[data-theme="light"] .banner-cta {
 
 /* --- Pie: fondo hundido, enlaces con contraste --- */
 html[data-theme="light"] .site-footer {
-  background: #eae6da;
-  border-top-color: rgba(38, 31, 18, .12);
+  background: #f4f4f1;
+  border-top-color: rgba(24, 24, 20, .10);
 }
 html[data-theme="light"] .site-footer::before { opacity: .35; }
 html[data-theme="light"] .footer-col h3 { color: #6f4700; }
@@ -2634,43 +2835,34 @@ html[data-theme="light"] .footer-col a:hover { color: var(--brand-strong); }
 /* --- Esqueletos de carga del blog --- */
 html[data-theme="light"] .skel-card,
 html[data-theme="light"] .skel-line {
-  background: linear-gradient(100deg, #efeade 32%, #f8f5ec 50%, #efeade 68%);
+  background: linear-gradient(100deg, #f1f1ed 32%, #fafaf7 50%, #f1f1ed 68%);
   background-size: 220% 100%;
 }
 
-/* --- Botones: brillo más contenido sobre fondos claros --- */
-html[data-theme="light"] .btn::after,
-html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
-html[data-theme="light"] .drop-btn::after,
-html[data-theme="light"] .theme-toggle::after,
-html[data-theme="light"] .nav-toggle::after,
-html[data-theme="light"] .to-top::after {
-  background: linear-gradient(105deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .55) 40%,
-      rgba(255, 255, 255, .95) 50%,
-      rgba(255, 255, 255, .55) 60%,
-      rgba(255, 255, 255, 0) 100%);
+/* --- Botones y cabecera: el brillo permanente se ve menos sobre blanco,
+       así que sube el contraste del destello. --- */
+html[data-theme="light"] .main-nav a::before,
+html[data-theme="light"] .drop-btn::before,
+html[data-theme="light"] .theme-toggle::before,
+html[data-theme="light"] .nav-toggle::before {
+  background-image: linear-gradient(100deg,
+      rgba(245, 166, 35, 0) 42%,
+      rgba(245, 166, 35, .10) 46%,
+      rgba(255, 205, 110, .38) 50%,
+      rgba(245, 166, 35, .10) 54%,
+      rgba(245, 166, 35, 0) 58%);
 }
-html[data-theme="light"] .btn.ghost::after,
-html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
-html[data-theme="light"] .drop-btn::after,
-html[data-theme="light"] .theme-toggle::after,
-html[data-theme="light"] .nav-toggle::after,
-html[data-theme="light"] .to-top::after {
-  background: linear-gradient(105deg,
-      rgba(245, 166, 35, 0) 0%,
-      rgba(245, 166, 35, .34) 38%,
-      rgba(255, 196, 87, .62) 50%,
-      rgba(245, 166, 35, .34) 62%,
-      rgba(245, 166, 35, 0) 100%);
+/* El barrido de los botones «de verdad» es blanco: sobre crema no se ve.
+   En claro se tiñe de ámbar para conservar el gesto. */
+html[data-theme="light"] .btn::before,
+html[data-theme="light"] .to-top::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 62%);
 }
-/* En las píldoras del menú el barrido es más ancho y algo más lento:
-   son elementos pequeños y el destello debe notarse. */
-html[data-theme="light"] .main-nav a:not([aria-current="page"])::after,
-html[data-theme="light"] .drop-btn::after { width: 90%; }
+html[data-theme="light"] .btn.ghost::before {
+  background: linear-gradient(135deg, rgba(245, 166, 35, .20), rgba(245, 166, 35, 0) 62%);
+}
 html[data-theme="light"] .main-nav a:hover,
 html[data-theme="light"] .drop-btn:hover {
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(52, 41, 20, .10), inset 0 0 0 1px var(--border);
+  background-color: #ffffff;
+  box-shadow: none;
 }

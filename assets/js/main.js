@@ -38,33 +38,66 @@
     if (h === here) a.setAttribute('aria-current', 'page');
   });
 
-  /* ---------- Desplegable de Información ---------- */
+  /* ---------- Desplegable de Información ----------
+     Se abre al pasar el ratón (o al enfocar con el teclado) y se cierra
+     con un pequeño retardo, para que no se cierre al bajar el cursor.
+     En táctil y en móvil manda el clic de toda la vida. */
+  /* Ojo: (hover: hover) da «false» en navegadores headless y en algún
+     dispositivo híbrido, así que no se usa para decidir: los eventos
+     mouseenter/mouseleave solo llegan cuando hay ratón de verdad. */
+  var canHover = true;
   document.querySelectorAll('.dropdown').forEach(function (dd) {
     var btn = dd.querySelector('.drop-btn');
     var menu = dd.querySelector('.dropdown-menu');
     if (!btn || !menu) return;
+    var closeTimer = null;
+
+    function cancelClose() {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    }
 
     function setOpen(open) {
+      cancelClose();
       if (open) {
+        if (!menu.hasAttribute('hidden')) return;
         menu.removeAttribute('hidden');
         btn.setAttribute('aria-expanded', 'true');
         dd.setAttribute('data-open', 'true');
       } else {
+        if (menu.hasAttribute('hidden')) return;
         menu.setAttribute('hidden', '');
         btn.setAttribute('aria-expanded', 'false');
         dd.setAttribute('data-open', 'false');
       }
     }
 
+    function scheduleClose() {
+      cancelClose();
+      closeTimer = setTimeout(function () { setOpen(false); }, 180);
+    }
+
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
       setOpen(menu.hasAttribute('hidden'));
     });
+
+    if (canHover) {
+      dd.addEventListener('mouseenter', function () { setOpen(true); });
+      dd.addEventListener('mouseleave', scheduleClose);
+      /* Si el foco sale del desplegable (tab), se cierra */
+      dd.addEventListener('focusout', function (e) {
+        if (!dd.contains(e.relatedTarget)) scheduleClose();
+      });
+    }
+
     document.addEventListener('click', function (e) {
       if (!dd.contains(e.target)) setOpen(false);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && !menu.hasAttribute('hidden')) {
+        setOpen(false);
+        btn.focus();
+      }
     });
   });
 
